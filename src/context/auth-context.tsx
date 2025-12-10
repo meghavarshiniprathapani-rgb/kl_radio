@@ -15,12 +15,24 @@ const users: User[] = [
   { id: '1', name: 'Station Head', email: 'stationhead@gmail.com', role: 'Station Head', avatarId: '1' },
   { id: '2', name: 'RJ Riff', email: 'rj@gmail.com', role: 'RJ', avatarId: '1' },
   { id: '3', name: 'Creative Carla', email: 'creative@gmail.com', role: 'Creative', avatarId: '1' },
-  { id: '4', name: 'Techie Tom', email: 'tom.t@klradio.com', role: 'Technical', avatarId: '1' },
+  { id: '4', name: 'Techie Tom', email: 'technical@gmail.com', role: 'Technical', avatarId: '1' },
   { id: '5', name: 'PR Penelope', email: 'pr@gmail.com', role: 'PR', avatarId: '1' },
   { id: '6', name: 'Designer Dan', email: 'designing@gmail.com', role: 'Designing', avatarId: '1' },
   { id: '7', name: 'Video Vince', email: 'videoediting@gmail.com', role: 'Video Editing', avatarId: '1' },
   { id: '8', name: 'Broadcast Barry', email: 'broadcasting@gmail.com', role: 'Broadcasting', avatarId: '1' },
 ];
+
+const roleRedirects: Record<string, string> = {
+  'Station Head': '/dashboard',
+  'RJ': '/dashboard/rj-wing',
+  'Creative': '/dashboard/creative',
+  'Technical': '/dashboard/technical',
+  'PR': '/dashboard/pr',
+  'Designing': '/dashboard/designing',
+  'Video Editing': '/dashboard/video-editing',
+  'Broadcasting': '/dashboard/broadcasting',
+};
+
 
 type AuthContextType = {
   user: User | null;
@@ -41,7 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     if (foundUser) {
       setUser(foundUser);
-      router.push('/welcome');
+      const redirectPath = roleRedirects[foundUser.role] || '/dashboard';
+      router.push(redirectPath);
       return { success: true };
     } else {
       return { success: false, error: 'No user found for that role.' };
