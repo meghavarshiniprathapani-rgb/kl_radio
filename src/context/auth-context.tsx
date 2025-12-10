@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 
 type User = {
   id: string;
@@ -21,16 +22,36 @@ const users: User[] = [
 type AuthContextType = {
   user: User | null;
   users: User[];
+  login: (email: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => void;
   setUser: (user: User | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(users[0]);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+  const login = useCallback(async (email: string): Promise<{ success: boolean; error?: string }> => {
+    // Mock login logic. In a real app, this would involve a password and an API call.
+    const foundUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    if (foundUser) {
+      setUser(foundUser);
+      router.push('/dashboard');
+      return { success: true };
+    } else {
+      return { success: false, error: 'No user found with that email.' };
+    }
+  }, [router]);
+
+  const logout = useCallback(() => {
+    setUser(null);
+    router.push('/login');
+  }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, users, setUser }}>
+    <AuthContext.Provider value={{ user, users, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

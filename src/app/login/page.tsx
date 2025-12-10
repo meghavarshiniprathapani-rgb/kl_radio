@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Radio } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,32 +14,46 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useAuth } from '@/context/auth-context';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { AuthProvider } from '@/context/auth-context';
+import { AuthProvider, useAuth } from '@/context/auth-context';
+import { useToast } from '@/hooks/use-toast';
+
 
 function LoginComponent() {
   const router = useRouter();
-  const { user, setUser, users } = useAuth();
+  const { login } = useAuth();
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState(''); // Password is for UI purposes for now
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      // Handle case where no user is selected
-      alert('Please select a role to log in.');
+    setLoading(true);
+    
+    if (!email || !password) {
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: 'Please enter both email and password.',
+      });
+      setLoading(false);
       return;
     }
+
     // In a real app, you'd handle authentication here.
-    // For now, we'll just redirect to the dashboard.
-    router.push('/dashboard');
+    // For now, we'll just use the mock login from the context.
+    const result = await login(email);
+
+    if (!result.success) {
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: result.error,
+      });
+    }
+    // On success, the context handles redirection.
+
+    setLoading(false);
   };
 
   return (
@@ -49,36 +65,34 @@ function LoginComponent() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Member Login</CardTitle>
-          <CardDescription>Select your role to access your dashboard.</CardDescription>
+          <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="role">Select Role</Label>
-               <Select
-                value={user?.id}
-                onValueChange={(userId) => {
-                  const selectedUser = users.find((u) => u.id === userId);
-                  if (selectedUser) {
-                    setUser(selectedUser);
-                  }
-                }}
-              >
-                <SelectTrigger id="role">
-                  <SelectValue placeholder="Select your role..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((u) => (
-                    <SelectItem key={u.id} value={u.id}>
-                      {u.name} ({u.role})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="email">Email</Label>
+               <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+               <Label htmlFor="password">Password</Label>
+               <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             
-            <Button type="submit" className="w-full mt-2">
-              Login as {user?.name}
+            <Button type="submit" className="w-full mt-2" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
         </CardContent>

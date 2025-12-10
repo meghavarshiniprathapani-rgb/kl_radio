@@ -16,7 +16,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useAuth } from '@/context/auth-context';
 
 export function UserNav() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   if (!user) return null;
   
@@ -47,8 +47,8 @@ export function UserNav() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/">Log out</Link>
+        <DropdownMenuItem onClick={() => logout()}>
+          Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
