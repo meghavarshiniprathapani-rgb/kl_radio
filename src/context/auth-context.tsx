@@ -7,7 +7,7 @@ type User = {
   id: string;
   name: string;
   email: string;
-  role: 'Station Head' | 'Creative' | 'Technical' | 'PR' | 'Design' | 'Video' | 'RJ' | 'Guest';
+  role: 'Station Head' | 'Creative' | 'Technical' | 'PR' | 'Design' | 'Video' | 'RJ' | 'Guest' | 'Broadcasting' | 'Designing' | 'Video Editing';
   avatarId: string;
 };
 
@@ -17,6 +17,9 @@ const users: User[] = [
   { id: '3', name: 'Creative Carla', email: 'carla.c@klradio.com', role: 'Creative', avatarId: '1' },
   { id: '4', name: 'Techie Tom', email: 'tom.t@klradio.com', role: 'Technical', avatarId: '1' },
   { id: '5', name: 'PR Penelope', email: 'penelope.p@klradio.com', role: 'PR', avatarId: '1' },
+  { id: '6', name: 'Designer Dan', email: 'dan.d@klradio.com', role: 'Designing', avatarId: '1' },
+  { id: '7', name: 'Video Vince', email: 'vince.v@klradio.com', role: 'Video Editing', avatarId: '1' },
+  { id: '8', name: 'Broadcast Barry', email: 'barry.b@klradio.com', role: 'Broadcasting', avatarId: '1' },
 ];
 
 type AuthContextType = {
@@ -35,7 +38,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string): Promise<{ success: boolean; error?: string }> => {
     // Mock login logic. In a real app, this would involve a password and an API call.
-    const foundUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    const foundUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase() || users.find(u2 => u2.role === u.role));
+    
+    if (email) { // This will be improved when Firebase is connected
+      const userToLogin = users.find(u => u.email === email) || users.find(u => u.role === email);
+      if (userToLogin) {
+        setUser(userToLogin);
+        router.push('/dashboard');
+        return { success: true };
+      }
+    }
+    
     if (foundUser) {
       setUser(foundUser);
       router.push('/dashboard');

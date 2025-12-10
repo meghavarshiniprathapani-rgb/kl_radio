@@ -34,18 +34,18 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   // General
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid, roles: ['Station Head', 'Creative', 'Technical', 'PR', 'Design', 'Video', 'RJ'] },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid, roles: ['Station Head', 'Creative', 'Technical', 'PR', 'Design', 'Video', 'RJ', 'Broadcasting', 'Designing', 'Video Editing'] },
   { href: '/dashboard/announcements', label: 'Announcements', icon: Megaphone, roles: ['Station Head', 'PR'] },
   { href: '/dashboard/suggestions', label: 'Suggestions', icon: Music2, roles: ['Station Head', 'RJ'] },
   
   // Wings
-  { href: '/dashboard/broadcasting', label: 'Broadcasting', icon: Radio, roles: ['Station Head', 'RJ', 'Technical'] },
+  { href: '/dashboard/broadcasting', label: 'Broadcasting', icon: Radio, roles: ['Station Head', 'RJ', 'Technical', 'Broadcasting'] },
   { href: '/dashboard/creative', label: 'Creative', icon: Brush, roles: ['Station Head', 'Creative'] },
-  { href: '/dashboard/designing', label: 'Designing', icon: Palette, roles: ['Station Head', 'Design'] },
+  { href: '/dashboard/designing', label: 'Designing', icon: Palette, roles: ['Station Head', 'Design', 'Designing'] },
   { href: '/dashboard/pr', label: 'PR', icon: Users, roles: ['Station Head', 'PR'] },
   { href: '/dashboard/technical', label: 'Technical', icon: Wrench, roles: ['Station Head', 'Technical'] },
-  { href: '/dashboard/video-editing', label: 'Video Editing', icon: Scissors, roles: ['Station Head', 'Video'] },
-  { href: '/dashboard/uploads', label: 'Uploads', icon: Upload, roles: ['Station Head', 'PR', 'Design', 'Video'] },
+  { href: '/dashboard/video-editing', label: 'Video Editing', icon: Scissors, roles: ['Station Head', 'Video', 'Video Editing'] },
+  { href: '/dashboard/uploads', label: 'Uploads', icon: Upload, roles: ['Station Head', 'PR', 'Design', 'Video', 'Designing', 'Video Editing'] },
 
   // Management
   { href: '/dashboard/admin', label: 'Admin Panel', icon: Shield, roles: ['Station Head'] },

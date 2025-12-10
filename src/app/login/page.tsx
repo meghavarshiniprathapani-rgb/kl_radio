@@ -27,7 +27,7 @@ import {
 
 function LoginComponent() {
   const router = useRouter();
-  const { users, login, setUser } = useAuth();
+  const { users, login } = useAuth();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState(''); // Password is for UI purposes for now
@@ -76,7 +76,7 @@ function LoginComponent() {
     setLoading(false);
   };
   
-  const uniqueRoles = Array.from(new Set(users.map(u => u.role)));
+  const uniqueRoles = Array.from(new Set(users.map(u => u.role))).filter(role => role !== 'Guest');
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
