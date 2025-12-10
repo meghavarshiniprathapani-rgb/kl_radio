@@ -14,12 +14,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useAuth } from '@/context/auth-context';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { AuthProvider } from '@/context/auth-context';
 
-export default function LoginPage() {
+function LoginComponent() {
   const router = useRouter();
+  const { user, setUser, users } = useAuth();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      // Handle case where no user is selected
+      alert('Please select a role to log in.');
+      return;
+    }
     // In a real app, you'd handle authentication here.
     // For now, we'll just redirect to the dashboard.
     router.push('/dashboard');
@@ -34,31 +49,36 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Member Login</CardTitle>
-          <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
+          <CardDescription>Select your role to access your dashboard.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="member@klradio.com"
-                required
-                defaultValue="station.head@klradio.com"
-              />
+              <Label htmlFor="role">Select Role</Label>
+               <Select
+                value={user?.id}
+                onValueChange={(userId) => {
+                  const selectedUser = users.find((u) => u.id === userId);
+                  if (selectedUser) {
+                    setUser(selectedUser);
+                  }
+                }}
+              >
+                <SelectTrigger id="role">
+                  <SelectValue placeholder="Select your role..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.name} ({u.role})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                defaultValue="password"
-              />
-            </div>
+            
             <Button type="submit" className="w-full mt-2">
-              Login
+              Login as {user?.name}
             </Button>
           </form>
         </CardContent>
@@ -71,5 +91,14 @@ export default function LoginPage() {
         .
       </p>
     </div>
+  );
+}
+
+
+export default function LoginPage() {
+  return (
+    <AuthProvider>
+      <LoginComponent />
+    </AuthProvider>
   );
 }
