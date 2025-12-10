@@ -25,7 +25,7 @@ const users: User[] = [
 type AuthContextType = {
   user: User | null;
   users: User[];
-  login: (email: string) => Promise<{ success: boolean; error?: string }>;
+  login: (role: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   setUser: (user: User | null) => void;
 };
@@ -36,14 +36,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
-  const login = useCallback(async (email: string): Promise<{ success: boolean; error?: string }> => {
-    // The 'email' parameter from the form is now treated as the role identifier for this mock setup.
-    const roleToFind = email;
+  const login = useCallback(async (roleToFind: string): Promise<{ success: boolean; error?: string }> => {
     const foundUser = users.find((u) => u.role === roleToFind);
     
     if (foundUser) {
       setUser(foundUser);
-      router.push('/dashboard');
+      router.push('/welcome');
       return { success: true };
     } else {
       return { success: false, error: 'No user found for that role.' };
