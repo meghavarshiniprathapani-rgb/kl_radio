@@ -15,6 +15,7 @@ import {
   Radio,
   Shield,
   Upload,
+  BookText,
 } from 'lucide-react';
 import {
   SidebarMenu,
@@ -37,6 +38,7 @@ const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid, roles: ['Station Head', 'Creative', 'Technical', 'PR', 'Design', 'Video', 'RJ', 'Broadcasting', 'Designing', 'Video Editing'] },
   { href: '/dashboard/announcements', label: 'Announcements', icon: Megaphone, roles: ['Station Head', 'PR'] },
   { href: '/dashboard/suggestions', label: 'Suggestions', icon: Music2, roles: ['Station Head', 'RJ'] },
+  { href: '/dashboard/rj-wing', label: 'RJ Wing', icon: BookText, roles: ['Station Head', 'RJ'] },
   
   // Wings
   { href: '/dashboard/broadcasting', label: 'Broadcasting', icon: Radio, roles: ['Station Head', 'RJ', 'Technical', 'Broadcasting'] },
@@ -56,6 +58,7 @@ const groupMapping: Record<string, string> = {
   'Dashboard': 'Menu',
   'Announcements': 'Menu',
   'Suggestions': 'Menu',
+  'RJ Wing': 'Menu',
   'Broadcasting': 'Wings',
   'Creative': 'Wings',
   'Designing': 'Wings',
