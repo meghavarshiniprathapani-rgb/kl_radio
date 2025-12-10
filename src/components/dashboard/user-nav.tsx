@@ -11,9 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useAuth } from '@/context/auth-context';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export function UserNav() {
   const { user, logout } = useAuth();
