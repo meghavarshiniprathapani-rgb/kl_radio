@@ -80,7 +80,7 @@ export default function Home() {
             <CardContent className="flex flex-col items-center justify-center p-10 text-center md:p-16">
               <h2 className="font-headline text-4xl font-bold">Listen Live</h2>
               <p className="mt-2 max-w-md text-primary-foreground/80">
-                Stream KL Radio 24/7. Don't miss a beat of the city's sound.
+                Stream KL Radio. Don't miss a beat of the KL's sound.
               </p>
               <Waveform className="my-8 text-primary-foreground/50" />
               <Button size="lg" variant="secondary" className="w-full max-w-xs text-lg font-bold shadow-lg transition-transform hover:scale-105">
