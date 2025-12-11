@@ -20,7 +20,7 @@ const NavbarKL = () => {
   return (
     <>
       <div className="fixed top-0 left-0 w-full h-24 flex justify-center items-center z-50 pointer-events-none">
-        <header className="w-full max-w-2xl bg-white/80 backdrop-blur-md text-black flex justify-center px-4 py-3 z-50 rounded-full shadow-lg pointer-events-auto">
+        <header className="w-full max-w-2xl bg-white/10 backdrop-blur-lg text-white flex justify-center px-4 py-3 z-50 rounded-full shadow-lg pointer-events-auto">
           <div className="flex items-center justify-between w-full">
             
             <Link href="/" className="flex items-center gap-3">
@@ -31,14 +31,14 @@ const NavbarKL = () => {
                 height={40}
                 className="w-10 h-10 rounded-full object-cover"
               />
-              <span className="text-lg font-semibold text-gray-900">KL Radio</span>
+              <span className="text-lg font-semibold text-white">KL Radio</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-6">
-              <Link href="/#announcements" className="text-sm text-gray-700 hover:text-black transition">
+              <Link href="/#announcements" className="text-sm text-gray-200 hover:text-white transition">
                 Announcements
               </Link>
-              <Link href="/#suggestions" className="text-sm text-gray-700 hover:text-black transition">
+              <Link href="/#suggestions" className="text-sm text-gray-200 hover:text-white transition">
                 Suggestions
               </Link>
             </nav>
@@ -57,7 +57,7 @@ const NavbarKL = () => {
               onClick={toggle}
               whileTap={{ scale: 0.9 }}
             >
-              <Menu className="w-6 h-6 text-gray-900" />
+              <Menu className="w-6 h-6 text-white" />
             </motion.button>
           </div>
         </header>
