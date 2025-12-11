@@ -9,7 +9,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, RefreshCw, Pen, Trash, Save, Megaphone } from 'lucide-react';
+import { PlusCircle, RefreshCw, Pen, Trash, Save, Megaphone, Podcast } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -55,6 +55,14 @@ type Announcement = {
   lastEdited: string;
 };
 
+type PodcastScript = {
+  id: string;
+  title: string;
+  topic: string;
+  content: string;
+  lastEdited: string;
+};
+
 
 type NewsItem = {
   article_id: string;
@@ -87,6 +95,14 @@ export default function CreativePage() {
   const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementContent, setAnnouncementContent] = useState('');
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
+
+  // Podcast Scripts state
+  const [podcastScripts, setPodcastScripts] = useState<PodcastScript[]>([]);
+  const [isPodcastDialogOpen, setIsPodcastDialogOpen] = useState(false);
+  const [podcastTitle, setPodcastTitle] = useState('');
+  const [podcastTopic, setPodcastTopic] = useState('');
+  const [podcastContent, setPodcastContent] = useState('');
+  const [editingPodcast, setEditingPodcast] = useState<PodcastScript | null>(null);
 
   const handleFetchNews = async () => {
     setIsFetching(true);
@@ -265,6 +281,68 @@ export default function CreativePage() {
     });
   };
 
+  // --- Podcast Script Management ---
+  const openNewPodcastDialog = () => {
+    setEditingPodcast(null);
+    setPodcastTitle('');
+    setPodcastTopic('');
+    setPodcastContent('');
+    setIsPodcastDialogOpen(true);
+  };
+
+  const openEditPodcastDialog = (podcast: PodcastScript) => {
+    setEditingPodcast(podcast);
+    setPodcastTitle(podcast.title);
+    setPodcastTopic(podcast.topic);
+    setPodcastContent(podcast.content);
+    setIsPodcastDialogOpen(true);
+  };
+
+  const handleSavePodcast = () => {
+    if (!podcastTitle || !podcastTopic || !podcastContent) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Fields',
+        description: 'Please provide a title, topic, and content for the podcast script.',
+      });
+      return;
+    }
+
+    if (editingPodcast) {
+      setPodcastScripts(prev => prev.map(p => 
+        p.id === editingPodcast.id 
+          ? { ...p, title: podcastTitle, topic: podcastTopic, content: podcastContent, lastEdited: new Date().toLocaleString() } 
+          : p
+      ));
+      toast({
+        title: 'Podcast Script Updated',
+        description: `"${podcastTitle}" has been updated.`,
+      });
+    } else {
+      const newPodcast: PodcastScript = {
+        id: `p${Date.now()}`,
+        title: podcastTitle,
+        topic: podcastTopic,
+        content: podcastContent,
+        lastEdited: new Date().toLocaleString(),
+      };
+      setPodcastScripts(prev => [...prev, newPodcast]);
+      toast({
+        title: 'Podcast Script Saved',
+        description: `"${podcastTitle}" has been added.`,
+      });
+    }
+    setIsPodcastDialogOpen(false);
+  };
+
+  const handleDeletePodcast = (podcastId: string) => {
+    setPodcastScripts(prev => prev.filter(podcast => podcast.id !== podcastId));
+    toast({
+      title: 'Podcast Script Deleted',
+      description: 'The podcast script has been removed.',
+    });
+  };
+
 
   return (
     <div className="space-y-6">
@@ -362,6 +440,61 @@ export default function CreativePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Podcast Script Dialog */}
+      <Dialog open={isPodcastDialogOpen} onOpenChange={setIsPodcastDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingPodcast ? 'Edit Podcast Script' : 'Create a New Podcast Script'}</DialogTitle>
+            <DialogDescription>
+              {editingPodcast ? 'Modify the details of your podcast script below.' : 'Draft a new script for a podcast episode.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="podcast-title" className="text-right">
+                Title
+              </Label>
+              <Input
+                id="podcast-title"
+                value={podcastTitle}
+                onChange={(e) => setPodcastTitle(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="podcast-topic" className="text-right">
+                Topic
+              </Label>
+              <Input
+                id="podcast-topic"
+                value={podcastTopic}
+                onChange={(e) => setPodcastTopic(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="podcast-content" className="text-right">
+                Content
+              </Label>
+              <Textarea
+                id="podcast-content"
+                value={podcastContent}
+                onChange={(e) => setPodcastContent(e.target.value)}
+                className="col-span-3"
+                rows={8}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleSavePodcast}>{editingPodcast ? 'Save Changes' : 'Save Script'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Scripts Management */}
@@ -458,6 +591,57 @@ export default function CreativePage() {
             <Button onClick={openNewAnnouncementDialog}>
               <Megaphone className="mr-2 h-4 w-4" />
               Create Announcement
+            </Button>
+          </CardFooter>
+        </Card>
+        
+        {/* Podcast Scripts Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Podcast Scripts</CardTitle>
+            <CardDescription>
+              Draft and manage scripts for podcast episodes.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Topic</TableHead>
+                  <TableHead>Last Edited</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {podcastScripts.length > 0 ? podcastScripts.map((podcast) => (
+                  <TableRow key={podcast.id}>
+                    <TableCell className="font-medium">{podcast.title}</TableCell>
+                    <TableCell>{podcast.topic}</TableCell>
+                    <TableCell>{podcast.lastEdited}</TableCell>
+                    <TableCell className="text-right">
+                      <Button onClick={() => openEditPodcastDialog(podcast)} variant="ghost" size="icon" className="h-8 w-8">
+                        <Pen className="h-4 w-4" />
+                      </Button>
+                      <Button onClick={() => handleDeletePodcast(podcast.id)} variant="ghost" size="icon" className="h-8 w-8 text-destructive/80 hover:text-destructive">
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                )) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                      No podcast scripts created yet.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+          <CardFooter className="flex justify-end gap-2">
+            <Button onClick={openNewPodcastDialog}>
+              <Podcast className="mr-2 h-4 w-4" />
+              Create Podcast Script
             </Button>
           </CardFooter>
         </Card>
