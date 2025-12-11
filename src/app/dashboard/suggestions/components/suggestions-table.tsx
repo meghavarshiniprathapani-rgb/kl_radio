@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface SuggestionsTableProps {
   suggestions: SongSuggestion[];
@@ -42,6 +43,15 @@ export function SuggestionsTable({ suggestions: initialSuggestions }: Suggestion
       title: 'Status Updated',
       description: `Song suggestion status changed to ${newStatus}.`,
     });
+  };
+
+  const toggleStatus = (id: string, currentStatus: SongSuggestion['status']) => {
+    if (currentStatus === 'Pending') {
+      handleStatusChange(id, 'Played');
+    } else if (currentStatus === 'Played') {
+      handleStatusChange(id, 'Pending');
+    }
+    // "Rejected" status is not toggled by direct click
   };
 
   const getBadgeVariant = (status: SongSuggestion['status']) => {
@@ -79,7 +89,19 @@ export function SuggestionsTable({ suggestions: initialSuggestions }: Suggestion
             <TableCell>{suggestion.name}</TableCell>
             <TableCell>{formatDistanceToNow(new Date(suggestion.submittedAt), { addSuffix: true })}</TableCell>
             <TableCell>
-              <Badge variant={getBadgeVariant(suggestion.status)}>{suggestion.status}</Badge>
+               <Button
+                variant={getBadgeVariant(suggestion.status)}
+                size="sm"
+                className={cn(
+                  'h-auto px-2.5 py-0.5 text-xs font-semibold',
+                  suggestion.status !== 'Rejected' && 'cursor-pointer',
+                  suggestion.status === 'Played' && 'bg-red-600 hover:bg-red-600/80',
+                )}
+                onClick={() => toggleStatus(suggestion.id, suggestion.status)}
+                disabled={suggestion.status === 'Rejected'}
+              >
+                {suggestion.status}
+              </Button>
             </TableCell>
             <TableCell>
               <DropdownMenu>
