@@ -53,7 +53,7 @@ export function SuggestionsTable({ suggestions: initialSuggestions }: Suggestion
     }
     // "Rejected" status is not toggled by direct click
   };
-
+  
   const getBadgeVariant = (status: SongSuggestion['status']) => {
     switch (status) {
       case 'Played':
@@ -66,6 +66,7 @@ export function SuggestionsTable({ suggestions: initialSuggestions }: Suggestion
         return 'outline';
     }
   };
+
 
   return (
     <Table>
@@ -89,19 +90,23 @@ export function SuggestionsTable({ suggestions: initialSuggestions }: Suggestion
             <TableCell>{suggestion.name}</TableCell>
             <TableCell>{formatDistanceToNow(new Date(suggestion.submittedAt), { addSuffix: true })}</TableCell>
             <TableCell>
-               <Button
-                variant={getBadgeVariant(suggestion.status)}
-                size="sm"
-                className={cn(
-                  'h-auto px-2.5 py-0.5 text-xs font-semibold',
-                  suggestion.status !== 'Rejected' && 'cursor-pointer',
-                  suggestion.status === 'Played' && 'bg-red-600 hover:bg-red-600/80',
-                )}
-                onClick={() => toggleStatus(suggestion.id, suggestion.status)}
-                disabled={suggestion.status === 'Rejected'}
-              >
-                {suggestion.status}
-              </Button>
+              {suggestion.status === 'Rejected' ? (
+                <Badge variant="destructive" className="text-xs font-semibold">
+                  {suggestion.status}
+                </Badge>
+              ) : (
+                <Button
+                  variant={suggestion.status === 'Played' ? 'default' : 'secondary'}
+                  size="sm"
+                  className={cn(
+                    'h-auto px-2.5 py-0.5 text-xs font-semibold',
+                     suggestion.status === 'Played' && 'bg-red-600 hover:bg-red-600/80',
+                  )}
+                  onClick={() => toggleStatus(suggestion.id, suggestion.status)}
+                >
+                  {suggestion.status}
+                </Button>
+              )}
             </TableCell>
             <TableCell>
               <DropdownMenu>
