@@ -158,7 +158,7 @@ export default function CreativePage() {
       // Update existing script
       setScripts(prev => prev.map(s => 
         s.id === editingScript.id 
-          ? { ...s, title: scriptTitle, content: scriptContent, lastEdited: new Date().toLocaleDateString() } 
+          ? { ...s, title: scriptTitle, content: scriptContent, lastEdited: new Date().toLocaleString() } 
           : s
       ));
       toast({
@@ -171,7 +171,7 @@ export default function CreativePage() {
         id: `s${scripts.length + 1}`,
         title: scriptTitle,
         content: scriptContent,
-        lastEdited: new Date().toLocaleDateString(),
+        lastEdited: new Date().toLocaleString(),
       };
       setScripts(prev => [...prev, newScript]);
       toast({
