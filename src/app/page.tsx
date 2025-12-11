@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Megaphone, Music, Send } from 'lucide-react';
-import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import React, { useState } from 'react';
+import { NavbarKL } from '@/components/ui/navbar-kl';
 
 
 // Mock data for announcements
@@ -133,7 +133,7 @@ function SuggestionForm() {
 function HomeComponent() {
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader />
+      <NavbarKL />
       <main className="flex-1">
         <section className="relative w-full py-20 md:py-32 lg:py-40">
           <div className="container mx-auto max-w-5xl px-4 text-center">

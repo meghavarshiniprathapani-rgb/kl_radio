@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { NavbarKL } from '@/components/ui/navbar-kl';
 
 
 function LoginComponent() {
@@ -69,9 +70,11 @@ function LoginComponent() {
   const uniqueRoles = Array.from(new Set(users.map(u => u.role))).filter(role => role !== 'Guest');
 
   return (
+    <>
+    <NavbarKL />
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="mb-8 flex items-center space-x-4 text-primary">
-        <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={120} height={120} className="h-32 w-32 rounded-full" />
+        <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={160} height={160} className="h-40 w-40 rounded-full" />
         <span className="font-headline text-6xl font-bold">KL Radio</span>
       </div>
       <Card className="w-full max-w-sm">
@@ -131,6 +134,7 @@ function LoginComponent() {
         .
       </p>
     </div>
+    </>
   );
 }
 
