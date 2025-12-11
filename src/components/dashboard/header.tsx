@@ -3,6 +3,9 @@ import Link from 'next/link';
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
 import Image from 'next/image';
@@ -38,14 +41,21 @@ export function DashboardHeader() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
-          <nav className="flex flex-col gap-6 text-lg font-medium">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 text-lg font-semibold"
-            >
-              <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={120} height={120} className="h-32 w-32 rounded-full" />
-              <span>KL Radio</span>
-            </Link>
+          <SheetHeader>
+            <SheetTitle>
+                <Link
+                href="/dashboard"
+                className="flex items-center gap-2 text-lg font-semibold"
+                >
+                <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={120} height={120} className="h-32 w-32 rounded-full" />
+                <span>KL Radio</span>
+                </Link>
+            </SheetTitle>
+            <SheetDescription>
+                Navigate through your dashboard sections.
+            </SheetDescription>
+          </SheetHeader>
+          <nav className="flex flex-col gap-6 text-lg font-medium mt-4">
             <MainNav isMobile={true} />
           </nav>
         </SheetContent>
