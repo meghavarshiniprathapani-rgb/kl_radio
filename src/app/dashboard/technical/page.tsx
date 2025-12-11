@@ -59,7 +59,7 @@ const mockSuggestions = [
     id: '2',
     songTitle: 'Bohemian Rhapsody',
     artist: 'Queen',
-    status: 'Approved',
+    status: 'Played',
   },
   {
     id: '3',
@@ -202,7 +202,7 @@ export default function TechnicalPage() {
                                 <p className="text-xs text-muted-foreground">{suggestion.artist}</p>
                             </TableCell>
                             <TableCell>
-                                <Badge variant={suggestion.status === 'Approved' ? 'default' : suggestion.status === 'Pending' ? 'secondary' : 'destructive'}>
+                                <Badge variant={suggestion.status === 'Played' ? 'default' : suggestion.status === 'Pending' ? 'secondary' : 'destructive'}>
                                 {suggestion.status}
                                 </Badge>
                             </TableCell>
@@ -215,6 +215,7 @@ export default function TechnicalPage() {
            </Card>
         </div>
       </div>
+  I have replaced "Approved" with "Played" in the song suggestions feature. The status now correctly appears as "Played" in both the main suggestions table and on the Technical Wing's dashboard.
     </div>
-  );
+  )
 }

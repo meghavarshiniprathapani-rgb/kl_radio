@@ -28,7 +28,7 @@ interface SuggestionsTableProps {
 export function SuggestionsTable({ suggestions }: SuggestionsTableProps) {
   const getBadgeVariant = (status: SongSuggestion['status']) => {
     switch (status) {
-      case 'Approved':
+      case 'Played':
         return 'default';
       case 'Pending':
         return 'secondary';
@@ -73,7 +73,7 @@ export function SuggestionsTable({ suggestions }: SuggestionsTableProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem>Approve</DropdownMenuItem>
+                  <DropdownMenuItem>Mark as Played</DropdownMenuItem>
                   <DropdownMenuItem>Reject</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -14,5 +14,5 @@ export type SongSuggestion = {
   songTitle: string;
   artist: string;
   submittedAt: string;
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: 'Pending' | 'Played' | 'Rejected';
 };
