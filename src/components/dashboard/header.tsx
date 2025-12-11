@@ -15,13 +15,13 @@ import { useAuth } from '@/context/auth-context';
 export function DashboardHeader() {
   const { logout } = useAuth();
   return (
-    <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-30 flex h-24 items-center gap-4 border-b bg-background px-4 md:px-6">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Link
           href="/dashboard"
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
         >
-          <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={48} height={48} className="h-12 w-12 rounded-full" />
+          <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={64} height={64} className="h-16 w-16 rounded-full" />
           <span className="sr-only">KL Radio</span>
         </Link>
         <MainNav />
@@ -43,7 +43,7 @@ export function DashboardHeader() {
               href="/dashboard"
               className="flex items-center gap-2 text-lg font-semibold"
             >
-              <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={48} height={48} className="h-12 w-12 rounded-full" />
+              <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={64} height={64} className="h-16 w-16 rounded-full" />
               <span className="sr-only">KL Radio</span>
             </Link>
             <MainNav isMobile={true} />

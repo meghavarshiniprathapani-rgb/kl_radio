@@ -7,7 +7,7 @@ export function SiteFooter() {
     <footer className="border-t py-6 md:px-8 md:py-0">
       <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
         <div className="flex items-center gap-3">
-          <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={40} height={40} className="h-10 w-10 rounded-full" />
+          <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={56} height={56} className="h-14 w-14 rounded-full" />
           <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
             KL Radio &copy; {new Date().getFullYear()}
           </p>
