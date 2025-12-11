@@ -163,181 +163,179 @@ export default function TechnicalPage() {
 
 
   return (
-    <div className="pt-24">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">
-            Technical Wing
-          </h1>
-          <p className="text-muted-foreground">
-            Manage live streams, music playback, and monitor station health.
-          </p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">
+          Technical Wing
+        </h1>
+        <p className="text-muted-foreground">
+          Manage live streams, music playback, and monitor station health.
+        </p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Broadcast Controls and Music Streamer */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Broadcast Controls</CardTitle>
+              <CardDescription>
+                Manage the live broadcast stream and monitor status.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Switch id="live-switch" checked={isLive} onCheckedChange={toggleLive} />
+                <Label htmlFor="live-switch" className="text-lg font-medium">
+                  {isLive ? 'You are LIVE' : 'Go Live'}
+                </Label>
+              </div>
+              <div className="flex items-center justify-between rounded-lg border bg-muted p-3">
+                <div className="text-sm">
+                  <span className="font-semibold">Stream Status:</span>
+                  <span
+                    className={`ml-2 font-medium ${
+                      streamStatus.includes('Stable')
+                        ? 'text-green-500'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {streamStatus}
+                  </span>
+                </div>
+                <Button variant="outline" size="sm">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Check Health
+                </Button>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button onClick={toggleLive} className="w-full" variant={isLive ? 'destructive' : 'default'}>
+                <Mic className="mr-2 h-4 w-4" />
+                {isLive ? 'End Broadcast' : 'Start Broadcast'}
+              </Button>
+            </CardFooter>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Music Streamer</CardTitle>
+              <CardDescription>Control the music being played on air.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Now Playing</p>
+                <p className="font-bold">{currentSong.title}</p>
+                <p className="text-xs text-muted-foreground">{currentSong.artist}</p>
+              </div>
+              <div className="space-y-1">
+                <Progress value={songProgress} className="w-full h-1" />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>{formatTime(songProgress)}</span>
+                  <span>4:00</span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                    <Shuffle className="h-5 w-5"/>
+                </Button>
+                <div className="flex justify-center gap-1">
+                    <Button variant="ghost" size="icon" onClick={handlePreviousSong} disabled={!isLive}>
+                        <Rewind className="h-6 w-6" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={togglePlay} disabled={!isLive}>
+                        {isPlaying ? <PauseCircle className="h-8 w-8" /> : <PlayCircle className="h-8 w-8" />}
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={handleNextSong} disabled={!isLive}>
+                        <FastForward className="h-6 w-6" />
+                    </Button>
+                </div>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                    <Repeat className="h-5 w-5"/>
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <Volume2 className="h-5 w-5 text-muted-foreground" />
+                <Slider 
+                  defaultValue={[volume]} 
+                  max={100} 
+                  step={1} 
+                  onValueChange={(value) => setVolume(value[0])}
+                  disabled={!isLive}
+                />
+              </div>
+
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Broadcast Controls and Music Streamer */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Broadcast Controls</CardTitle>
-                <CardDescription>
-                  Manage the live broadcast stream and monitor status.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Switch id="live-switch" checked={isLive} onCheckedChange={toggleLive} />
-                  <Label htmlFor="live-switch" className="text-lg font-medium">
-                    {isLive ? 'You are LIVE' : 'Go Live'}
-                  </Label>
+        {/* Live Scripts and Song Suggestions */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Live Script: {mockTodaysScript.show}</CardTitle>
+              <CardDescription>Currently available script for the on-air show.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-48">
+                <div className="space-y-4 pr-4 whitespace-pre-wrap">
+                  <h3 className="font-semibold text-base">{mockTodaysScript.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{mockTodaysScript.content}</p>
                 </div>
-                <div className="flex items-center justify-between rounded-lg border bg-muted p-3">
-                  <div className="text-sm">
-                    <span className="font-semibold">Stream Status:</span>
-                    <span
-                      className={`ml-2 font-medium ${
-                        streamStatus.includes('Stable')
-                          ? 'text-green-500'
-                          : 'text-muted-foreground'
-                      }`}
-                    >
-                      {streamStatus}
-                    </span>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Check Health
-                  </Button>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button onClick={toggleLive} className="w-full" variant={isLive ? 'destructive' : 'default'}>
-                  <Mic className="mr-2 h-4 w-4" />
-                  {isLive ? 'End Broadcast' : 'Start Broadcast'}
-                </Button>
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Music Streamer</CardTitle>
-                <CardDescription>Control the music being played on air.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+              </ScrollArea>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Music2 className="h-6 w-6" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Now Playing</p>
-                  <p className="font-bold">{currentSong.title}</p>
-                  <p className="text-xs text-muted-foreground">{currentSong.artist}</p>
+                  <CardTitle>Song Suggestions</CardTitle>
+                  <CardDescription>Incoming requests from listeners.</CardDescription>
                 </div>
-                <div className="space-y-1">
-                  <Progress value={songProgress} className="w-full h-1" />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{formatTime(songProgress)}</span>
-                    <span>4:00</span>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                      <Shuffle className="h-5 w-5"/>
-                  </Button>
-                  <div className="flex justify-center gap-1">
-                      <Button variant="ghost" size="icon" onClick={handlePreviousSong} disabled={!isLive}>
-                          <Rewind className="h-6 w-6" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={togglePlay} disabled={!isLive}>
-                          {isPlaying ? <PauseCircle className="h-8 w-8" /> : <PlayCircle className="h-8 w-8" />}
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={handleNextSong} disabled={!isLive}>
-                          <FastForward className="h-6 w-6" />
-                      </Button>
-                  </div>
-                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                      <Repeat className="h-5 w-5"/>
-                  </Button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Volume2 className="h-5 w-5 text-muted-foreground" />
-                  <Slider 
-                    defaultValue={[volume]} 
-                    max={100} 
-                    step={1} 
-                    onValueChange={(value) => setVolume(value[0])}
-                    disabled={!isLive}
-                  />
-                </div>
-
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Live Scripts and Song Suggestions */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Live Script: {mockTodaysScript.show}</CardTitle>
-                <CardDescription>Currently available script for the on-air show.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-48">
-                  <div className="space-y-4 pr-4 whitespace-pre-wrap">
-                    <h3 className="font-semibold text-base">{mockTodaysScript.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{mockTodaysScript.content}</p>
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <Music2 className="h-6 w-6" />
-                  <div>
-                    <CardTitle>Song Suggestions</CardTitle>
-                    <CardDescription>Incoming requests from listeners.</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-48">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Song</TableHead>
-                        <TableHead>Played</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {songSuggestions.length > 0 ? (
-                        songSuggestions.map((suggestion) => (
-                          <TableRow key={suggestion.id}>
-                            <TableCell>
-                              <p className="font-medium">{suggestion.songTitle}</p>
-                              <p className="text-xs text-muted-foreground">{suggestion.artist}</p>
-                            </TableCell>
-                            <TableCell>
-                              {suggestion.status === 'Rejected' ? (
-                                <Badge variant="destructive">Rejected</Badge>
-                              ) : (
-                                <Checkbox
-                                  checked={suggestion.status === 'Played'}
-                                  onCheckedChange={() => togglePlayedStatus(suggestion.id)}
-                                />
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={2} className="h-24 text-center">
-                            No song suggestions yet.
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-48">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Song</TableHead>
+                      <TableHead>Played</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {songSuggestions.length > 0 ? (
+                      songSuggestions.map((suggestion) => (
+                        <TableRow key={suggestion.id}>
+                          <TableCell>
+                            <p className="font-medium">{suggestion.songTitle}</p>
+                            <p className="text-xs text-muted-foreground">{suggestion.artist}</p>
+                          </TableCell>
+                          <TableCell>
+                            {suggestion.status === 'Rejected' ? (
+                              <Badge variant="destructive">Rejected</Badge>
+                            ) : (
+                              <Checkbox
+                                checked={suggestion.status === 'Played'}
+                                onCheckedChange={() => togglePlayedStatus(suggestion.id)}
+                              />
+                            )}
                           </TableCell>
                         </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={2} className="h-24 text-center">
+                          No song suggestions yet.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
