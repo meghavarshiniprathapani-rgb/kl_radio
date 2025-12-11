@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -345,7 +346,7 @@ export default function CreativePage() {
 
 
   return (
-    <div className="space-y-6 pt-10">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">
           Creative Wing
@@ -716,5 +717,7 @@ export default function CreativePage() {
     </div>
   );
 }
+
+    
 
     
