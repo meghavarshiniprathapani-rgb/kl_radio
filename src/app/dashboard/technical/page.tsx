@@ -33,20 +33,35 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 
 // Mock Data
-const mockScripts = [
-  {
-    id: 's1',
-    title: 'Morning Rush Intro',
-    show: 'Morning Rush',
-    content: "Good morning, Klians! Welcome to the Morning Rush... We've got a great show for you today!",
-  },
-  {
-    id: 's2',
-    title: 'Weather Update',
-    show: 'Morning Rush',
-    content: 'Time for a quick look at the weather. Expect clear skies...',
-  },
-];
+const mockTodaysScript = {
+  id: '1',
+  show: 'Story Time',
+  title: '“SISTER”',
+  content: `Hi hello namastey miru vintunaru kl radio the voice of kluains with me your rj……. vachesa andi vachesa malli mi mundhuku maroo kotha story tho vachesaa eroju nen chpaboye story deni gurinchi ante Eddari anna la muddula chelli katha…
+
+General ga miru enno bondings gurinchi viney untaru for example akka-chelli, akka-thammudu, bava-bamaridhi, anna-chelli, vadina-maradhalu… kani na kadha koncham special ye .. kadhu kadhu chala special andi..
+
+Chinnapati nundi amma, nanna, friends villey na lokam ga perigina nenu .Prapancham anty na drustilo villu mugurey ani chala gattiga fix awtuna rojulu avi.. School ki veladam allari chyadam malli sayantraniki intiki vachi amma nanna nalatho muchatlu veyadam edy pani ga chestuna days avi..
+
+Entha anandani bayataki natichina edho oka moment lo nak antu evaryna sibiling unty bagundu eppudyna tattukoleni badha vachina pattani santhosham vachina chepukovadaniki nak antu oka manishi undalani na “KALA”.
+
+But manakemo siblings leru kani chala mandhi okadanivey kadha chala happy ga undi untav , nikem siblings leru godavapadey valu undaru prasantaga undochu ani chala chepey vaalu but Unavalaki aa value eppatiki teliyadhu okavela adi manishyna …vastuvayna…
+
+mana manasuki ledha mana sheriraniki degaraga undapudu dani viluva asalu teliyadhu .. Konni days ki friends degara una sare oka teliyani loneliness vachesindi adi entha la impact chsindi anty edyna anipisty okari chpadama ledha Manalo maname dachukundama aney oka pedda question mark na mind lo raise ayindi?? Appati varaku una friends ye tarvatha ela mayamayaro teliyadhu oka certain time tarvatha nak antu evaru leru nak anandani echey amma, dairyam chpey nanna tappa..
+
+Konni sarlu narakam ela untadi anty anni untay kani share chskovali anukunapudu oka correct person manatho undaru amma,nanna ki enni chpukuna inka muta matalu dachukuney dani..Ela chala badhaga , koncham anandanga gadustuna na chinni jindagi loki oka eddari manushulani aa devudu varam ga pampadu..Valley na pranamga anukuntuna ma annayalu ..
+
+A nimisham varaku oka Annaya prema ela untado , vala caring oka ammayi life lo entha impact chupistado asalu minimum idea leni naku tattukoleni prema, muta kataleni anandani parichayam chsaru.Appati varaku devudini nak enduku evarini thoduga evaledhu ani tittukuna nenu aa nimisham nundi chance dorikina prati saari devudiki thanks chpadam start chsa..
+
+manam cheesy prati prayers aa devudu vintado vinaro teliyadhu kani nenu korukuna na santhoshani ma Annaya la Roopam lo na life lo oka pedda varam la aa devudi naku echadu..Siblings kakapoyina , oka thalli pegu pancukuni puttakapoyina na pyna vaalu chupinchey prema ee lokam lo evaru chupinchi undaremo (doubt enduku asalu undaru).
+
+Annaya ani pilichina prati saari tanu enta panilo una sare aa pilupu loni ardham chpakundaney ardham chskuntadu ma bangaramyna Annaya..Ye janma lo punynam chskunano teliyadhu kani oka mulla chettu chuttu oka kavacham la na chuttu vala prema eppati alane undalani korukutuna..
+
+Prati brother-sisters kadha lo kotukovadame vini untaru kani na kadha lo yedchina prati saari tana bhujam ye nak oka Raksha la tana mataley naku oka dairyam la untundi.. Oka nanna tana kuthurini enta allaaru mudhuga penchukuntaru nannu ma annayalu anta kana ekkuva ganey chuskuntaru … DISTANCE DOES’NT MATTER ee line miru chala lovestories lo viney untaru kani ma ee anadamyna bonding lo adey main character ni play chsindi Annaya ani call chsina prati saari call cut chsi vacheylopu na kala mundu pratysham ayeyvadu..
+
+Chpey situation yeppud raledhu kani Annaya without you I’m nothing okavela ni character ye na life lo lekapoty ela untado kuda uhinchukoleni situation . Evari disti tagalakunda prathi janma lo niku SONTHA chellila putalani aa devudini korukuntu ni allari chelli… malli repu marenoo kotha stories tho mi mundhuku vachesthaam….. vintune vundandi kl radio the voice of kluains……. Entha manchiga thana gurinchi chpindhi Akshaya putti…..
+Nenu mi rj…….. signing off.`,
+};
 
 const mockSuggestions = [
   {
@@ -162,20 +177,14 @@ export default function TechnicalPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Live Scripts</CardTitle>
-              <CardDescription>Currently available scripts for the on-air show.</CardDescription>
+              <CardTitle>Live Script: {mockTodaysScript.show}</CardTitle>
+              <CardDescription>Currently available script for the on-air show.</CardDescription>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-48">
-                <div className="space-y-4">
-                  {mockScripts.map((script) => (
-                    <div key={script.id} className="rounded-lg border p-3">
-                      <h3 className="font-semibold">{script.title} ({script.show})</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {script.content}
-                      </p>
-                    </div>
-                  ))}
+                <div className="space-y-4 pr-4 whitespace-pre-wrap">
+                  <h3 className="font-semibold text-base">{mockTodaysScript.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{mockTodaysScript.content}</p>
                 </div>
               </ScrollArea>
             </CardContent>
