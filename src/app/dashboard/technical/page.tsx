@@ -26,11 +26,17 @@ import {
   List,
   RefreshCw,
   PauseCircle,
+  Rewind,
+  FastForward,
+  Shuffle,
+  Repeat,
+  Volume2,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
+import { Slider } from '@/components/ui/slider';
 
 // Mock Data
 const mockTodaysScript = {
@@ -87,13 +93,42 @@ const mockSuggestions = [
 export default function TechnicalPage() {
   const [isLive, setIsLive] = useState(false);
   const [streamStatus, setStreamStatus] = useState('Offline');
-  const [currentSong, setCurrentSong] = useState({ title: 'Silence', artist: 'N/A' });
+  const [currentSong, setCurrentSong] = useState({ title: 'Awaiting Song', artist: 'Playlist' });
+  const [isPlaying, setIsPlaying] = useState(false);
   const [songProgress, setSongProgress] = useState(0);
+  const [volume, setVolume] = useState(50);
 
   const toggleLive = () => {
     setIsLive(!isLive);
     setStreamStatus(isLive ? 'Offline' : 'Online - Stable');
   };
+  
+  const togglePlay = () => {
+    if (!isLive) return;
+    setIsPlaying(!isPlaying);
+    if (!isPlaying && currentSong.title === 'Awaiting Song') {
+        setCurrentSong({ title: 'Blinding Lights', artist: 'The Weeknd' });
+    }
+  };
+
+  useEffect(() => {
+    let progressInterval: NodeJS.Timeout;
+    if (isPlaying) {
+      progressInterval = setInterval(() => {
+        setSongProgress(prev => (prev >= 100 ? 0 : prev + 1));
+      }, 1000);
+    }
+    return () => clearInterval(progressInterval);
+  }, [isPlaying]);
+
+  const formatTime = (percentage: number) => {
+    const totalSeconds = 240; // Example song length: 4 minutes
+    const currentSeconds = Math.floor((totalSeconds * percentage) / 100);
+    const minutes = Math.floor(currentSeconds / 60);
+    const seconds = currentSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
 
   return (
     <div className="space-y-6">
@@ -160,15 +195,43 @@ export default function TechnicalPage() {
                 <p className="font-bold">{currentSong.title}</p>
                 <p className="text-xs text-muted-foreground">{currentSong.artist}</p>
               </div>
-              <Progress value={songProgress} className="w-full" />
-              <div className="flex justify-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <PlayCircle className="h-6 w-6" />
+              <div className="space-y-1">
+                <Progress value={songProgress} className="w-full h-1" />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>{formatTime(songProgress)}</span>
+                  <span>4:00</span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                    <Shuffle className="h-5 w-5"/>
                 </Button>
-                 <Button variant="ghost" size="icon">
-                  <PauseCircle className="h-6 w-6" />
+                <div className="flex justify-center gap-1">
+                    <Button variant="ghost" size="icon">
+                        <Rewind className="h-6 w-6" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={togglePlay}>
+                        {isPlaying ? <PauseCircle className="h-8 w-8" /> : <PlayCircle className="h-8 w-8" />}
+                    </Button>
+                    <Button variant="ghost" size="icon">
+                        <FastForward className="h-6 w-6" />
+                    </Button>
+                </div>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                    <Repeat className="h-5 w-5"/>
                 </Button>
               </div>
+              <div className="flex items-center gap-2">
+                <Volume2 className="h-5 w-5 text-muted-foreground" />
+                <Slider 
+                  defaultValue={[volume]} 
+                  max={100} 
+                  step={1} 
+                  onValueChange={(value) => setVolume(value[0])}
+                />
+              </div>
+
             </CardContent>
           </Card>
         </div>
