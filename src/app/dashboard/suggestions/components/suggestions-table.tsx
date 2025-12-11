@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { SongSuggestion } from '@/lib/types';
 import {
   Table,
@@ -17,15 +18,32 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 interface SuggestionsTableProps {
   suggestions: SongSuggestion[];
 }
 
-export function SuggestionsTable({ suggestions }: SuggestionsTableProps) {
+export function SuggestionsTable({ suggestions: initialSuggestions }: SuggestionsTableProps) {
+  const [suggestions, setSuggestions] = useState<SongSuggestion[]>(initialSuggestions);
+  const { toast } = useToast();
+
+  const handleStatusChange = (id: string, newStatus: SongSuggestion['status']) => {
+    setSuggestions(currentSuggestions =>
+      currentSuggestions.map(suggestion =>
+        suggestion.id === id ? { ...suggestion, status: newStatus } : suggestion
+      )
+    );
+    toast({
+      title: 'Status Updated',
+      description: `Song suggestion status changed to ${newStatus}.`,
+    });
+  };
+
   const getBadgeVariant = (status: SongSuggestion['status']) => {
     switch (status) {
       case 'Played':
@@ -72,9 +90,17 @@ export function SuggestionsTable({ suggestions }: SuggestionsTableProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem>Mark as Played</DropdownMenuItem>
-                  <DropdownMenuItem>Reject</DropdownMenuItem>
+                  <DropdownMenuLabel>Change Status</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleStatusChange(suggestion.id, 'Played')}>
+                    Mark as Played
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStatusChange(suggestion.id, 'Pending')}>
+                    Mark as Pending
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStatusChange(suggestion.id, 'Rejected')}>
+                    Mark as Rejected
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </TableCell>
