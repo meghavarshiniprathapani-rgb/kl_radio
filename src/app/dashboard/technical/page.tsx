@@ -215,7 +215,6 @@ export default function TechnicalPage() {
            </Card>
         </div>
       </div>
-  I have replaced "Approved" with "Played" in the song suggestions feature. The status now correctly appears as "Played" in both the main suggestions table and on the Technical Wing's dashboard.
     </div>
   )
 }
