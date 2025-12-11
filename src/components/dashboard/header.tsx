@@ -3,72 +3,97 @@ import Link from 'next/link';
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetTrigger,
 } from '@/components/ui/sheet';
 import Image from 'next/image';
 import { Button } from '../ui/button';
-import { LogOut, PanelLeft } from 'lucide-react';
+import { LogOut, PanelLeft, Menu } from 'lucide-react';
 import { UserNav } from './user-nav';
 import { MainNav } from './main-nav';
 import { useAuth } from '@/context/auth-context';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function DashboardHeader() {
   const { logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const toggle = () => setOpen(!open);
+
   return (
-    <header className="sticky top-0 z-30 flex h-24 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2 text-lg font-semibold md:text-base"
-        >
-          <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={120} height={120} className="h-32 w-32 rounded-full" />
-          <span className="sr-only">KL Radio</span>
-        </Link>
-        <MainNav />
-      </nav>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="shrink-0 md:hidden"
-          >
-            <PanelLeft className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>
-                <Link
-                href="/dashboard"
-                className="flex items-center gap-2 text-lg font-semibold"
-                >
-                <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={120} height={120} className="h-32 w-32 rounded-full" />
-                <span>KL Radio</span>
-                </Link>
-            </SheetTitle>
-            <SheetDescription>
-                Navigate through your dashboard sections.
-            </SheetDescription>
-          </SheetHeader>
-          <nav className="flex flex-col gap-6 text-lg font-medium mt-4">
-            <MainNav isMobile={true} />
+    <>
+    <div className="fixed top-0 left-0 w-full h-24 flex justify-center items-center z-50 pointer-events-none">
+      <header className="w-full max-w-7xl bg-white/10 backdrop-blur-lg text-white flex justify-center px-4 py-3 z-50 rounded-full shadow-lg pointer-events-auto">
+        <div className="flex items-center justify-between w-full">
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <Image
+              src="https://ik.imagekit.io/bhanuteja110/image.png"
+              alt="KL Radio Logo"
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+            <span className="text-lg font-semibold text-white">KL Radio</span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-6">
+            <MainNav />
           </nav>
-        </SheetContent>
-      </Sheet>
-      <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-         <div className="relative ml-auto flex flex-1 items-center justify-end gap-2 md:grow-0">
+          
+          <div className="hidden md:flex items-center gap-2">
             <UserNav />
             <Button variant="ghost" size="icon" onClick={() => logout()}>
               <LogOut className="h-4 w-4" />
               <span className="sr-only">Log out</span>
             </Button>
-         </div>
-      </div>
-    </header>
+          </div>
+          
+
+          <motion.button
+            className="md:hidden block"
+            onClick={toggle}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Menu className="w-6 h-6 text-white" />
+          </motion.button>
+        </div>
+      </header>
+    </div>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="fixed inset-0 bg-black text-white pt-24 px-6 z-40 md:hidden"
+          initial={{ opacity: 0, x: '100%' }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: '100%' }}
+          transition={{ type: 'spring', stiffness: 260, damping: 30 }}
+        >
+          <button
+            className="absolute top-6 right-6 p-2"
+            onClick={toggle}
+          >
+            <LogOut className="w-6 h-6 text-white" />
+          </button>
+
+          <div className="flex flex-col space-y-6 text-lg">
+            <MainNav isMobile={true}/>
+
+            <Button
+                variant="destructive"
+                className="mt-4 w-full text-center py-3 bg-red-600 rounded-lg hover:bg-red-700"
+                onClick={() => {
+                    toggle();
+                    logout();
+                }}
+              >
+                Logout
+            </Button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
