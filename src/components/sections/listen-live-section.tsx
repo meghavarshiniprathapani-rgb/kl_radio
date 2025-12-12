@@ -31,7 +31,7 @@ export function ListenLiveSection() {
   return (
     <section
       id="listen-live"
-      className="container mx-auto max-w-5xl px-4 pb-20 md:pb-32 lg:pb-40"
+      className="container mx-auto max-w-5xl px-4 py-20 md:py-28"
     >
       <Card className="overflow-hidden bg-primary/90 text-primary-foreground shadow-2xl backdrop-blur-sm">
         <CardContent className="flex flex-col items-center justify-center p-10 text-center md:p-16">
