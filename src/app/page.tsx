@@ -12,9 +12,9 @@ import { LenisProvider } from '@/components/lenis-provider';
 function HomeComponent() {
   return (
     <LenisProvider>
-      <div className="flex min-h-screen flex-col pt-24">
+      <div className="flex min-h-screen flex-col">
         <NavbarKL />
-        <main className="flex-1">
+        <main className="flex-1 pt-24">
           <HeroSection />
           <StickyScrollSection />
           <ListenLiveSection />
