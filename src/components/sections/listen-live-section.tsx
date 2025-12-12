@@ -2,8 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import React from 'react';
+import React, { useState } from 'react';
 import { SoundWave } from '../ui/sound-wave';
+import { AudioWave } from '../ui/audio-wave';
 
 const Waveform = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 140 32" width="140" height="32" {...props}>
@@ -29,6 +30,10 @@ const Waveform = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export function ListenLiveSection() {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const togglePlay = () => setIsPlaying(!isPlaying);
+
   return (
     <section
       id="listen-live"
@@ -38,17 +43,22 @@ export function ListenLiveSection() {
         <SoundWave />
         <Card className="relative overflow-hidden bg-primary text-primary-foreground shadow-2xl backdrop-blur-sm mt-8">
           <CardContent className="flex flex-col items-center justify-center p-10 text-center md:p-16">
-            <h2 className="font-serif italic text-5xl font-bold">Listen Live</h2>
+            <h2 className="font-serif italic text-5xl font-bold">
+              {isPlaying ? 'Now Playing' : 'Listen Live'}
+            </h2>
             <p className="mt-2 max-w-md text-primary-foreground/80">
-              Stream KL Radio. Don't miss a beat of the KL's sound.
+              {isPlaying ? 'KL Radio - The Voice of Klians' : "Stream KL Radio. Don't miss a beat of the KL's sound."}
             </p>
-            <Waveform className="my-8 text-primary-foreground/50" />
+            <div className="my-8 h-[32px] w-[140px] flex items-center justify-center">
+              {isPlaying ? <AudioWave /> : <Waveform className="text-primary-foreground/50" />}
+            </div>
             <Button
               size="lg"
               variant="secondary"
               className="w-full max-w-xs text-lg font-bold shadow-lg transition-transform hover:scale-105 bg-background text-foreground hover:bg-background/80 rounded-full"
+              onClick={togglePlay}
             >
-              Start Listening
+              {isPlaying ? 'Stop' : 'Start Listening'}
             </Button>
           </CardContent>
         </Card>
