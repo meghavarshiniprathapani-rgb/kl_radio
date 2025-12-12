@@ -73,11 +73,11 @@ Nenu mi rj…….. signing off.`,
 };
 
 const mockPlaylist = [
-    { title: 'Blinding Lights', artist: 'The Weeknd' },
-    { title: 'As It Was', artist: 'Harry Styles' },
-    { title: 'Levitating', artist: 'Dua Lipa' },
-    { title: 'Save Your Tears', artist: 'The Weeknd' },
-    { title: 'good 4 u', artist: 'Olivia Rodrigo' },
+    { title: 'Blinding Lights', movie: 'The Weeknd' },
+    { title: 'As It Was', movie: 'Harry Styles' },
+    { title: 'Levitating', movie: 'Dua Lipa' },
+    { title: 'Save Your Tears', movie: 'The Weeknd' },
+    { title: 'good 4 u', movie: 'Olivia Rodrigo' },
 ];
 
 export default function TechnicalPage() {
@@ -90,7 +90,7 @@ export default function TechnicalPage() {
   const { songSuggestions, setSongSuggestions } = useAuth();
   const { toast } = useToast();
 
-  const currentSong = isLive ? mockPlaylist[currentSongIndex] : { title: 'Awaiting Song', artist: 'Playlist' };
+  const currentSong = isLive ? mockPlaylist[currentSongIndex] : { title: 'Awaiting Song', movie: 'Playlist' };
 
   const toggleLive = () => {
     setIsLive(!isLive);
@@ -225,7 +225,7 @@ export default function TechnicalPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Now Playing</p>
                 <p className="font-bold">{currentSong.title}</p>
-                <p className="text-xs text-muted-foreground">{currentSong.artist}</p>
+                <p className="text-xs text-muted-foreground">{currentSong.movie}</p>
               </div>
               <div className="space-y-1">
                 <Progress value={songProgress} className="w-full h-1" />
@@ -310,7 +310,7 @@ export default function TechnicalPage() {
                         <TableRow key={suggestion.id}>
                           <TableCell>
                             <p className="font-medium">{suggestion.songTitle}</p>
-                            <p className="text-xs text-muted-foreground">{suggestion.artist}</p>
+                            <p className="text-xs text-muted-foreground">{suggestion.movie}</p>
                           </TableCell>
                           <TableCell>
                             {suggestion.status === 'Rejected' ? (

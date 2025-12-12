@@ -21,11 +21,11 @@ function SuggestionForm() {
   const { toast } = useToast();
   const [name, setName] = useState('');
   const [songTitle, setSongTitle] = useState('');
-  const [artist, setArtist] = useState('');
+  const [movie, setMovie] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !songTitle || !artist) {
+    if (!name || !songTitle || !movie) {
       toast({
         variant: 'destructive',
         title: 'Missing information',
@@ -33,14 +33,14 @@ function SuggestionForm() {
       });
       return;
     }
-    addSongSuggestion({ name, songTitle, artist });
+    addSongSuggestion({ name, songTitle, movie });
     toast({
       title: 'Suggestion received!',
       description: "Thanks for the recommendation. We'll check it out!",
     });
     setName('');
     setSongTitle('');
-    setArtist('');
+    setMovie('');
   };
 
   return (
@@ -77,12 +77,12 @@ function SuggestionForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="artist">Artist</Label>
+              <Label htmlFor="movie">Movie</Label>
               <Input
-                id="artist"
-                placeholder="e.g., The Weeknd"
-                value={artist}
-                onChange={(e) => setArtist(e.target.value)}
+                id="movie"
+                placeholder="e.g., Starboy"
+                value={movie}
+                onChange={(e) => setMovie(e.target.value)}
               />
             </div>
           </CardContent>

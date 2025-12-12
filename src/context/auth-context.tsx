@@ -50,7 +50,7 @@ type AuthContextType = {
   assignedNews: AssignedNewsItem[];
   setAssignedNews: (news: AssignedNewsItem[]) => void;
   songSuggestions: SongSuggestion[];
-  addSongSuggestion: (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) => void;
+  addSongSuggestion: (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status' | 'artist'>) => void;
   setSongSuggestions: (suggestions: SongSuggestion[]) => void;
 };
 

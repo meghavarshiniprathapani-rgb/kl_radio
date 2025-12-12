@@ -55,7 +55,7 @@ export function SuggestionsTable({ suggestions, setSuggestions }: SuggestionsTab
       <TableHeader>
         <TableRow>
           <TableHead>Song Title</TableHead>
-          <TableHead>Artist</TableHead>
+          <TableHead>Movie</TableHead>
           <TableHead>Submitted By</TableHead>
           <TableHead>Time</TableHead>
           <TableHead>Status</TableHead>
@@ -68,7 +68,7 @@ export function SuggestionsTable({ suggestions, setSuggestions }: SuggestionsTab
         {suggestions.map((suggestion) => (
           <TableRow key={suggestion.id}>
             <TableCell className="font-medium">{suggestion.songTitle}</TableCell>
-            <TableCell>{suggestion.artist}</TableCell>
+            <TableCell>{suggestion.movie}</TableCell>
             <TableCell>{suggestion.name}</TableCell>
             <TableCell>{formatDistanceToNow(new Date(suggestion.submittedAt), { addSuffix: true })}</TableCell>
             <TableCell>

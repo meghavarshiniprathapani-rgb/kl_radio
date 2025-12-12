@@ -12,7 +12,7 @@ export type SongSuggestion = {
   id: string;
   name: string;
   songTitle: string;
-  artist: string;
+  movie: string;
   submittedAt: string;
   status: 'Pending' | 'Played' | 'Rejected';
 };
