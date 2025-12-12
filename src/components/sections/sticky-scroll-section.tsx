@@ -356,6 +356,7 @@ export function StickyScrollSection() {
              left: 0;
              transform: none;
              margin-bottom: 2rem;
+             margin-top: 4rem;
           }
 
           .sticky-scroll-section-container .card-container {
@@ -369,10 +370,13 @@ export function StickyScrollSection() {
 
           .sticky-scroll-section-container .card-back {
             font-size: 0.8rem;
+            padding: 1.5rem;
           }
 
           .sticky-scroll-section-container .card-back span {
             font-size: 1.5rem;
+            top: 1rem;
+            left: 1rem;
           }
         }
       `}</style>
