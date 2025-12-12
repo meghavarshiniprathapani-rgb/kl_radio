@@ -45,16 +45,16 @@ function SuggestionForm() {
 
   return (
     <div id="suggestions" className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Music className="h-7 w-7 text-primary" />
-        <h2 className="font-headline text-3xl font-semibold">Suggest a Song</h2>
+      <div className="flex items-center justify-center gap-3">
+        <Music className="h-8 w-8 text-primary" />
+        <h2 className="font-headline text-4xl font-semibold">Suggest a Song</h2>
       </div>
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>Heard a new banger?</CardTitle>
+            <CardTitle>Drop the new banger?</CardTitle>
             <CardDescription>
-              Let us know what you want to hear on KL Radio.
+              Tell KL Radio what's spinning next!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -100,7 +100,7 @@ function SuggestionForm() {
 
 export function AnnouncementsAndSuggestionsSection() {
   return (
-    <section className="bg-muted/50 py-20 md:py-28">
+    <section className="bg-background py-20 md:py-28">
       <div className="container mx-auto grid max-w-md gap-16 px-4">
         <SuggestionForm />
       </div>
