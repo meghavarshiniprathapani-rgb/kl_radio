@@ -34,12 +34,13 @@ type AssignedNewsItem = {
 type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (username: string, password: string, role: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   loading: boolean;
   songSuggestions: SongSuggestion[];
   addSongSuggestion: (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) => void;
   setSongSuggestions: (suggestions: SongSuggestion[]) => void;
+  assignedNews: AssignedNewsItem[];
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [songSuggestions, setSongSuggestions] = useState<SongSuggestion[]>([]);
+  const [assignedNews, setAssignedNews] = useState<AssignedNewsItem[]>([]);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -55,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        // You might want a /api/auth/me endpoint to verify the token and get user data
         const userData = JSON.parse(atob(token.split('.')[1])); 
         setUser(userData);
       } catch (error) {
@@ -67,14 +68,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
+  const fetchAssignedNews = useCallback(async () => {
+    if (user?.role === 'RJ' || user?.role === 'Station Head') {
+      try {
+        const response = await api.get('/rj/news');
+        setAssignedNews(response.data);
+      } catch (error) {
+        console.error("Failed to fetch assigned news", error);
+      }
+    }
+  }, [user]);
+
   useEffect(() => {
     verifyUser();
   }, [verifyUser]);
 
-  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  useEffect(() => {
+    if (user) {
+        fetchAssignedNews();
+    }
+  }, [user, fetchAssignedNews]);
+
+  const login = async (username: string, password: string, role: string): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
     try {
-      const response = await api.post('/auth/login', { username, password });
+      const response = await api.post('/auth/login', { username, password, role });
       const { token } = response.data;
       
       localStorage.setItem('token', token);
@@ -94,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     setUser(null);
+    setAssignedNews([]);
     localStorage.removeItem('token');
     router.push('/login');
   }, [router]);
@@ -122,9 +141,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         songSuggestions,
         addSongSuggestion,
-        setSongSuggestions
+        setSongSuggestions,
+        assignedNews
     }}>
-      {loading ? <div>Loading...</div> : children}
+      {loading ? (
+          <div className="flex h-screen items-center justify-center">
+            <p>Loading...</p>
+          </div>
+        ) : children}
     </AuthContext.Provider>
   );
 }

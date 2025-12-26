@@ -17,26 +17,34 @@ import { Label } from '@/components/ui/label';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { NavbarKL } from '@/components/ui/navbar-kl';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 function LoginComponent() {
   const { login, loading } = useAuth();
   const { toast } = useToast();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!username || !password) {
+    if (!username || !password || !role) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: 'Please enter both username and password.',
+        description: 'Please enter username, password, and select a role.',
       });
       return;
     }
 
-    const result = await login(username, password);
+    const result = await login(username, password, role);
 
     if (!result.success) {
       toast({
@@ -84,6 +92,24 @@ function LoginComponent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="role">Role</Label>
+              <Select onValueChange={setRole} value={role}>
+                <SelectTrigger id="role">
+                  <SelectValue placeholder="Select your role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Station Head">Station Head</SelectItem>
+                  <SelectItem value="Creative">Creative</SelectItem>
+                  <SelectItem value="Technical">Technical</SelectItem>
+                  <SelectItem value="PR">PR</SelectItem>
+                  <SelectItem value="Designing">Designing</SelectItem>
+                  <SelectItem value="Video Editing">Video Editing</SelectItem>
+                  <SelectItem value="RJ">RJ</SelectItem>
+                  <SelectItem value="Broadcasting">Broadcasting</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             <Button type="submit" className="w-full mt-2" disabled={loading}>
