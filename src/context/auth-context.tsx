@@ -1,27 +1,17 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import type { SongSuggestion } from '@/lib/types';
+import { api } from '@/lib/api';
 
 type User = {
   id: string;
   name: string;
-  email: string;
+  username: string;
   role: 'Station Head' | 'Creative' | 'Technical' | 'PR' | 'Design' | 'Video' | 'RJ' | 'Guest' | 'Broadcasting' | 'Designing' | 'Video Editing';
   avatarId: string;
 };
-
-const users: User[] = [
-  { id: '1', name: 'Station Head', email: 'stationhead@gmail.com', role: 'Station Head', avatarId: '1' },
-  { id: '2', name: 'RJ Riff', email: 'rj@gmail.com', role: 'RJ', avatarId: '1' },
-  { id: '3', name: 'Creative Carla', email: 'creative@gmail.com', role: 'Creative', avatarId: '1' },
-  { id: '4', name: 'Techie Tom', email: 'technical@gmail.com', role: 'Technical', avatarId: '1' },
-  { id: '5', name: 'PR Penelope', email: 'pr@gmail.com', role: 'PR', avatarId: '1' },
-  { id: '6', name: 'Designer Dan', email: 'designing@gmail.com', role: 'Designing', avatarId: '1' },
-  { id: '7', name: 'Video Vince', email: 'videoediting@gmail.com', role: 'Video Editing', avatarId: '1' },
-  { id: '8', name: 'Broadcast Barry', email: 'broadcasting@gmail.com', role: 'Broadcasting', avatarId: '1' },
-];
 
 const roleRedirects: Record<string, string> = {
   'Station Head': '/dashboard',
@@ -43,14 +33,12 @@ type AssignedNewsItem = {
 
 type AuthContextType = {
   user: User | null;
-  users: User[];
-  login: (role: string) => Promise<{ success: boolean; error?: string }>;
+  isAuthenticated: boolean;
+  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  setUser: (user: User | null) => void;
-  assignedNews: AssignedNewsItem[];
-  setAssignedNews: (news: AssignedNewsItem[]) => void;
+  loading: boolean;
   songSuggestions: SongSuggestion[];
-  addSongSuggestion: (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status' | 'artist'>) => void;
+  addSongSuggestion: (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) => void;
   setSongSuggestions: (suggestions: SongSuggestion[]) => void;
 };
 
@@ -58,52 +46,85 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [assignedNews, setAssignedNews] = useState<AssignedNewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [songSuggestions, setSongSuggestions] = useState<SongSuggestion[]>([]);
   const router = useRouter();
+  const pathname = usePathname();
 
-  const login = useCallback(async (roleToFind: string): Promise<{ success: boolean; error?: string }> => {
-    const foundUser = users.find((u) => u.role === roleToFind);
-    
-    if (foundUser) {
-      setUser(foundUser);
-      const redirectPath = roleRedirects[foundUser.role] || '/dashboard';
-      router.push(redirectPath);
-      return { success: true };
-    } else {
-      return { success: false, error: 'No user found for that role.' };
+  const verifyUser = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        // You might want a /api/auth/me endpoint to verify the token and get user data
+        const userData = JSON.parse(atob(token.split('.')[1])); 
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to parse token or fetch user", error);
+        localStorage.removeItem('token');
+        setUser(null);
+      }
     }
-  }, [router]);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    verifyUser();
+  }, [verifyUser]);
+
+  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/login', { username, password });
+      const { token } = response.data;
+      
+      localStorage.setItem('token', token);
+      const userData = JSON.parse(atob(token.split('.')[1]));
+      setUser(userData);
+
+      const redirectPath = roleRedirects[userData.role] || '/dashboard';
+      router.push(redirectPath);
+      setLoading(false);
+      return { success: true };
+    } catch (error: any) {
+      setLoading(false);
+      const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      return { success: false, error: errorMessage };
+    }
+  };
 
   const logout = useCallback(() => {
     setUser(null);
+    localStorage.removeItem('token');
     router.push('/login');
   }, [router]);
   
-  const addSongSuggestion = useCallback((suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) => {
-    const newSuggestion: SongSuggestion = {
-      ...suggestion,
-      id: `sugg-${Date.now()}`,
-      submittedAt: new Date().toISOString(),
-      status: 'Pending',
-    };
-    setSongSuggestions(prev => [newSuggestion, ...prev]);
+  const addSongSuggestion = useCallback(async (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) => {
+    try {
+        const newSuggestion = await api.post('/public/song-suggestion', suggestion);
+        setSongSuggestions(prev => [newSuggestion.data, ...prev]);
+    } catch (error) {
+        console.error("Failed to add song suggestion", error);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!loading && !user && !['/login', '/'].includes(pathname) && !pathname.startsWith('/_next')) {
+        router.push('/login');
+    }
+  }, [user, loading, pathname, router]);
 
   return (
     <AuthContext.Provider value={{ 
         user, 
-        users, 
+        isAuthenticated: !!user,
         login, 
         logout, 
-        setUser, 
-        assignedNews, 
-        setAssignedNews,
+        loading,
         songSuggestions,
         addSongSuggestion,
         setSongSuggestions
     }}>
-      {children}
+      {loading ? <div>Loading...</div> : children}
     </AuthContext.Provider>
   );
 }

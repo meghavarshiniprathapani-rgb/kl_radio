@@ -16,44 +16,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { NavbarKL } from '@/components/ui/navbar-kl';
 
-
 function LoginComponent() {
-  const router = useRouter();
-  const { users, login } = useAuth();
+  const { login, loading } = useAuth();
   const { toast } = useToast();
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState(''); // Password is for UI purposes for now
-  const [loading, setLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string>('');
-
+  const [password, setPassword] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     
-    if (!selectedRole) {
+    if (!username || !password) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: 'Please select a role to log in.',
+        description: 'Please enter both username and password.',
       });
-      setLoading(false);
       return;
     }
 
-    // Pass the selected role to the login function.
-    // The auth context's login function is now expecting the role.
-    const result = await login(selectedRole);
+    const result = await login(username, password);
 
     if (!result.success) {
       toast({
@@ -63,11 +46,7 @@ function LoginComponent() {
       });
     }
     // On success, the context handles redirection.
-
-    setLoading(false);
   };
-  
-  const uniqueRoles = Array.from(new Set(users.map(u => u.role))).filter(role => role !== 'Guest');
 
   return (
     <>
@@ -80,23 +59,10 @@ function LoginComponent() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Member Login</CardTitle>
-          <CardDescription>Select your role and enter your credentials.</CardDescription>
+          <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="grid gap-4">
-            <div className="grid gap-2">
-                <Label htmlFor="role">Select Your Role</Label>
-                <Select onValueChange={setSelectedRole} value={selectedRole}>
-                    <SelectTrigger id="role">
-                        <SelectValue placeholder="Login as..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {uniqueRoles.map((role) => (
-                        <SelectItem key={role} value={role}>{role}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
             <div className="grid gap-2">
               <Label htmlFor="username">Username</Label>
                <Input
@@ -113,6 +79,7 @@ function LoginComponent() {
                <Input
                 id="password"
                 type="password"
+                placeholder="Enter your password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -137,7 +104,6 @@ function LoginComponent() {
     </>
   );
 }
-
 
 export default function LoginPage() {
   return (

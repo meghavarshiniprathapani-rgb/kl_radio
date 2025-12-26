@@ -15,15 +15,15 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import React, { useState } from 'react';
+import { api } from '@/lib/api';
 
 function SuggestionForm() {
-  const { addSongSuggestion } = useAuth();
   const { toast } = useToast();
   const [name, setName] = useState('');
   const [songTitle, setSongTitle] = useState('');
   const [movie, setMovie] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !songTitle || !movie) {
       toast({
@@ -33,14 +33,22 @@ function SuggestionForm() {
       });
       return;
     }
-    addSongSuggestion({ name, songTitle, movie });
-    toast({
-      title: 'Suggestion received!',
-      description: "Thanks for the recommendation. We'll check it out!",
-    });
-    setName('');
-    setSongTitle('');
-    setMovie('');
+    try {
+        await api.post('/public/song-suggestion', { name, songTitle, movie });
+        toast({
+          title: 'Suggestion received!',
+          description: "Thanks for the recommendation. We'll check it out!",
+        });
+        setName('');
+        setSongTitle('');
+        setMovie('');
+    } catch(error) {
+         toast({
+            variant: 'destructive',
+            title: 'Submission Error',
+            description: 'Could not submit your suggestion. Please try again later.',
+        });
+    }
   };
 
   return (
@@ -80,7 +88,7 @@ function SuggestionForm() {
               <Label htmlFor="movie">Movie</Label>
               <Input
                 id="movie"
-                placeholder="e.g., Starboy"
+                placeholder="e.g., After Hours"
                 value={movie}
                 onChange={(e) => setMovie(e.target.value)}
               />
