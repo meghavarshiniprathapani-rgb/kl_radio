@@ -31,7 +31,7 @@ function LoginComponent() {
   const router = useRouter();
   const { users, login } = useAuth();
   const { toast } = useToast();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState(''); // Password is for UI purposes for now
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>('');
@@ -98,14 +98,14 @@ function LoginComponent() {
                 </Select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
                <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
+                id="username"
+                type="text"
+                placeholder="Enter your username"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
