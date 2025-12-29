@@ -12,17 +12,17 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', roles: ['Station Head', 'Creative', 'Technical', 'PR', 'Design', 'Video', 'RJ', 'Broadcasting', 'Designing', 'Video Editing'] },
+  { href: '/dashboard', label: 'Dashboard', roles: ['Station Head', 'Creative', 'Technical', 'PR', 'Designing', 'Video Editing', 'RJ', 'Broadcasting'] },
   { href: '/dashboard/announcements', label: 'Announcements', roles: ['Station Head', 'PR'] },
   { href: '/dashboard/suggestions', label: 'Suggestions', roles: ['Station Head', 'RJ', 'Technical'] },
   { href: '/dashboard/rj-wing', label: 'RJ Wing', roles: ['Station Head', 'RJ'] },
   { href: '/dashboard/broadcasting', label: 'Broadcasting', roles: ['Station Head', 'RJ', 'Technical', 'Broadcasting'] },
   { href: '/dashboard/creative', label: 'Creative', roles: ['Station Head', 'Creative'] },
-  { href: '/dashboard/designing', label: 'Designing', roles: ['Station Head', 'Design', 'Designing'] },
+  { href: '/dashboard/designing', label: 'Designing', roles: ['Station Head', 'Designing'] },
   { href: '/dashboard/pr', label: 'PR', roles: ['Station Head', 'PR'] },
   { href: '/dashboard/technical', label: 'Technical', roles: ['Station Head', 'Technical'] },
-  { href: '/dashboard/video-editing', label: 'Video Editing', roles: ['Station Head', 'Video', 'Video Editing'] },
-  { href: '/dashboard/uploads', label: 'Uploads', roles: ['Station Head', 'PR', 'Design', 'Video', 'Designing', 'Video Editing'] },
+  { href: '/dashboard/video-editing', label: 'Video Editing', roles: ['Station Head', 'Video Editing'] },
+  { href: '/dashboard/uploads', label: 'Uploads', roles: ['Station Head', 'PR', 'Designing', 'Video Editing'] },
   { href: '/dashboard/admin', label: 'Admin Panel', roles: ['Station Head'] },
 ];
 

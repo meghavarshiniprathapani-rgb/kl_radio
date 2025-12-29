@@ -9,7 +9,7 @@ type User = {
   id: string;
   name: string;
   username: string;
-  role: 'Station Head' | 'Creative' | 'Technical' | 'PR' | 'Design' | 'Video' | 'RJ' | 'Guest' | 'Broadcasting' | 'Designing' | 'Video Editing';
+  role: 'Station Head' | 'Creative' | 'Technical' | 'PR' | 'Designing' | 'Video Editing' | 'RJ' | 'Broadcasting' | 'Guest';
   avatarId: string;
 };
 
