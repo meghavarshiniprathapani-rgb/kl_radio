@@ -144,11 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSongSuggestions,
         assignedNews
     }}>
-      {loading ? (
-          <div className="flex h-screen items-center justify-center">
-            <p>Loading...</p>
-          </div>
-        ) : children}
+      {children}
     </AuthContext.Provider>
   );
 }
