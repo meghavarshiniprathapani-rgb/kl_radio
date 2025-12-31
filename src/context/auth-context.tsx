@@ -10,7 +10,7 @@ type User = {
   id: string;
   name: string;
   username: string;
-  role: 'Station Head' | 'Creative' | 'Technical' | 'PR' | 'Designing' | 'Video Editing' | 'RJ' | 'Broadcasting' | 'Guest';
+  role: 'station_head' | 'creative' | 'technical' | 'pr' | 'designing' | 'video_editing' | 'rj' | 'broadcasting' | 'guest';
   avatarId: string;
 };
 
@@ -73,52 +73,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(userData);
     const redirectPath = roleRedirects[userData.role] || '/dashboard';
     router.push(redirectPath);
+    router.refresh(); 
   }, [router]);
   
-  useEffect(() => {
-    const initializeApp = async () => {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      if (token) {
-        setAuthToken(token);
-        try {
-          const response = await api.get('/auth/me');
-          if (response.data) {
+  const verifyAuth = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    const isAuthPage = pathname === '/login';
+    const isPublicPage = pathname === '/';
+
+    if (!token) {
+        if (!isPublicPage && !isAuthPage) {
+            router.push('/login');
+        }
+        setLoading(false);
+        return;
+    }
+
+    setAuthToken(token);
+    try {
+        const response = await api.get('/auth/me');
+        if (response.data && response.data.user) {
             setUser(response.data.user);
-            const currentPath = pathname;
-            const isAuthPage = currentPath === '/login';
             if (isAuthPage) {
-              const redirectPath = roleRedirects[response.data.user.role] || '/dashboard';
-              router.push(redirectPath);
+                const redirectPath = roleRedirects[response.data.user.role] || '/dashboard';
+                router.push(redirectPath);
             }
-          } else {
-            localStorage.removeItem('token');
-            setAuthToken(null);
-            if (!['/', '/login'].includes(pathname)) {
-              router.push('/login');
-            }
-          }
-        } catch (error) {
-          console.error('Session verification failed', error);
-          localStorage.removeItem('token');
-          setAuthToken(null);
-          if (!['/', '/login'].includes(pathname)) {
-            router.push('/login');
-          }
+        } else {
+            // Token is invalid
+            throw new Error('Invalid session');
         }
-      } else {
-        const isDashboard = pathname.startsWith('/dashboard');
-        if (isDashboard) {
+    } catch (error) {
+        console.error('Session verification failed', error);
+        localStorage.removeItem('token');
+        setAuthToken(null);
+        setUser(null);
+        if (!isPublicPage) {
             router.push('/login');
         }
-      }
-      
-      setLoading(false);
-    };
-    initializeApp();
+    } finally {
+        setLoading(false);
+    }
   }, [pathname, router]);
+
+  useEffect(() => {
+    verifyAuth();
+  }, [pathname]);
+
   
   const login = useCallback(async (role: string, username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    setLoading(true);
     const backendRole = roleMapping[role] || role;
     try {
       const response = await api.post('/auth/login', { username, role: backendRole, password }); 
@@ -126,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       handleLoginSuccess(userData, token);
       return { success: true };
     } catch (error: any) {
+      setLoading(false);
       const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
       return { success: false, error: errorMessage };
     }
@@ -152,12 +156,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     }
   }, [toast]);
-
-  useEffect(() => {
-    if (!loading && !user && !['/login', '/'].includes(pathname) && !pathname.startsWith('/_next')) {
-        router.push('/login');
-    }
-  }, [user, loading, pathname, router]);
 
   return (
     <AuthContext.Provider value={{ 
