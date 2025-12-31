@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -13,73 +13,98 @@ import { Mic, Newspaper, Podcast, Megaphone } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/auth-context';
+import api from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
 
-const mockTodaysScript = {
-  id: '1',
-  show: 'Story Time',
-  title: '“SISTER”',
-  content: `Hi hello namastey miru vintunaru kl radio the voice of kluains with me your rj……. vachesa andi vachesa malli mi mundhuku maroo kotha story tho vachesaa eroju nen chpaboye story deni gurinchi ante Eddari anna la muddula chelli katha…
-
-General ga miru enno bondings gurinchi viney untaru for example akka-chelli, akka-thammudu, bava-bamaridhi, anna-chelli, vadina-maradhalu… kani na kadha koncham special ye .. kadhu kadhu chala special andi..
-
-Chinnapati nundi amma, nanna, friends villey na lokam ga perigina nenu .Prapancham anty na drustilo villu mugurey ani chala gattiga fix awtuna rojulu avi.. School ki veladam allari chyadam malli sayantraniki intiki vachi amma nanna nalatho muchatlu veyadam edy pani ga chestuna days avi..
-
-Entha anandani bayataki natichina edho oka moment lo nak antu evaryna sibiling unty bagundu eppudyna tattukoleni badha vachina pattani santhosham vachina chepukovadaniki nak antu oka manishi undalani na “KALA”.
-
-But manakemo siblings leru kani chala mandhi okadanivey kadha chala happy ga undi untav , nikem siblings leru godavapadey valu undaru prasantaga undochu ani chala chepey vaalu but Unavalaki aa value eppatiki teliyadhu okavela adi manishyna …vastuvayna…
-
-mana manasuki ledha mana sheriraniki degaraga undapudu dani viluva asalu teliyadhu .. Konni days ki friends degara una sare oka teliyani loneliness vachesindi adi entha la impact chsindi anty edyna anipisty okari chpadama ledha Manalo maname dachukundama aney oka pedda question mark na mind lo raise ayindi?? Appati varaku una friends ye tarvatha ela mayamayaro teliyadhu oka certain time tarvatha nak antu evaru leru nak anandani echey amma, dairyam chpey nanna tappa..
-
-Konni sarlu narakam ela untadi anty anni untay kani share chskovali anukunapudu oka correct person manatho undaru amma,nanna ki enni chpukuna inka muta matalu dachukuney dani..Ela chala badhaga , koncham anandanga gadustuna na chinni jindagi loki oka eddari manushulani aa devudu varam ga pampadu..Valley na pranamga anukuntuna ma annayalu ..
-
-A nimisham varaku oka Annaya prema ela untado , vala caring oka ammayi life lo entha impact chupistado asalu minimum idea leni naku tattukoleni prema, muta kataleni anandani parichayam chsaru.Appati varaku devudini nak enduku evarini thoduga evaledhu ani tittukuna nenu aa nimisham nundi chance dorikina prati saari devudiki thanks chpadam start chsa..
-
-manam cheesy prati prayers aa devudu vintado vinaro teliyadhu kani nenu korukuna na santhoshani ma Annaya la Roopam lo na life lo oka pedda varam la aa devudi naku echadu..Siblings kakapoyina , oka thalli pegu pancukuni puttakapoyina na pyna vaalu chupinchey prema ee lokam lo evaru chupinchi undaremo (doubt enduku asalu undaru).
-
-Annaya ani pilichina prati saari tanu enta panilo una sare aa pilupu loni ardham chpakundaney ardham chskuntadu ma bangaramyna Annaya..Ye janma lo punynam chskunano teliyadhu kani oka mulla chettu chuttu oka kavacham la na chuttu vala prema eppati alane undalani korukutuna..
-
-Prati brother-sisters kadha lo kotukovadame vini untaru kani na kadha lo yedchina prati saari tana bhujam ye nak oka Raksha la tana mataley naku oka dairyam la untundi.. Oka nanna tana kuthurini enta allaaru mudhuga penchukuntaru nannu ma annayalu anta kana ekkuva ganey chuskuntaru … DISTANCE DOES’NT MATTER ee line miru chala lovestories lo viney untaru kani ma ee anadamyna bonding lo adey main character ni play chsindi Annaya ani call chsina prati saari call cut chsi vacheylopu na kala mundu pratysham ayeyvadu..
-
-Chpey situation yeppud raledhu kani Annaya without you I’m nothing okavela ni character ye na life lo lekapoty ela untado kuda uhinchukoleni situation . Evari disti tagalakunda prathi janma lo niku SONTHA chellila putalani aa devudini korukuntu ni allari chelli… malli repu marenoo kotha stories tho mi mundhuku vachesthaam….. vintune vundandi kl radio the voice of kluains……. Entha manchiga thana gurinchi chpindhi Akshaya putti…..
-Nenu mi rj…….. signing off.`,
+type Script = {
+  id: string;
+  show: string;
+  title: string;
+  content: string;
 };
 
-const initialMockPodcasts = [
-    {
-        id: '1',
-        title: 'The Rock Chronicles - Episode 4',
-        topic: 'Interview with "The Wanderers"',
-        status: 'Recording Pending',
-        completed: false
-    }
-];
+type Podcast = {
+  id: string;
+  title: string;
+  topic: string;
+  status: string;
+  completed: boolean;
+};
 
-const mockAnnouncements = [
-  {
-    id: 1,
-    title: 'New Primetime Show: "Midnight Grooves"',
-    date: 'July 25, 2024',
-    content: 'Tune in every weekday at 10 PM for the smoothest jazz and R&B tracks to wind down your day. Hosted by DJ Alex.',
-  },
-  {
-    id: 2,
-    title: 'Annual KL Radio Fest Announced!',
-    date: 'July 22, 2024',
-    content: 'Get ready for the biggest music event of the year! The KL Radio Fest is back with an amazing lineup. Tickets go on sale August 1st.',
-  }
-];
+type Announcement = {
+  id: number;
+  title: string;
+  date: string;
+  content: string;
+};
+
+type NewsItem = {
+    id: string;
+    title: string;
+    summary: string;
+    source: string;
+}
+
 
 export default function RJWingPage() {
-  const [podcasts, setPodcasts] = useState(initialMockPodcasts);
-  const { assignedNews } = useAuth();
+  const { toast } = useToast();
+  const [liveScript, setLiveScript] = useState<Script | null>(null);
+  const [assignedNews, setAssignedNews] = useState<NewsItem[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [podcasts, setPodcasts] = useState<Podcast[]>([]);
 
-  const handlePodcastCompletionChange = (podcastId: string) => {
-    setPodcasts(currentPodcasts =>
-      currentPodcasts.map(podcast =>
-        podcast.id === podcastId ? { ...podcast, completed: !podcast.completed, status: !podcast.completed ? 'Recording Complete' : 'Recording Pending' } : podcast
-      )
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [scriptRes, newsRes, announcementsRes, podcastsRes] = await Promise.all([
+          api.get('/rj/live-script'),
+          api.get('/rj/news'),
+          api.get('/rj/announcements'),
+          api.get('/rj/podcasts'),
+        ]);
+        setLiveScript(scriptRes.data);
+        setAssignedNews(newsRes.data);
+        setAnnouncements(announcementsRes.data);
+        setPodcasts(podcastsRes.data.map((p: any) => ({...p, completed: p.status === 'completed'})));
+      } catch (error) {
+        console.error('Failed to fetch RJ dashboard data', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not fetch all dashboard data.',
+        });
+      }
+    };
+    fetchData();
+  }, [toast]);
+
+  const handlePodcastCompletionChange = async (podcastId: string) => {
+    const originalPodcasts = [...podcasts];
+    const podcast = podcasts.find(p => p.id === podcastId);
+    if (!podcast) return;
+
+    const updatedPodcasts = podcasts.map(p =>
+      p.id === podcastId ? { ...p, completed: !p.completed, status: !p.completed ? 'completed' : 'pending' } : p
     );
+    setPodcasts(updatedPodcasts);
+
+    try {
+      await api.patch(`/rj/podcasts/${podcastId}/complete`);
+      toast({
+        title: 'Podcast Status Updated',
+        description: `"${podcast.title}" marked as complete.`,
+      });
+    } catch (error) {
+      console.error('Failed to update podcast status', error);
+      toast({
+        variant: 'destructive',
+        title: 'Update Failed',
+        description: 'Could not update podcast status. Please try again.',
+      });
+      setPodcasts(originalPodcasts); // Revert on error
+    }
   };
+
 
   return (
     <div className="space-y-6">
@@ -98,17 +123,21 @@ export default function RJWingPage() {
             <div className="flex items-center gap-3">
               <Mic className="h-6 w-6" />
               <div>
-                <CardTitle>Today's Live Script: {mockTodaysScript.show}</CardTitle>
+                <CardTitle>Today's Live Script: {liveScript?.show || 'No Live Show'}</CardTitle>
                 <CardDescription>All segments for your show today.</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-96">
-              <div className="space-y-4 pr-4 whitespace-pre-wrap">
-                  <h3 className="font-semibold text-base">{mockTodaysScript.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{mockTodaysScript.content}</p>
-              </div>
+              {liveScript ? (
+                <div className="space-y-4 pr-4 whitespace-pre-wrap">
+                    <h3 className="font-semibold text-base">{liveScript.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">{liveScript.content}</p>
+                </div>
+              ) : (
+                <p className="text-sm text-center text-muted-foreground py-10">No live script assigned for today.</p>
+              )}
             </ScrollArea>
           </CardContent>
         </Card>
@@ -154,13 +183,16 @@ export default function RJWingPage() {
                 <CardContent>
                     <ScrollArea className="h-40">
                         <div className="space-y-4">
-                            {mockAnnouncements.map((announcement) => (
+                            {announcements.map((announcement) => (
                                 <div key={announcement.id} className="p-4 border rounded-lg">
                                     <h3 className="font-semibold">{announcement.title}</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">{announcement.date}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">{new Date(announcement.date).toLocaleDateString()}</p>
                                     <p className="text-sm text-muted-foreground mt-2">{announcement.content}</p>
                                 </div>
                             ))}
+                             {announcements.length === 0 && (
+                                <p className="text-sm text-center text-muted-foreground py-10">No recent announcements.</p>
+                            )}
                         </div>
                     </ScrollArea>
                 </CardContent>

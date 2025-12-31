@@ -21,20 +21,33 @@ const mockUsers: User[] = [
   { id: '4', name: 'Techie Tom', email: 'technical@gmail.com', role: 'Technical', avatarId: '1' },
   { id: '5', name: 'PR Penelope', email: 'pr@gmail.com', role: 'PR', avatarId: '1' },
   { id: '6', name: 'Designer Dan', email: 'designing@gmail.com', role: 'Designing', avatarId: '1' },
-  { id: '7', name: 'Video Vince', email: 'videoediting@gmail.com', role: 'Video Editing', avatarId: '1' },
+  { id: '7', 'name': 'Video Vince', email: 'videoediting@gmail.com', role: 'Video Editing', avatarId: '1' },
   { id: '8', name: 'Broadcast Barry', email: 'broadcasting@gmail.com', role: 'Broadcasting', avatarId: '1' },
 ];
 
 const roleRedirects: Record<string, string> = {
-  'Station Head': '/dashboard',
-  'RJ': '/dashboard/rj-wing',
-  'Creative': '/dashboard/creative',
-  'Technical': '/dashboard/technical',
-  'PR': '/dashboard/pr',
-  'Designing': '/dashboard/designing',
-  'Video Editing': '/dashboard/video-editing',
-  'Broadcasting': '/dashboard/broadcasting',
+  'station_head': '/dashboard',
+  'rj': '/dashboard/rj-wing',
+  'creative': '/dashboard/creative',
+  'technical': '/dashboard/technical',
+  'pr': '/dashboard/pr',
+  'designing': '/dashboard/designing',
+  'video_editing': '/dashboard/video-editing',
+  'broadcasting': '/dashboard/broadcasting',
 };
+
+// Frontend roles to backend roles mapping
+const roleMapping: { [key: string]: string } = {
+  'Station Head': 'station_head',
+  'Creative': 'creative',
+  'Technical': 'technical',
+  'PR': 'pr',
+  'RJ': 'rj',
+  'Broadcasting': 'broadcasting',
+  'Designing': 'designing',
+  'Video Editing': 'video_editing',
+};
+
 
 type AssignedNewsItem = {
     id: string;
@@ -47,7 +60,7 @@ type AuthContextType = {
   user: User | null;
   users: User[];
   loading: boolean;
-  login: (role: string, username: string) => Promise<{ success: boolean; error?: string }>;
+  login: (role: string, username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   setUser: (user: User | null) => void;
   assignedNews: AssignedNewsItem[];
@@ -114,24 +127,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      // We will integrate this in the next step.
-      // For now, it remains commented out.
-      /* try {
-        const response = await api.get('/public/song-suggestions');
-        setSongSuggestions(response.data);
-      } catch (error) {
-        console.error("Could not fetch song suggestions. The backend might be offline.", error);
-      } */
-
       setLoading(false);
     };
     initializeApp();
   }, [pathname, router]);
   
-  const login = useCallback(async (role: string, username: string): Promise<{ success: boolean; error?: string }> => {
+  const login = useCallback(async (role: string, username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    const backendRole = roleMapping[role] || role;
     try {
-      // The password is sent as 'password' for now, as per your backend docs.
-      const response = await api.post('/auth/login', { username, role, password: 'password' }); 
+      const response = await api.post('/auth/login', { username, role: backendRole, password }); 
       const { user: userData, token } = response.data;
       handleLoginSuccess(userData, token);
       return { success: true };
@@ -150,7 +154,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const addSongSuggestion = useCallback(async (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) => {
      try {
-      const response = await api.post('/public/song-suggestions', suggestion);
+      const response = await api.post('/public/song-suggestion', suggestion);
       // Assuming the backend returns the newly created suggestion
       setSongSuggestions(prev => [response.data, ...prev]);
     } catch (error) {

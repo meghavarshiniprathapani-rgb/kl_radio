@@ -15,17 +15,17 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import React, { useState } from 'react';
+import api from '@/lib/api';
 
 function SuggestionForm() {
-  const { addSongSuggestion } = useAuth();
   const { toast } = useToast();
-  const [name, setName] = useState('');
+  const [listenerName, setListenerName] = useState('');
   const [songTitle, setSongTitle] = useState('');
   const [movie, setMovie] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !songTitle || !movie) {
+    if (!listenerName || !songTitle || !movie) {
       toast({
         variant: 'destructive',
         title: 'Missing information',
@@ -33,14 +33,24 @@ function SuggestionForm() {
       });
       return;
     }
-    addSongSuggestion({ name, songTitle, movie });
-    toast({
-      title: 'Suggestion received!',
-      description: "Thanks for the recommendation. We'll check it out!",
-    });
-    setName('');
-    setSongTitle('');
-    setMovie('');
+
+    try {
+        await api.post('/public/song-suggestion', { listenerName, songTitle, movie });
+        toast({
+        title: 'Suggestion received!',
+        description: "Thanks for the recommendation. We'll check it out!",
+        });
+        setListenerName('');
+        setSongTitle('');
+        setMovie('');
+    } catch (error) {
+        console.error("Failed to submit suggestion", error);
+        toast({
+            variant: 'destructive',
+            title: 'Submission Failed',
+            description: 'Could not send your suggestion. Please try again later.',
+        });
+    }
   };
 
   return (
@@ -63,8 +73,8 @@ function SuggestionForm() {
               <Input
                 id="name"
                 placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={listenerName}
+                onChange={(e) => setListenerName(e.target.value)}
               />
             </div>
             <div className="space-y-2">

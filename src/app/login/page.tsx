@@ -50,7 +50,7 @@ function LoginComponent() {
       return;
     }
 
-    const result = await login(selectedRole, username);
+    const result = await login(selectedRole, username, password);
 
     if (!result.success) {
       toast({

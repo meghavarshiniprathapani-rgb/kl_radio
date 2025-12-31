@@ -12,7 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Trash } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import api from '@/lib/api';
 
 interface SuggestionsTableProps {
   suggestions: SongSuggestion[];
@@ -33,15 +34,38 @@ export function SuggestionsTable({ suggestions, setSuggestions }: SuggestionsTab
   const { toast } = useToast();
 
   const handleStatusChange = (id: string, newStatus: SongSuggestion['status']) => {
+    // This is a local update for immediate UI feedback.
+    // The backend doesn't support status updates, only deletion.
     setSuggestions(
       suggestions.map(suggestion =>
         suggestion.id === id ? { ...suggestion, status: newStatus } : suggestion
       )
     );
     toast({
-      title: 'Status Updated',
-      description: `Song suggestion status changed to ${newStatus}.`,
+      title: 'Status Updated (Local)',
+      description: `Song suggestion status changed to ${newStatus}. This is a local-only change.`,
     });
+  };
+
+  const handleDeleteSuggestion = async (id: string) => {
+    const originalSuggestions = [...suggestions];
+    setSuggestions(suggestions.filter(s => s.id !== id));
+
+    try {
+      await api.delete(`/technical/song-suggestions/${id}`);
+      toast({
+        title: 'Suggestion Deleted',
+        description: 'The song suggestion has been removed.',
+      });
+    } catch (error) {
+      console.error('Failed to delete suggestion', error);
+      setSuggestions(originalSuggestions);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not delete the suggestion.',
+      });
+    }
   };
 
   const togglePlayedStatus = (id: string, currentStatus: SongSuggestion['status']) => {
@@ -99,16 +123,22 @@ export function SuggestionsTable({ suggestions, setSuggestions }: SuggestionsTab
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => handleStatusChange(suggestion.id, 'Played')}>
                     Mark as Played
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleStatusChange(suggestion.id, 'Pending')}>
                     Mark as Pending
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleStatusChange(suggestion.id, 'Rejected')}>
+                   <DropdownMenuItem onClick={() => handleStatusChange(suggestion.id, 'Rejected')}>
                     Mark as Rejected
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="text-destructive"
+                    onClick={() => handleDeleteSuggestion(suggestion.id)}>
+                    <Trash className="mr-2 h-4 w-4" />
+                    Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
