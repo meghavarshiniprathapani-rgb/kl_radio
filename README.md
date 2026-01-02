@@ -111,4 +111,3 @@ Each user is assigned a role that determines which parts of the dashboard they c
 - **Creative Wing**: A comprehensive interface for writing show scripts, creating announcements, and managing podcast scripts. It also includes a news-fetcher to pull in and assign news articles to RJs.
 - **RJ Wing**: A personalized dashboard for RJs showing the current live script, their assigned news for the day, and podcasts they need to record.
 - **Technical Wing**: A control panel for managing the live broadcast, controlling the music streamer, and moderating song suggestions from listeners.
-- **AI-Powered Announcement Generator**: A Genkit-powered tool in the Announcements dashboard that can generate draft announcements from a simple prompt.
