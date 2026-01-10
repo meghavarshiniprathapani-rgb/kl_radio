@@ -16,3 +16,13 @@ export type SongSuggestion = {
   submittedAt: string;
   status: 'Pending' | 'Played' | 'Rejected';
 };
+
+export type UserRole = 'station_head' | 'creative' | 'technical' | 'pr' | 'designing' | 'video_editing' | 'rj' | 'broadcasting' | 'guest';
+
+export type User = {
+  id: string;
+  name: string;
+  username: string;
+  role: UserRole;
+  avatarId: string;
+};

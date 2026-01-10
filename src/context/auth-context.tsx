@@ -2,17 +2,9 @@
 
 import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import type { SongSuggestion } from '@/lib/types';
+import type { SongSuggestion, User } from '@/lib/types';
 import api, { setAuthToken } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-
-type User = {
-  id: string;
-  name: string;
-  username: string;
-  role: 'station_head' | 'creative' | 'technical' | 'pr' | 'designing' | 'video_editing' | 'rj' | 'broadcasting' | 'guest';
-  avatarId: string;
-};
 
 const roleRedirects: { [key: string]: string } = {
   'station_head': '/dashboard',
@@ -70,8 +62,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleLoginSuccess = useCallback((userData: any, token: string) => {
     localStorage.setItem('token', token);
     setAuthToken(token);
-    setUser(userData);
-    const redirectPath = roleRedirects[userData.role] || '/dashboard';
+    const apiUser: User = {
+        id: userData.id,
+        name: userData.name,
+        username: userData.username,
+        role: userData.role,
+        avatarId: userData.avatarId || '1',
+    };
+    setUser(apiUser);
+    const redirectPath = roleRedirects[apiUser.role] || '/dashboard';
     router.push(redirectPath);
     router.refresh(); 
   }, [router]);
@@ -93,13 +92,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
         const response = await api.get('/auth/me');
         if (response.data && response.data.user) {
-            setUser(response.data.user);
+            const userData = response.data.user;
+            const apiUser: User = {
+                id: userData.id,
+                name: userData.name,
+                username: userData.username,
+                role: userData.role,
+                avatarId: userData.avatarId || '1',
+            };
+            setUser(apiUser);
             if (isAuthPage) {
-                const redirectPath = roleRedirects[response.data.user.role] || '/dashboard';
+                const redirectPath = roleRedirects[apiUser.role] || '/dashboard';
                 router.push(redirectPath);
             }
         } else {
-            // Token is invalid
             throw new Error('Invalid session');
         }
     } catch (error) {
@@ -117,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     verifyAuth();
-  }, [pathname]);
+  }, [verifyAuth]);
 
   
   const login = useCallback(async (role: string, username: string, password: string): Promise<{ success: boolean; error?: string }> => {
