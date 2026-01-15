@@ -15,6 +15,8 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/auth-context';
 import api from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+
 
 type Script = {
   id: string;
@@ -48,6 +50,7 @@ type NewsItem = {
 
 export default function RJWingPage() {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
   const [liveScript, setLiveScript] = useState<Script | null>(null);
   const [assignedNews, setAssignedNews] = useState<NewsItem[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -55,11 +58,12 @@ export default function RJWingPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const [scriptRes, newsRes, announcementsRes, podcastsRes] = await Promise.all([
           api.get('/rj/live-script'),
-          api.get('/rj/news'),
-          api.get('/rj/announcements'),
+          api.get('/creative/news'), // Corrected API endpoint
+          api.get('/creative/announcements'), // Corrected API endpoint
           api.get('/rj/podcasts'),
         ]);
         setLiveScript(scriptRes.data);
@@ -73,6 +77,8 @@ export default function RJWingPage() {
           title: 'Error',
           description: 'Could not fetch all dashboard data.',
         });
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -130,7 +136,7 @@ export default function RJWingPage() {
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-96">
-              {liveScript ? (
+              {isLoading ? <div className="space-y-2 pr-4"><Skeleton className="h-6 w-3/4" /><Skeleton className="h-20 w-full" /></div> : liveScript ? (
                 <div className="space-y-4 pr-4 whitespace-pre-wrap">
                     <h3 className="font-semibold text-base">{liveScript.title}</h3>
                     <p className="text-sm text-muted-foreground mt-1">{liveScript.content}</p>
@@ -156,14 +162,15 @@ export default function RJWingPage() {
                <CardContent>
                 <ScrollArea className="h-40">
                   <div className="space-y-4">
-                    {assignedNews.map((item) => (
-                      <div key={item.id} className="p-4 border rounded-lg">
-                          <h3 className="font-semibold">{item.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">{item.content}</p>
-                          <p className="text-xs text-muted-foreground/70 mt-2">Source: {item.source}</p>
-                      </div>
-                    ))}
-                     {assignedNews.length === 0 && (
+                    {isLoading ? <div className="space-y-2 pr-4"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></div> : assignedNews.length > 0 ? (
+                        assignedNews.map((item) => (
+                        <div key={item.id} className="p-4 border rounded-lg">
+                            <h3 className="font-semibold">{item.title}</h3>
+                            <p className="text-sm text-muted-foreground mt-1">{item.content}</p>
+                            <p className="text-xs text-muted-foreground/70 mt-2">Source: {item.source}</p>
+                        </div>
+                        ))
+                    ) : (
                         <p className="text-sm text-center text-muted-foreground py-10">No news assigned for today.</p>
                     )}
                   </div>
@@ -183,14 +190,15 @@ export default function RJWingPage() {
                 <CardContent>
                     <ScrollArea className="h-40">
                         <div className="space-y-4">
-                            {announcements.map((announcement) => (
+                            {isLoading ? <div className="space-y-2 pr-4"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></div> : announcements.length > 0 ? (
+                                announcements.map((announcement) => (
                                 <div key={announcement.id} className="p-4 border rounded-lg">
                                     <h3 className="font-semibold">{announcement.title}</h3>
                                     <p className="text-xs text-muted-foreground mt-1">{new Date(announcement.date).toLocaleDateString()}</p>
                                     <p className="text-sm text-muted-foreground mt-2">{announcement.content}</p>
                                 </div>
-                            ))}
-                             {announcements.length === 0 && (
+                                ))
+                            ) : (
                                 <p className="text-sm text-center text-muted-foreground py-10">No recent announcements.</p>
                             )}
                         </div>
@@ -211,7 +219,7 @@ export default function RJWingPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {podcasts.length > 0 ? (
+          {isLoading ? <div className="space-y-4"><Skeleton className="h-20 w-full" /><Skeleton className="h-20 w-full" /></div> : podcasts.length > 0 ? (
             <div className="space-y-4">
               {podcasts.map((podcast) => (
                 <div key={podcast.id} className="p-4 border rounded-lg flex justify-between items-center">

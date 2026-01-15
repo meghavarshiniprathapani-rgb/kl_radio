@@ -42,6 +42,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import api from '@/lib/api';
 import type { SongSuggestion } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 type LiveScript = {
@@ -68,6 +69,7 @@ export default function TechnicalPage() {
   const [songProgress, setSongProgress] = useState(0);
   const [volume, setVolume] = useState(50);
   const [isFetching, setIsFetching] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   
   const [liveScript, setLiveScript] = useState<LiveScript | null>(null);
   const [songSuggestions, setSongSuggestions] = useState<SongSuggestion[]>([]);
@@ -93,6 +95,7 @@ export default function TechnicalPage() {
 
   useEffect(() => {
     const fetchInitialData = async () => {
+      setIsInitialLoading(true);
       try {
         const [scriptRes, suggestionsRes] = await Promise.all([
           api.get('/technical/live-script'),
@@ -107,6 +110,8 @@ export default function TechnicalPage() {
           title: 'Error',
           description: 'Could not fetch dashboard data.'
         });
+      } finally {
+        setIsInitialLoading(false);
       }
     };
     fetchInitialData();
@@ -122,7 +127,6 @@ export default function TechnicalPage() {
 
   const handleBulkDelete = async () => {
     if (selectedSuggestions.length === 0) {
-      // If nothing is selected, just refresh.
       await fetchSuggestions();
       toast({
         title: 'Suggestions Refreshed',
@@ -133,8 +137,6 @@ export default function TechnicalPage() {
 
     setIsFetching(true);
     const originalSuggestions = [...songSuggestions];
-
-    // Optimistically update the UI
     setSongSuggestions(prev => prev.filter(s => !selectedSuggestions.includes(s.id)));
 
     try {
@@ -145,11 +147,9 @@ export default function TechnicalPage() {
         title: 'Suggestions Deleted',
         description: `${selectedSuggestions.length} song(s) have been removed.`,
       });
-      // Clear selection after deletion
       setSelectedSuggestions([]);
     } catch (error) {
       console.error('Failed to delete suggestions', error);
-      // Revert UI on error
       setSongSuggestions(originalSuggestions);
       toast({
         variant: 'destructive',
@@ -158,7 +158,6 @@ export default function TechnicalPage() {
       });
     } finally {
       setIsFetching(false);
-      // Fetch fresh data from the server to ensure consistency
       await fetchSuggestions();
     }
   };
@@ -230,7 +229,6 @@ export default function TechnicalPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Broadcast Controls and Music Streamer */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -325,7 +323,6 @@ export default function TechnicalPage() {
           </Card>
         </div>
 
-        {/* Live Scripts and Song Suggestions */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -334,7 +331,7 @@ export default function TechnicalPage() {
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-48">
-                {liveScript ? (
+                {isInitialLoading ? <div className="space-y-2 pr-4"><Skeleton className="h-6 w-3/4" /><Skeleton className="h-20 w-full" /></div> : liveScript ? (
                   <div className="space-y-4 pr-4 whitespace-pre-wrap">
                     <h3 className="font-semibold text-base">{liveScript.title}</h3>
                     <p className="text-sm text-muted-foreground mt-1">{liveScript.content}</p>
@@ -367,6 +364,7 @@ export default function TechnicalPage() {
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-48">
+                {isInitialLoading ? <div className="space-y-2 pr-4"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div> :
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -379,7 +377,7 @@ export default function TechnicalPage() {
                               setSelectedSuggestions([]);
                             }
                           }}
-                          checked={selectedSuggestions.length > 0 && selectedSuggestions.length === songSuggestions.length}
+                          checked={songSuggestions.length > 0 && selectedSuggestions.length === songSuggestions.length}
                           aria-label="Select all"
                         />
                       </TableHead>
@@ -418,6 +416,7 @@ export default function TechnicalPage() {
                     )}
                   </TableBody>
                 </Table>
+                }
               </ScrollArea>
             </CardContent>
           </Card>

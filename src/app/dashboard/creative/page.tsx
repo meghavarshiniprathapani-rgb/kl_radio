@@ -41,6 +41,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import api from '@/lib/api';
 import { Star } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Script = {
   id: string;
@@ -85,6 +86,7 @@ type User = {
 export default function CreativePage() {
   const [rjs, setRjs] = useState<User[]>([]);
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
   
   const [scripts, setScripts] = useState<Script[]>([]);
   const [isScriptDialogOpen, setIsScriptDialogOpen] = useState(false);
@@ -117,6 +119,7 @@ export default function CreativePage() {
   // --- DATA FETCHING ---
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const [scriptsRes, announcementsRes, podcastsRes, usersRes, newsRes] = await Promise.all([
           api.get('/creative/scripts'),
@@ -129,7 +132,9 @@ export default function CreativePage() {
         setAnnouncements(announcementsRes.data);
         setPodcastScripts(podcastsRes.data);
         setNews(newsRes.data);
-        setRjs(usersRes.data.filter((u: User) => u.role === 'rj'));
+        if (usersRes.data) {
+          setRjs(usersRes.data.filter((u: User) => u.role === 'rj'));
+        }
       } catch (error) {
         console.error("Failed to fetch creative data", error);
         toast({
@@ -137,6 +142,8 @@ export default function CreativePage() {
           title: "Error",
           description: "Could not load data for the creative dashboard.",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -356,7 +363,14 @@ export default function CreativePage() {
         </p>
       </div>
 
-      <Dialog open={isScriptDialogOpen} onOpenChange={setIsScriptDialogOpen}>
+      <Dialog open={isScriptDialogOpen} onOpenChange={(isOpen) => {
+          setIsScriptDialogOpen(isOpen);
+          if (!isOpen) {
+            setEditingScript(null);
+            setScriptTitle('');
+            setScriptContent('');
+          }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingScript ? 'Edit Script' : 'Write a New Script'}</DialogTitle>
@@ -381,7 +395,14 @@ export default function CreativePage() {
         </DialogContent>
       </Dialog>
       
-      <Dialog open={isAnnouncementDialogOpen} onOpenChange={setIsAnnouncementDialogOpen}>
+      <Dialog open={isAnnouncementDialogOpen} onOpenChange={(isOpen) => {
+          setIsAnnouncementDialogOpen(isOpen);
+          if (!isOpen) {
+              setEditingAnnouncement(null);
+              setAnnouncementTitle('');
+              setAnnouncementContent('');
+          }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingAnnouncement ? 'Edit Announcement' : 'Create an Announcement'}</DialogTitle>
@@ -406,7 +427,16 @@ export default function CreativePage() {
         </DialogContent>
       </Dialog>
       
-      <Dialog open={isPodcastDialogOpen} onOpenChange={setIsPodcastDialogOpen}>
+      <Dialog open={isPodcastDialogOpen} onOpenChange={(isOpen) => {
+          setIsPodcastDialogOpen(isOpen);
+          if (!isOpen) {
+            setEditingPodcast(null);
+            setPodcastTitle('');
+            setPodcastTopic('');
+            setPodcastContent('');
+            setPodcastAssignedTo('');
+          }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingPodcast ? 'Edit Podcast Script' : 'New Podcast Script'}</DialogTitle>
@@ -448,7 +478,15 @@ export default function CreativePage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isNewsDialogOpen} onOpenChange={setIsNewsDialogOpen}>
+      <Dialog open={isNewsDialogOpen} onOpenChange={(isOpen) => {
+          setIsNewsDialogOpen(isOpen);
+          if (!isOpen) {
+            setEditingNews(null);
+            setNewsTitle('');
+            setNewsContent('');
+            setNewsSource('');
+          }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingNews ? 'Edit News Item' : 'Create a News Item'}</DialogTitle>
@@ -487,6 +525,11 @@ export default function CreativePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {isLoading ? <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div> :
             <Table>
               <TableHeader>
                 <TableRow>
@@ -518,6 +561,7 @@ export default function CreativePage() {
                 )}
               </TableBody>
             </Table>
+            }
           </CardContent>
           <CardFooter className="flex justify-end gap-2">
             <Button onClick={openNewScriptDialog}><PlusCircle className="mr-2 h-4 w-4" />Write Script</Button>
@@ -530,6 +574,11 @@ export default function CreativePage() {
             <CardDescription>Create and manage station announcements.</CardDescription>
           </CardHeader>
           <CardContent>
+            {isLoading ? <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div> :
             <Table>
               <TableHeader>
                 <TableRow>
@@ -551,6 +600,7 @@ export default function CreativePage() {
                 )}
               </TableBody>
             </Table>
+            }
           </CardContent>
           <CardFooter className="flex justify-end gap-2">
             <Button onClick={openNewAnnouncementDialog}><Megaphone className="mr-2 h-4 w-4" />Create Announcement</Button>
@@ -563,6 +613,11 @@ export default function CreativePage() {
             <CardDescription>Draft and manage scripts for podcast episodes.</CardDescription>
           </CardHeader>
           <CardContent>
+            {isLoading ? <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div> :
             <Table>
               <TableHeader>
                 <TableRow>
@@ -581,6 +636,7 @@ export default function CreativePage() {
                 )}
               </TableBody>
             </Table>
+            }
           </CardContent>
           <CardFooter className="flex justify-end gap-2">
             <Button onClick={openNewPodcastDialog}><Podcast className="mr-2 h-4 w-4" />Create Podcast Script</Button>
@@ -595,6 +651,11 @@ export default function CreativePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {isLoading ? <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div> :
              <Table>
               <TableHeader>
                 <TableRow>
@@ -622,6 +683,7 @@ export default function CreativePage() {
                 )}
               </TableBody>
             </Table>
+            }
           </CardContent>
            <CardFooter className="flex justify-end gap-2">
             <Button onClick={openNewNewsDialog}><Newspaper className="mr-2 h-4 w-4" />Create News Item</Button>
