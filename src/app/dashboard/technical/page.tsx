@@ -94,7 +94,7 @@ export default function TechnicalPage() {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [scriptRes, suggestionsRes] await Promise.all([
+        const [scriptRes, suggestionsRes] = await Promise.all([
           api.get('/technical/live-script'),
           api.get('/technical/song-suggestions')
         ]);
@@ -427,3 +427,4 @@ export default function TechnicalPage() {
   )
 }
  
+    
