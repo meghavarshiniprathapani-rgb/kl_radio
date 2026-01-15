@@ -9,7 +9,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, RefreshCw, Pen, Trash, Save, Megaphone, Podcast, Star } from 'lucide-react';
+import { PlusCircle, Pen, Trash, Save, Megaphone, Podcast, Newspaper } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -40,6 +40,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import api from '@/lib/api';
+import { Star } from 'lucide-react';
 
 type Script = {
   id: string;
@@ -66,13 +67,12 @@ type PodcastScript = {
 };
 
 type NewsItem = {
-    article_id: string;
+    id: string;
     title: string;
-    link: string;
-    source_id: string;
-    description: string;
-    pubDate: string;
+    content: string;
+    source: string;
     assignedTo: string | null;
+    lastEdited: string;
 };
 
 type User = {
@@ -84,8 +84,6 @@ type User = {
 
 export default function CreativePage() {
   const [rjs, setRjs] = useState<User[]>([]);
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [isFetching, setIsFetching] = useState(false);
   const { toast } = useToast();
   
   const [scripts, setScripts] = useState<Script[]>([]);
@@ -108,20 +106,30 @@ export default function CreativePage() {
   const [podcastAssignedTo, setPodcastAssignedTo] = useState('');
   const [editingPodcast, setEditingPodcast] = useState<PodcastScript | null>(null);
 
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [isNewsDialogOpen, setIsNewsDialogOpen] = useState(false);
+  const [newsTitle, setNewsTitle] = useState('');
+  const [newsContent, setNewsContent] = useState('');
+  const [newsSource, setNewsSource] = useState('');
+  const [newsAssignedTo, setNewsAssignedTo] = useState<string | null>(null);
+  const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
+
 
   // --- DATA FETCHING ---
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [scriptsRes, announcementsRes, podcastsRes, usersRes] = await Promise.all([
+        const [scriptsRes, announcementsRes, podcastsRes, usersRes, newsRes] = await Promise.all([
           api.get('/creative/scripts'),
           api.get('/creative/announcements'),
           api.get('/creative/podcasts'),
-          api.get('/users'), // Assuming an endpoint to get users
+          api.get('/users'),
+          api.get('/creative/news'),
         ]);
         setScripts(scriptsRes.data);
         setAnnouncements(announcementsRes.data);
         setPodcastScripts(podcastsRes.data);
+        setNews(newsRes.data);
         setRjs(usersRes.data.filter((u: User) => u.role === 'rj'));
       } catch (error) {
         console.error("Failed to fetch creative data", error);
@@ -135,73 +143,7 @@ export default function CreativePage() {
     fetchData();
   }, [toast]);
 
-
-  const handleFetchNews = async () => {
-    setIsFetching(true);
-    try {
-      const response = await api.get('/news/fetch');
-      if (response.data) {
-        setNews(response.data.map((item: any) => ({ ...item, assignedTo: null })));
-        toast({
-          title: "News Fetched",
-          description: `Successfully fetched ${response.data.length} new articles.`
-        });
-      }
-    } catch (error: any) {
-      console.error('Error fetching news:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message || 'Could not fetch news articles.',
-      });
-    } finally {
-      setIsFetching(false);
-    }
-  };
-
-  const handleAssignNews = (articleId: string, rjId: string | null) => {
-    const updatedNews = news.map(item =>
-      item.article_id === articleId ? { ...item, assignedTo: rjId === 'unassigned' ? null : rjId } : item
-    );
-    setNews(updatedNews);
-  };
-  
-  const handleSaveAssignments = async () => {
-    const assignments = news.filter(item => item.assignedTo).map(item => ({
-        article_id: item.article_id,
-        title: item.title,
-        link: item.link,
-        source_id: item.source_id,
-        description: item.description,
-        pubDate: item.pubDate,
-        assignedTo: item.assignedTo,
-    }));
-
-    if (assignments.length === 0) {
-        toast({
-            variant: "destructive",
-            title: "No assignments to save",
-            description: "Please assign at least one news item to an RJ.",
-        });
-        return;
-    }
-
-    try {
-        await api.post('/news/save', { articles: assignments });
-        toast({
-            title: "Assignments Saved",
-            description: "News assignments have been saved and sent to the RJ dashboard."
-        });
-    } catch (error) {
-        console.error("Failed to save news assignments", error);
-        toast({
-            variant: "destructive",
-            title: "Save Failed",
-            description: "Could not save news assignments.",
-        });
-    }
-  };
-
+  // --- SCRIPT MANAGEMENT ---
   const openNewScriptDialog = () => {
     setEditingScript(null);
     setScriptTitle('');
@@ -266,7 +208,7 @@ export default function CreativePage() {
   };
 
 
-  // --- Announcement Management ---
+  // --- ANNOUNCEMENT MANAGEMENT ---
   const openNewAnnouncementDialog = () => {
     setEditingAnnouncement(null);
     setAnnouncementTitle('');
@@ -319,6 +261,7 @@ export default function CreativePage() {
     }
   };
 
+  // --- PODCAST SCRIPT MANAGEMENT ---
   const openNewPodcastDialog = () => {
     setEditingPodcast(null);
     setPodcastTitle('');
@@ -345,6 +288,63 @@ export default function CreativePage() {
     } catch (error) {
         console.error("Failed to save podcast script", error);
         toast({ variant: 'destructive', title: 'Save Failed', description: 'Could not save the podcast script.' });
+    }
+  };
+
+  // --- NEWS ITEM MANAGEMENT ---
+  const openNewNewsDialog = () => {
+    setEditingNews(null);
+    setNewsTitle('');
+    setNewsContent('');
+    setNewsSource('');
+    setNewsAssignedTo(null);
+    setIsNewsDialogOpen(true);
+  };
+
+  const openEditNewsDialog = (newsItem: NewsItem) => {
+    setEditingNews(newsItem);
+    setNewsTitle(newsItem.title);
+    setNewsContent(newsItem.content);
+    setNewsSource(newsItem.source);
+    setNewsAssignedTo(newsItem.assignedTo);
+    setIsNewsDialogOpen(true);
+  };
+
+  const handleSaveNews = async () => {
+    if (!newsTitle || !newsContent || !newsSource) {
+      toast({ variant: 'destructive', title: 'Missing Fields', description: 'Title, Content, and Source are required.' });
+      return;
+    }
+
+    const payload = { title: newsTitle, content: newsContent, source: newsSource, assignedTo: newsAssignedTo };
+
+    try {
+      if (editingNews) {
+        const response = await api.put(`/creative/news/${editingNews.id}`, payload);
+        setNews(prev => prev.map(n => n.id === editingNews.id ? response.data : n));
+        toast({ title: 'News Item Updated', description: `"${newsTitle}" has been updated.` });
+      } else {
+        const response = await api.post('/creative/news', payload);
+        setNews(prev => [...prev, response.data]);
+        toast({ title: 'News Item Saved', description: `"${newsTitle}" has been added.` });
+      }
+      setIsNewsDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to save news item", error);
+      toast({ variant: 'destructive', title: 'Save Failed', description: 'Could not save the news item.' });
+    }
+  };
+
+  const handleDeleteNews = async (newsId: string) => {
+    const originalNews = [...news];
+    setNews(prev => prev.filter(item => item.id !== newsId));
+    try {
+      await api.delete(`/creative/news/${newsId}`);
+      toast({ title: 'News Item Deleted', description: 'The news item has been removed.' });
+    } catch (error) {
+      console.error("Failed to delete news item", error);
+      setNews(originalNews);
+      toast({ variant: 'destructive', title: 'Delete Failed', description: 'Could not delete the news item.' });
     }
   };
 
@@ -451,8 +451,52 @@ export default function CreativePage() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+      <Dialog open={isNewsDialogOpen} onOpenChange={setIsNewsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingNews ? 'Edit News Item' : 'Create a News Item'}</DialogTitle>
+            <DialogDescription>
+              {editingNews ? 'Modify the details of this news item.' : 'Draft a new news item for RJs to announce.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="news-title" className="text-right">Title</Label>
+              <Input id="news-title" value={newsTitle} onChange={(e) => setNewsTitle(e.target.value)} className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="news-source" className="text-right">Source</Label>
+              <Input id="news-source" value={newsSource} onChange={(e) => setNewsSource(e.target.value)} className="col-span-3" />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="news-assign" className="text-right">Assign To</Label>
+              <Select onValueChange={(value) => setNewsAssignedTo(value === 'unassigned' ? null : value)} value={newsAssignedTo || 'unassigned'}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select an RJ" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {rjs.map(rj => (
+                    <SelectItem key={rj.id} value={rj.id}>{rj.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="news-content" className="text-right">Content</Label>
+              <Textarea id="news-content" value={newsContent} onChange={(e) => setNewsContent(e.target.value)} className="col-span-3" rows={8} />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+            <Button onClick={handleSaveNews}>{editingNews ? 'Save Changes' : 'Save News Item'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+        <Card className="lg:col-span-2 xl:col-span-1">
           <CardHeader>
             <CardTitle>Scripts</CardTitle>
             <CardDescription>
@@ -465,7 +509,6 @@ export default function CreativePage() {
                 <TableRow>
                   <TableHead>Live</TableHead>
                   <TableHead>Title</TableHead>
-                  <TableHead>Last Edited</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -478,7 +521,6 @@ export default function CreativePage() {
                       </Button>
                     </TableCell>
                     <TableCell className="font-medium">{script.title}</TableCell>
-                    <TableCell>{new Date(script.lastEdited).toLocaleString()}</TableCell>
                     <TableCell className="text-right">
                       <Button onClick={() => openEditScriptDialog(script)} variant="ghost" size="icon" className="h-8 w-8"><Pen className="h-4 w-4" /></Button>
                       <Button onClick={() => handleDeleteScript(script.id)} variant="ghost" size="icon" className="h-8 w-8 text-destructive/80 hover:text-destructive"><Trash className="h-4 w-4" /></Button>
@@ -486,7 +528,7 @@ export default function CreativePage() {
                   </TableRow>
                 )) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
+                    <TableCell colSpan={3} className="h-24 text-center">
                       No scripts created yet.
                     </TableCell>
                   </TableRow>
@@ -509,7 +551,6 @@ export default function CreativePage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Title</TableHead>
-                  <TableHead>Last Edited</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -517,14 +558,13 @@ export default function CreativePage() {
                 {announcements.length > 0 ? announcements.map((announcement) => (
                   <TableRow key={announcement.id}>
                     <TableCell className="font-medium">{announcement.title}</TableCell>
-                    <TableCell>{new Date(announcement.lastEdited).toLocaleString()}</TableCell>
                     <TableCell className="text-right">
                       <Button onClick={() => openEditAnnouncementDialog(announcement)} variant="ghost" size="icon" className="h-8 w-8"><Pen className="h-4 w-4" /></Button>
                       <Button onClick={() => handleDeleteAnnouncement(announcement.id)} variant="ghost" size="icon" className="h-8 w-8 text-destructive/80 hover:text-destructive"><Trash className="h-4 w-4" /></Button>
                     </TableCell>
                   </TableRow>
                 )) : (
-                  <TableRow><TableCell colSpan={3} className="h-24 text-center">No announcements created yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={2} className="h-24 text-center">No announcements created yet.</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
@@ -544,21 +584,17 @@ export default function CreativePage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Title</TableHead>
-                  <TableHead>Topic</TableHead>
                   <TableHead>Assigned To</TableHead>
-                  <TableHead>Last Edited</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {podcastScripts.length > 0 ? podcastScripts.map((podcast) => (
                   <TableRow key={podcast.id}>
                     <TableCell className="font-medium">{podcast.title}</TableCell>
-                    <TableCell>{podcast.topic}</TableCell>
                     <TableCell>{rjs.find(r => r.id === podcast.assignedTo)?.name || 'Unassigned'}</TableCell>
-                    <TableCell>{new Date(podcast.lastEdited).toLocaleString()}</TableCell>
                   </TableRow>
                 )) : (
-                  <TableRow><TableCell colSpan={4} className="h-24 text-center">No podcast scripts created yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={2} className="h-24 text-center">No podcast scripts created yet.</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
@@ -568,69 +604,47 @@ export default function CreativePage() {
           </CardFooter>
         </Card>
 
-        <Card>
+        <Card className="lg:col-span-2 xl:col-span-3">
           <CardHeader>
-            <div className="flex justify-between items-start">
-                <div>
-                    <CardTitle>News Feed</CardTitle>
-                    <CardDescription>
-                        Fetch the latest news and assign it to RJs.
-                    </CardDescription>
-                </div>
-                <div className="flex gap-2">
-                    <Button onClick={handleFetchNews} disabled={isFetching} variant="outline">
-                        <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-                        {isFetching ? 'Fetching...' : 'Fetch News'}
-                    </Button>
-                    <Button onClick={handleSaveAssignments}>
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Assignments
-                    </Button>
-                </div>
-            </div>
+            <CardTitle>News Items</CardTitle>
+            <CardDescription>
+                Create, assign, and manage news items for RJs.
+            </CardDescription>
           </CardHeader>
           <CardContent>
              <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>News Title</TableHead>
-                  <TableHead>Assign To</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Source</TableHead>
+                  <TableHead>Assigned To</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {news.length > 0 ? news.map((item) => (
-                  <TableRow key={item.article_id}>
-                    <TableCell>
-                      <p className="font-medium">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">{item.source_id}</p>
-                    </TableCell>
-                    <TableCell className="w-[180px]">
-                      <Select 
-                        defaultValue={item.assignedTo || "unassigned"}
-                        onValueChange={(value) => handleAssignNews(item.article_id, value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Assign to RJ..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="unassigned">Unassigned</SelectItem>
-                          {rjs.map(rj => (
-                            <SelectItem key={rj.id} value={rj.id}>{rj.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.title}</TableCell>
+                    <TableCell>{item.source}</TableCell>
+                    <TableCell>{rjs.find(r => r.id === item.assignedTo)?.name || 'Unassigned'}</TableCell>
+                    <TableCell className="text-right">
+                       <Button onClick={() => openEditNewsDialog(item)} variant="ghost" size="icon" className="h-8 w-8"><Pen className="h-4 w-4" /></Button>
+                      <Button onClick={() => handleDeleteNews(item.id)} variant="ghost" size="icon" className="h-8 w-8 text-destructive/80 hover:text-destructive"><Trash className="h-4 w-4" /></Button>
                     </TableCell>
                   </TableRow>
                 )) : (
                     <TableRow>
-                        <TableCell colSpan={2} className="h-24 text-center">
-                            No news fetched yet. Click "Fetch News" to get started.
+                        <TableCell colSpan={4} className="h-24 text-center">
+                            No news items created yet.
                         </TableCell>
                     </TableRow>
                 )}
               </TableBody>
             </Table>
           </CardContent>
+           <CardFooter className="flex justify-end gap-2">
+            <Button onClick={openNewNewsDialog}><Newspaper className="mr-2 h-4 w-4" />Create News Item</Button>
+          </CardFooter>
         </Card>
       </div>
     </div>

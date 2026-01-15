@@ -41,7 +41,7 @@ type Announcement = {
 type NewsItem = {
     id: string;
     title: string;
-    summary: string;
+    content: string;
     source: string;
 }
 
@@ -159,7 +159,7 @@ export default function RJWingPage() {
                     {assignedNews.map((item) => (
                       <div key={item.id} className="p-4 border rounded-lg">
                           <h3 className="font-semibold">{item.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">{item.summary}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{item.content}</p>
                           <p className="text-xs text-muted-foreground/70 mt-2">Source: {item.source}</p>
                       </div>
                     ))}
