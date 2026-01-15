@@ -30,6 +30,7 @@ import {
   Repeat,
   Volume2,
   Music2,
+  Trash2,
 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { Switch } from '@/components/ui/switch';
@@ -70,16 +71,14 @@ export default function TechnicalPage() {
   
   const [liveScript, setLiveScript] = useState<LiveScript | null>(null);
   const [songSuggestions, setSongSuggestions] = useState<SongSuggestion[]>([]);
+  const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
 
   const fetchSuggestions = useCallback(async () => {
     setIsFetching(true);
     try {
       const suggestionsRes = await api.get('/technical/song-suggestions');
       setSongSuggestions(suggestionsRes.data);
-       toast({
-          title: 'Suggestions Refreshed',
-          description: 'The song suggestion list has been updated.',
-        });
+      setSelectedSuggestions([]);
     } catch (error) {
       console.error('Failed to fetch song suggestions', error);
       toast({
@@ -95,7 +94,7 @@ export default function TechnicalPage() {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [scriptRes, suggestionsRes] = await Promise.all([
+        const [scriptRes, suggestionsRes] await Promise.all([
           api.get('/technical/live-script'),
           api.get('/technical/song-suggestions')
         ]);
@@ -112,6 +111,57 @@ export default function TechnicalPage() {
     };
     fetchInitialData();
   }, [toast]);
+
+  const handleSelectionChange = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedSuggestions(prev => [...prev, id]);
+    } else {
+      setSelectedSuggestions(prev => prev.filter(suggestionId => suggestionId !== id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedSuggestions.length === 0) {
+      // If nothing is selected, just refresh.
+      await fetchSuggestions();
+      toast({
+        title: 'Suggestions Refreshed',
+        description: 'The song suggestion list has been updated.',
+      });
+      return;
+    }
+
+    setIsFetching(true);
+    const originalSuggestions = [...songSuggestions];
+
+    // Optimistically update the UI
+    setSongSuggestions(prev => prev.filter(s => !selectedSuggestions.includes(s.id)));
+
+    try {
+      await Promise.all(
+        selectedSuggestions.map(id => api.delete(`/technical/song-suggestions/${id}`))
+      );
+      toast({
+        title: 'Suggestions Deleted',
+        description: `${selectedSuggestions.length} song(s) have been removed.`,
+      });
+      // Clear selection after deletion
+      setSelectedSuggestions([]);
+    } catch (error) {
+      console.error('Failed to delete suggestions', error);
+      // Revert UI on error
+      setSongSuggestions(originalSuggestions);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not delete the selected suggestions.',
+      });
+    } finally {
+      setIsFetching(false);
+      // Fetch fresh data from the server to ensure consistency
+      await fetchSuggestions();
+    }
+  };
 
 
   const currentSong = isLive ? mockPlaylist[currentSongIndex] : { title: 'Awaiting Song', movie: 'Playlist' };
@@ -157,7 +207,8 @@ export default function TechnicalPage() {
       }, 1000);
     }
     return () => clearInterval(progressInterval);
-  }, [isPlaying, isLive, handleNextSong]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying, isLive]);
 
   const formatTime = (percentage: number) => {
     const totalSeconds = 240; // Example song length: 4 minutes
@@ -167,25 +218,6 @@ export default function TechnicalPage() {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
   
-  const togglePlayedStatus = (id: string) => {
-    // Note: The backend only supports deleting, not updating status.
-    // This is a local-only toggle for the 'Played' checkbox.
-    setSongSuggestions(
-      songSuggestions.map(suggestion => {
-        if (suggestion.id === id && suggestion.status !== 'Rejected') {
-            const newStatus = suggestion.status === 'Played' ? 'Pending' : 'Played';
-             toast({
-                title: 'Status Updated (Local)',
-                description: `Song suggestion status changed to ${newStatus}.`,
-            });
-            return { ...suggestion, status: newStatus };
-        }
-        return suggestion;
-      })
-    );
-  };
-
-
   return (
     <div className="space-y-6">
       <div>
@@ -323,9 +355,13 @@ export default function TechnicalPage() {
                     <CardDescription>Incoming requests from listeners.</CardDescription>
                   </div>
                 </div>
-                <Button onClick={fetchSuggestions} disabled={isFetching} size="sm" variant="outline">
+                 <Button onClick={handleBulkDelete} disabled={isFetching} size="sm" variant={selectedSuggestions.length > 0 ? "destructive" : "outline"}>
+                  {selectedSuggestions.length > 0 ? (
+                    <Trash2 className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+                  ) : (
                     <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-                    {isFetching ? 'Refreshing' : 'Refresh'}
+                  )}
+                  {isFetching ? 'Processing...' : (selectedSuggestions.length > 0 ? `Delete (${selectedSuggestions.length})` : 'Refresh')}
                 </Button>
               </div>
             </CardHeader>
@@ -334,33 +370,48 @@ export default function TechnicalPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-8">
+                        <Checkbox 
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedSuggestions(songSuggestions.map(s => s.id));
+                            } else {
+                              setSelectedSuggestions([]);
+                            }
+                          }}
+                          checked={selectedSuggestions.length > 0 && selectedSuggestions.length === songSuggestions.length}
+                          aria-label="Select all"
+                        />
+                      </TableHead>
                       <TableHead>Song</TableHead>
-                      <TableHead>Played</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {songSuggestions.length > 0 ? (
                       songSuggestions.map((suggestion) => (
                         <TableRow key={suggestion.id}>
+                           <TableCell>
+                            <Checkbox 
+                                onCheckedChange={(checked) => handleSelectionChange(suggestion.id, !!checked)}
+                                checked={selectedSuggestions.includes(suggestion.id)}
+                                aria-label={`Select ${suggestion.songTitle}`}
+                            />
+                           </TableCell>
                           <TableCell>
                             <p className="font-medium">{suggestion.songTitle}</p>
                             <p className="text-xs text-muted-foreground">{suggestion.movie}</p>
                           </TableCell>
                           <TableCell>
-                            {suggestion.status === 'Rejected' ? (
-                              <Badge variant="destructive">Rejected</Badge>
-                            ) : (
-                              <Checkbox
-                                checked={suggestion.status === 'Played'}
-                                onCheckedChange={() => togglePlayedStatus(suggestion.id)}
-                              />
-                            )}
+                            <Badge variant={suggestion.status === 'Rejected' ? 'destructive' : suggestion.status === 'Played' ? 'secondary' : 'default'}>
+                                {suggestion.status}
+                            </Badge>
                           </TableCell>
                         </TableRow>
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={2} className="h-24 text-center">
+                        <TableCell colSpan={3} className="h-24 text-center">
                           No song suggestions yet.
                         </TableCell>
                       </TableRow>
@@ -375,3 +426,4 @@ export default function TechnicalPage() {
     </div>
   )
 }
+ 
