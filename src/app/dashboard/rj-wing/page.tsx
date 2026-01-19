@@ -59,27 +59,53 @@ export default function RJWingPage() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+
       try {
-        const [scriptRes, newsRes, announcementsRes, podcastsRes] = await Promise.all([
-          api.get('/rj/live-script'),
-          api.get('/public/news'),
-          api.get('/public/announcements'),
-          api.get('/rj/podcasts'),
-        ]);
+        const scriptRes = await api.get('/rj/live-script');
         setLiveScript(scriptRes.data);
-        setAssignedNews(newsRes.data);
-        setAnnouncements(announcementsRes.data);
-        setPodcasts(podcastsRes.data.map((p: any) => ({...p, completed: p.status === 'completed'})));
       } catch (error) {
-        console.error('Failed to fetch RJ dashboard data', error);
+        console.error('Failed to fetch live script', error);
         toast({
           variant: 'destructive',
           title: 'Error',
-          description: 'Could not fetch all dashboard data.',
+          description: 'Could not fetch the live script.',
         });
-      } finally {
-        setIsLoading(false);
       }
+
+      try {
+        const newsRes = await api.get('/public/news');
+        setAssignedNews(newsRes.data);
+      } catch (error) {
+        console.error('Failed to fetch news', error);
+        // Silently fail is ok, UI will show an empty state.
+      }
+      
+      try {
+        const announcementsRes = await api.get('/public/announcements');
+        setAnnouncements(announcementsRes.data);
+      } catch (error) {
+        console.error('Failed to fetch announcements', error);
+        // Silently fail is ok, UI will show an empty state.
+      }
+
+      try {
+        const podcastsRes = await api.get('/rj/podcasts');
+        setPodcasts(
+          podcastsRes.data.map((p: any) => ({
+            ...p,
+            completed: p.status === 'completed',
+          }))
+        );
+      } catch (error) {
+        console.error('Failed to fetch podcasts', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not fetch assigned podcasts.',
+        });
+      }
+
+      setIsLoading(false);
     };
     fetchData();
   }, [toast]);
