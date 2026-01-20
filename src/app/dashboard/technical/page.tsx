@@ -32,7 +32,7 @@ import {
   Music2,
   Trash2,
 } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
@@ -74,6 +74,13 @@ export default function TechnicalPage() {
   const [liveScript, setLiveScript] = useState<LiveScript | null>(null);
   const [songSuggestions, setSongSuggestions] = useState<SongSuggestion[]>([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
+  
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const animationFrameRef = useRef<number>();
 
   const fetchSuggestions = useCallback(async () => {
     setIsFetching(true);
@@ -116,6 +123,93 @@ export default function TechnicalPage() {
     };
     fetchInitialData();
   }, [toast]);
+
+  const draw = useCallback(() => {
+    if (!analyserRef.current || !canvasRef.current) {
+      return;
+    }
+    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+    analyserRef.current.getByteFrequencyData(dataArray);
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const barWidth = (canvas.width / dataArray.length) * 2.5;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < dataArray.length; i++) {
+      barHeight = dataArray[i] / 2;
+      ctx.fillStyle = `hsl(${barHeight + 100}, 100%, 50%)`;
+      ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+      x += barWidth + 1;
+    }
+
+    animationFrameRef.current = requestAnimationFrame(draw);
+  }, []);
+
+  const startMic = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = audioContext;
+      analyserRef.current = audioContext.createAnalyser();
+      analyserRef.current.fftSize = 256;
+      sourceRef.current = audioContext.createMediaStreamSource(stream);
+      sourceRef.current.connect(analyserRef.current);
+      animationFrameRef.current = requestAnimationFrame(draw);
+    } catch (err) {
+      console.error('Failed to get mic', err);
+      toast({
+        variant: 'destructive',
+        title: 'Microphone Error',
+        description: 'Could not access your microphone. Please check permissions.',
+      });
+      setIsLive(false);
+      setStreamStatus('Offline');
+      localStorage.setItem('kl-radio-live-status', 'offline');
+    }
+  };
+
+  const stopMic = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    if (sourceRef.current) {
+      sourceRef.current.disconnect();
+    }
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      audioContextRef.current.close();
+    }
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  }, []);
+  
+  const toggleLive = () => {
+    const newLiveState = !isLive;
+    setIsLive(newLiveState);
+    if (newLiveState) {
+        startMic();
+        setStreamStatus('Online - Mic Active');
+        localStorage.setItem('kl-radio-live-status', 'online');
+    } else {
+        stopMic();
+        setStreamStatus('Offline');
+        localStorage.setItem('kl-radio-live-status', 'offline');
+    }
+  };
 
   const handleSelectionChange = (id: string, checked: boolean) => {
     if (checked) {
@@ -162,18 +256,8 @@ export default function TechnicalPage() {
     }
   };
 
-
   const currentSong = isLive ? mockPlaylist[currentSongIndex] : { title: 'Awaiting Song', movie: 'Playlist' };
 
-  const toggleLive = () => {
-    setIsLive(!isLive);
-    setStreamStatus(isLive ? 'Offline' : 'Online - Stable');
-    if (isLive) {
-      setIsPlaying(false);
-      setSongProgress(0);
-    }
-  };
-  
   const togglePlay = () => {
     if (!isLive) return;
     setIsPlaying(!isPlaying);
@@ -208,6 +292,11 @@ export default function TechnicalPage() {
     return () => clearInterval(progressInterval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying, isLive]);
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => stopMic();
+  }, [stopMic]);
 
   const formatTime = (percentage: number) => {
     const totalSeconds = 240; // Example song length: 4 minutes
@@ -249,7 +338,7 @@ export default function TechnicalPage() {
                   <span className="font-semibold">Stream Status:</span>
                   <span
                     className={`ml-2 font-medium ${
-                      streamStatus.includes('Stable')
+                      streamStatus.includes('Online')
                         ? 'text-green-500'
                         : 'text-muted-foreground'
                     }`}
@@ -257,11 +346,19 @@ export default function TechnicalPage() {
                     {streamStatus}
                   </span>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" disabled={!isLive}>
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Check Health
                 </Button>
               </div>
+               {isLive && (
+                <div className="space-y-2 pt-2">
+                  <Label htmlFor="mic-visualizer">Microphone Input</Label>
+                  <div className="rounded-lg border bg-muted p-3">
+                    <canvas ref={canvasRef} id="mic-visualizer" width="300" height="50" className="w-full h-[50px]"></canvas>
+                  </div>
+                </div>
+              )}
             </CardContent>
             <CardFooter>
               <Button onClick={toggleLive} className="w-full" variant={isLive ? 'destructive' : 'default'}>
@@ -425,5 +522,3 @@ export default function TechnicalPage() {
     </div>
   )
 }
- 
-    
