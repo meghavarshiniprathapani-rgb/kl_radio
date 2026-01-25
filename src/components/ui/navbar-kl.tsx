@@ -37,6 +37,12 @@ const NavbarKL = () => {
               <Link href="/#announcements" className="text-sm text-gray-200 hover:text-white transition">
                 Announcements
               </Link>
+              <Link href="/#events" className="text-sm text-gray-200 hover:text-white transition">
+                Events
+              </Link>
+              <Link href="/#our-team" className="text-sm text-gray-200 hover:text-white transition">
+                Our Team
+              </Link>
               <Link href="/#suggestions" className="text-sm text-gray-200 hover:text-white transition">
                 Suggestions
               </Link>
@@ -75,6 +81,8 @@ const NavbarKL = () => {
 
             <div className="flex flex-col items-center justify-center h-full space-y-6 text-lg">
               <Link href="/#announcements" onClick={toggle}>Announcements</Link>
+              <Link href="/#events" onClick={toggle}>Events</Link>
+              <Link href="/#our-team" onClick={toggle}>Our Team</Link>
               <Link href="/#suggestions" onClick={toggle}>Suggestions</Link>
 
               <Link 
