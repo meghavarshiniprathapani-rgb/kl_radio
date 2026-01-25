@@ -119,31 +119,45 @@ export default function CreativePage() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      try {
-        const [scriptsRes, announcementsRes, podcastsRes, usersRes, newsRes] = await Promise.all([
-          api.get('/creative/scripts'),
-          api.get('/creative/announcements'),
-          api.get('/creative/podcasts'),
-          api.get('/users'),
-          api.get('/creative/news'),
-        ]);
-        setScripts(scriptsRes.data);
-        setAnnouncements(announcementsRes.data);
-        setPodcastScripts(podcastsRes.data);
-        setNews(newsRes.data);
-        if (usersRes.data) {
-          setRjs(usersRes.data.filter((u: User) => u.role === 'rj'));
+
+      const scriptsPromise = api.get('/creative/scripts').then(res => setScripts(res.data)).catch(err => {
+        console.error("Failed to fetch scripts", err);
+        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load scripts." });
+      });
+
+      const announcementsPromise = api.get('/creative/announcements').then(res => setAnnouncements(res.data)).catch(err => {
+        console.error("Failed to fetch announcements", err);
+        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load announcements." });
+      });
+
+      const podcastsPromise = api.get('/creative/podcasts').then(res => setPodcastScripts(res.data)).catch(err => {
+        console.error("Failed to fetch podcasts", err);
+        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load podcast scripts." });
+      });
+
+      const usersPromise = api.get('/users').then(res => {
+        if (res.data) {
+          setRjs(res.data.filter((u: User) => u.role === 'rj'));
         }
-      } catch (error: any) {
-        console.error("Failed to fetch creative data", error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.response?.data?.message || "Could not load data for the creative dashboard.",
-        });
-      } finally {
-        setIsLoading(false);
-      }
+      }).catch(err => {
+        console.error("Failed to fetch users", err);
+        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load user list for assignments." });
+      });
+
+      const newsPromise = api.get('/creative/news').then(res => setNews(res.data)).catch(err => {
+        console.error("Failed to fetch news", err);
+        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load news items." });
+      });
+
+      await Promise.all([
+        scriptsPromise,
+        announcementsPromise,
+        podcastsPromise,
+        usersPromise,
+        newsPromise,
+      ]);
+      
+      setIsLoading(false);
     };
     fetchData();
   }, [toast]);
