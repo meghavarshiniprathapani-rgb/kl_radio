@@ -20,21 +20,21 @@
     },
     {
       "id": "rj-head",
-      "description": "Team member photo for RJ Head",
-      "imageUrl": "https://images.unsplash.com/photo-1555952494-035df91b9442?q=80&w=800&auto=format&fit=crop",
-      "imageHint": "man headphones"
+      "description": "Team member photo for RJ Head, Jahnavi Paruchuri",
+      "imageUrl": "https://ik.imagekit.io/bhanuteja110/Radio/IMG_20260125_111445%20-%20JAHNAVI%20PARUCHURI.jpg",
+      "imageHint": "woman smiling"
     },
     {
       "id": "creative-head",
-      "description": "Team member photo for Creative Head",
-      "imageUrl": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop",
-      "imageHint": "person thinking"
+      "description": "Team member photo for Creative Head, A. Sai charitha",
+      "imageUrl": "https://ik.imagekit.io/bhanuteja110/Radio/RAV_1232%20-%20Alluru%20Charitha.jpeg",
+      "imageHint": "woman creative"
     },
     {
       "id": "technical-head",
-      "description": "Team member photo for Technical Head",
-      "imageUrl": "https://images.unsplash.com/photo-1551887373-3c5f35a76d52?q=80&w=800&auto=format&fit=crop",
-      "imageHint": "person tech"
+      "description": "Team member photo for Technical Head, Nallamothu Bhanuteja",
+      "imageUrl": "https://ik.imagekit.io/bhanuteja110/WhatsApp%20Image%202025-09-12%20at%2013.43.09_62291c4c.jpg?updatedAt=1762627213780",
+      "imageHint": "man tech"
     },
     {
       "id": "broadcasting-head",
@@ -44,9 +44,9 @@
     },
     {
       "id": "video-editing-head",
-      "description": "Team member photo for Video Editing Head",
-      "imageUrl": "https://images.unsplash.com/photo-1579586337278-35d9addb7f5b?q=80&w=800&auto=format&fit=crop",
-      "imageHint": "person editing"
+      "description": "Team member photo for Video Editing Head, Kanipakam Dilip Sai Nath Reddy",
+      "imageUrl": "https://ik.imagekit.io/bhanuteja110/Radio/IMG_0149%20-%20Sai%20reddy.jpeg",
+      "imageHint": "man editing"
     },
     {
       "id": "pr-head",

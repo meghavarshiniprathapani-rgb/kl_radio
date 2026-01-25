@@ -1,4 +1,3 @@
-
 'use client';
 
 import { NavbarKL } from '@/components/ui/navbar-kl';
@@ -19,17 +18,17 @@ const teamMembers = [
   },
   {
     role: 'RJ Head',
-    name: 'Alex "DJ Vibe" Chen',
+    name: 'Jahnavi Paruchuri',
     avatarId: 'rj-head',
   },
   {
     role: 'Creative Head',
-    name: 'Sophia Rodriguez',
+    name: 'A. Sai charitha',
     avatarId: 'creative-head',
   },
   {
     role: 'Technical Head',
-    name: 'Marcus Thorne',
+    name: 'Nallamothu Bhanuteja',
     avatarId: 'technical-head',
   },
   {
@@ -39,7 +38,7 @@ const teamMembers = [
   },
   {
     role: 'Video Editing Head',
-    name: 'Leo Kim',
+    name: 'Kanipakam Dilip Sai Nath Reddy',
     avatarId: 'video-editing-head',
   },
   {
