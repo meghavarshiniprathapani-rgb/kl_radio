@@ -1,10 +1,9 @@
 'use client';
 
-import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { NavbarKL } from '@/components/ui/navbar-kl';
 import { SiteFooter } from '@/components/site-footer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import CircularGallery from '@/components/ui/circular-gallery';
 
 const teamMembers = [
   {
@@ -55,6 +54,14 @@ const teamMembers = [
 ];
 
 export default function OurTeamPage() {
+  const galleryItems = teamMembers.map((member) => {
+    const memberImage = PlaceHolderImages.find((p) => p.id === member.avatarId);
+    return {
+      image: memberImage?.imageUrl || `https://picsum.photos/seed/${member.name}/800/600?grayscale`,
+      text: `${member.name} - ${member.role}`,
+    };
+  });
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <NavbarKL />
@@ -67,31 +74,16 @@ export default function OurTeamPage() {
             The driving force behind KL Radio, a collective of passionate minds dedicated to bringing you the best audio experience.
           </p>
 
-          <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {teamMembers.map((member) => {
-              const memberImage = PlaceHolderImages.find(p => p.id === member.avatarId);
-              return (
-                <Card key={member.role} className="text-center transition-transform transform hover:scale-105 hover:shadow-primary/20 hover:shadow-lg">
-                  <CardHeader>
-                    <div className="relative mx-auto h-40 w-40">
-                      {memberImage && (
-                        <Image
-                          src={memberImage.imageUrl}
-                          alt={`Photo of ${member.name}`}
-                          fill
-                          className="rounded-full object-cover"
-                          data-ai-hint={memberImage.imageHint}
-                        />
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-xl font-semibold">{member.name}</CardTitle>
-                    <p className="text-md text-primary font-medium">{member.role}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div className="mt-16 relative" style={{ height: '70vh', minHeight: '500px' }}>
+            <CircularGallery
+              items={galleryItems}
+              bend={1}
+              textColor="hsl(var(--foreground))"
+              font="bold 30px Lexend"
+              borderRadius={0.05}
+              scrollEase={0.05}
+              scrollSpeed={2}
+            />
           </div>
         </div>
       </main>
