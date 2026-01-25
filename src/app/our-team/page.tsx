@@ -58,7 +58,7 @@ export default function OurTeamPage() {
     const memberImage = PlaceHolderImages.find((p) => p.id === member.avatarId);
     return {
       image: memberImage?.imageUrl || `https://picsum.photos/seed/${member.name}/800/600?grayscale`,
-      text: `${member.name} - ${member.role}`,
+      text: `${member.role}\n${member.name}`,
     };
   });
 

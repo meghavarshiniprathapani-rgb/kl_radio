@@ -41,11 +41,22 @@ function createTextTexture(
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Could not get 2d context');
 
-  context.font = font;
-  const metrics = context.measureText(text);
-  const textWidth = Math.ceil(metrics.width);
+  const lines = text.split('\n');
   const fontSize = getFontSize(font);
-  const textHeight = Math.ceil(fontSize * 1.2);
+  const lineHeight = fontSize * 1.2;
+
+  context.font = font;
+
+  let maxWidth = 0;
+  lines.forEach(line => {
+    const metrics = context.measureText(line);
+    if (metrics.width > maxWidth) {
+      maxWidth = metrics.width;
+    }
+  });
+
+  const textWidth = Math.ceil(maxWidth);
+  const textHeight = Math.ceil(lineHeight * lines.length);
 
   canvas.width = textWidth + 20;
   canvas.height = textHeight + 20;
@@ -55,7 +66,14 @@ function createTextTexture(
   context.textBaseline = 'middle';
   context.textAlign = 'center';
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+  const totalTextHeight = lineHeight * (lines.length - 1);
+  const startY = canvas.height / 2 - totalTextHeight / 2;
+
+  lines.forEach((line, index) => {
+    const y = startY + index * lineHeight;
+    context.fillText(line, canvas.width / 2, y);
+  });
 
   const texture = new Texture(gl, { generateMipmaps: false });
   texture.image = canvas;
@@ -121,7 +139,7 @@ class Title {
     });
     this.mesh = new Mesh(this.gl, { geometry, program });
     const aspect = width / height;
-    const textHeightScaled = this.plane.scale.y * 0.15;
+    const textHeightScaled = this.plane.scale.y * 0.25; // Increased scale for multiline
     const textWidthScaled = textHeightScaled * aspect;
     this.mesh.scale.set(textWidthScaled, textHeightScaled, 1);
     this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeightScaled * 0.5 - 0.05;
