@@ -47,4 +47,5 @@ export type NewsItem = {
     content: string;
     source: string;
     lastEdited: string;
+    isLive?: boolean;
 };

@@ -73,6 +73,7 @@ type NewsItem = {
     content: string;
     source: string;
     lastEdited: string;
+    isLive?: boolean;
 };
 
 type User = {
@@ -362,6 +363,17 @@ export default function CreativePage() {
       console.error("Failed to delete news item", error);
       setNews(originalNews);
       toast({ variant: 'destructive', title: 'Delete Failed', description: error.response?.data?.message || 'Could not delete the news item.' });
+    }
+  };
+
+  const handleSetLiveNews = async (newsId: string) => {
+    try {
+      await api.patch(`/creative/news/${newsId}/live`);
+      setNews(prev => prev.map(n => ({ ...n, isLive: n.id === newsId })));
+      toast({ title: 'Live News Set', description: 'The news item has been marked as live for RJs.' });
+    } catch (error: any) {
+      console.error("Failed to set live news", error);
+      toast({ variant: 'destructive', title: 'Failed', description: error.response?.data?.message || 'Could not set the live news item.' });
     }
   };
 
@@ -660,7 +672,7 @@ export default function CreativePage() {
           <CardHeader>
             <CardTitle>News Items</CardTitle>
             <CardDescription>
-                Create, assign, and manage news items for RJs.
+                Create, assign, and manage news items for RJs. Mark one as LIVE.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -672,6 +684,7 @@ export default function CreativePage() {
              <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Live</TableHead>
                   <TableHead>Title</TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -679,7 +692,12 @@ export default function CreativePage() {
               </TableHeader>
               <TableBody>
                 {news.length > 0 ? news.map((item) => (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.id} className={item.isLive ? 'bg-primary/10' : ''}>
+                    <TableCell>
+                      <Button onClick={() => handleSetLiveNews(item.id)} variant="ghost" size="icon" className="h-8 w-8" disabled={item.isLive}>
+                        <Star className={`h-4 w-4 ${item.isLive ? 'text-primary fill-primary' : 'text-muted-foreground'}`} />
+                      </Button>
+                    </TableCell>
                     <TableCell className="font-medium">{item.title}</TableCell>
                     <TableCell>{item.source}</TableCell>
                     <TableCell className="text-right">
@@ -689,7 +707,7 @@ export default function CreativePage() {
                   </TableRow>
                 )) : (
                     <TableRow>
-                        <TableCell colSpan={3} className="h-24 text-center">
+                        <TableCell colSpan={4} className="h-24 text-center">
                             No news items created yet.
                         </TableCell>
                     </TableRow>
