@@ -48,7 +48,7 @@ const teamMembers = [
   },
   {
     role: 'Designing Head',
-    name: 'Olivia Martinez',
+    name: 'Duggi Abhigna',
     avatarId: 'designing-head',
   },
 ];
