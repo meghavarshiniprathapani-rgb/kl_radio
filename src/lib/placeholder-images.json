@@ -59,6 +59,24 @@
       "description": "Team member photo for Designing Head, Duggi Abhigna",
       "imageUrl": "https://ik.imagekit.io/bhanuteja110/Radio/IMG-20260122-WA0030%20-%20abhigna_%20Duggi.jpg",
       "imageHint": "woman smiling"
+    },
+    {
+      "id": "event-1",
+      "description": "A placeholder image for a radio event",
+      "imageUrl": "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjb25jZXJ0JTIwY3Jvd2R8ZW58MHx8fHwxNzY5MzgwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "concert crowd"
+    },
+    {
+      "id": "event-2",
+      "description": "A placeholder image for a radio event",
+      "imageUrl": "https://images.unsplash.com/photo-1622386010273-646e12d1c02f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkaiUyMGNvbnNvbGV8ZW58MHx8fHwxNzY5NDQ2MTIxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dj console"
+    },
+    {
+      "id": "event-3",
+      "description": "A placeholder image for a radio event",
+      "imageUrl": "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bGl2ZSUyMG11c2ljfGVufDB8fHx8MTc2OTQxNjUzM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "live music"
     }
   ]
 }
