@@ -5,6 +5,7 @@ import { NavbarKL } from '@/components/ui/navbar-kl';
 import { SiteFooter } from '@/components/site-footer';
 import ScrollStack, { ScrollStackItem } from '@/components/ui/scroll-stack';
 import Image from 'next/image';
+import { LenisProvider } from '@/components/lenis-provider';
 
 const pastEvents = [
   {
@@ -64,36 +65,44 @@ const pastEvents = [
   }
 ];
 
+function EventsComponent() {
+    return (
+        <div className="flex min-h-screen flex-col bg-background text-foreground">
+        <NavbarKL />
+        <main className="flex-1 bg-background">
+            <ScrollStack useWindowScroll={true} stackPosition="25%" itemDistance={20}>
+                {pastEvents.map((event, index) => (
+                <ScrollStackItem key={index} itemClassName="bg-card text-card-foreground border border-border !p-0 overflow-hidden">
+                    <div className="flex h-full w-full items-stretch">
+                        <div className="relative w-1/3 flex-shrink-0">
+                            <Image
+                                src={`https://picsum.photos/seed/${event.title.replace(/\s+/g, '-')}/400/600`}
+                                alt={`Image for ${event.title}`}
+                                fill
+                                className="object-cover"
+                                data-ai-hint={event.hint}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            />
+                        </div>
+                        <div className="flex flex-col justify-center p-12">
+                            <h2 className="text-3xl font-bold mb-4 font-headline">{event.title}</h2>
+                            <p className="text-muted-foreground">{event.description}</p>
+                        </div>
+                    </div>
+                </ScrollStackItem>
+                ))}
+            </ScrollStack>
+        </main>
+        <SiteFooter />
+        </div>
+    )
+}
+
 
 export default function EventsPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <NavbarKL />
-      <main className="flex-1 bg-background">
-        <ScrollStack useWindowScroll={true} stackPosition="25%" itemDistance={20}>
-            {pastEvents.map((event, index) => (
-              <ScrollStackItem key={index} itemClassName="bg-card text-card-foreground border border-border !p-0 overflow-hidden">
-                <div className="flex h-full w-full items-stretch">
-                    <div className="relative w-1/3 flex-shrink-0">
-                        <Image
-                            src={`https://picsum.photos/seed/${event.title.replace(/\s+/g, '-')}/400/600`}
-                            alt={`Image for ${event.title}`}
-                            fill
-                            className="object-cover"
-                            data-ai-hint={event.hint}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                    </div>
-                    <div className="flex flex-col justify-center p-12">
-                        <h2 className="text-3xl font-bold mb-4 font-headline">{event.title}</h2>
-                        <p className="text-muted-foreground">{event.description}</p>
-                    </div>
-                </div>
-              </ScrollStackItem>
-            ))}
-        </ScrollStack>
-      </main>
-      <SiteFooter />
-    </div>
+    <LenisProvider>
+        <EventsComponent />
+    </LenisProvider>
   );
 }

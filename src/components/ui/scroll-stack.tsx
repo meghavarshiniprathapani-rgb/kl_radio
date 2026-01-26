@@ -3,6 +3,7 @@
 import React, { useLayoutEffect, useRef, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import Lenis from '@studio-freight/lenis';
+import { useLenis } from '@/components/lenis-provider';
 
 export interface ScrollStackItemProps {
   itemClassName?: string;
@@ -58,6 +59,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const lenisRef = useRef<Lenis | null>(null);
   const cardsRef = useRef<HTMLElement[]>([]);
   const isUpdatingRef = useRef(false);
+  const providedLenis = useLenis();
 
   const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
     if (scrollTop < start) return 0;
@@ -74,31 +76,33 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   const getScrollData = useCallback(() => {
     if (useWindowScroll) {
+      const scrollTop = providedLenis ? providedLenis.scroll : window.scrollY;
       return {
-        scrollTop: window.scrollY,
+        scrollTop: scrollTop,
         containerHeight: window.innerHeight,
         scrollContainer: document.documentElement
       };
     } else {
       const scroller = scrollerRef.current;
+      const scrollTop = lenisRef.current ? lenisRef.current.scroll : scroller ? scroller.scrollTop : 0;
       return {
-        scrollTop: scroller ? scroller.scrollTop : 0,
+        scrollTop: scrollTop,
         containerHeight: scroller ? scroller.clientHeight : 0,
         scrollContainer: scroller
       };
     }
-  }, [useWindowScroll]);
+  }, [useWindowScroll, providedLenis]);
 
   const getElementOffset = useCallback(
     (element: HTMLElement) => {
       if (useWindowScroll) {
         const rect = element.getBoundingClientRect();
-        return rect.top + window.scrollY;
+        return rect.top + (providedLenis ? providedLenis.scroll : window.scrollY);
       } else {
         return element.offsetTop;
       }
     },
-    [useWindowScroll]
+    [useWindowScroll, providedLenis]
   );
 
   const updateCardTransforms = useCallback(() => {
@@ -197,62 +201,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     updateCardTransforms();
   }, [updateCardTransforms]);
 
-  const setupLenis = useCallback(() => {
-    if (useWindowScroll) {
-      const lenis = new Lenis({
-        duration: 1.2,
-        easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        touchMultiplier: 2,
-        infinite: false,
-        wheelMultiplier: 1,
-        lerp: 0.1,
-        syncTouch: true,
-        syncTouchLerp: 0.075
-      });
-
-      lenis.on('scroll', handleScroll);
-
-      const raf = (time: number) => {
-        lenis.raf(time);
-        animationFrameRef.current = requestAnimationFrame(raf);
-      };
-      animationFrameRef.current = requestAnimationFrame(raf);
-
-      lenisRef.current = lenis;
-      return lenis;
-    } else {
-      const scroller = scrollerRef.current;
-      if (!scroller) return;
-
-      const lenis = new Lenis({
-        wrapper: scroller,
-        content: scroller.querySelector('.scroll-stack-inner') as HTMLElement,
-        duration: 1.2,
-        easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        touchMultiplier: 2,
-        infinite: false,
-        gestureOrientation: 'vertical',
-        wheelMultiplier: 1,
-        lerp: 0.1,
-        syncTouch: true,
-        syncTouchLerp: 0.075
-      });
-
-      lenis.on('scroll', handleScroll);
-
-      const raf = (time: number) => {
-        lenis.raf(time);
-        animationFrameRef.current = requestAnimationFrame(raf);
-      };
-      animationFrameRef.current = requestAnimationFrame(raf);
-
-      lenisRef.current = lenis;
-      return lenis;
-    }
-  }, [handleScroll, useWindowScroll]);
-
   useLayoutEffect(() => {
     if (!useWindowScroll && !scrollerRef.current) return;
 
@@ -276,7 +224,41 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       card.style.webkitPerspective = '1000px';
     });
 
-    setupLenis();
+    let localLenis: Lenis | null = null;
+    
+    if (useWindowScroll) {
+      if (providedLenis) {
+        providedLenis.on('scroll', handleScroll);
+      }
+    } else {
+        const scroller = scrollerRef.current;
+        if (!scroller) return;
+
+        localLenis = new Lenis({
+          wrapper: scroller,
+          content: scroller.querySelector('.scroll-stack-inner') as HTMLElement,
+          duration: 1.2,
+          easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
+          touchMultiplier: 2,
+          infinite: false,
+          gestureOrientation: 'vertical',
+          wheelMultiplier: 1,
+          lerp: 0.1,
+          syncTouch: true,
+          syncTouchLerp: 0.075
+        });
+
+        localLenis.on('scroll', handleScroll);
+        
+        const raf = (time: number) => {
+          localLenis!.raf(time);
+          animationFrameRef.current = requestAnimationFrame(raf);
+        };
+        animationFrameRef.current = requestAnimationFrame(raf);
+
+        lenisRef.current = localLenis;
+    }
 
     updateCardTransforms();
 
@@ -284,8 +266,12 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      if (useWindowScroll && providedLenis) {
+        providedLenis.off('scroll', handleScroll);
+      }
       if (lenisRef.current) {
         lenisRef.current.destroy();
+        lenisRef.current = null;
       }
       stackCompletedRef.current = false;
       cardsRef.current = [];
@@ -294,8 +280,9 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   }, [
     itemDistance,
     useWindowScroll,
-    setupLenis,
-    updateCardTransforms
+    handleScroll,
+    updateCardTransforms,
+    providedLenis,
   ]);
 
   return (
