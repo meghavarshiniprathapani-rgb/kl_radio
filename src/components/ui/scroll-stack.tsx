@@ -57,7 +57,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   const lenisRef = useRef<Lenis | null>(null);
   const cardsRef = useRef<HTMLElement[]>([]);
-  const lastTransformsRef = useRef(new Map<number, any>());
   const isUpdatingRef = useRef(false);
 
   const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
@@ -107,7 +106,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
     isUpdatingRef.current = true;
 
-    const { scrollTop, containerHeight, scrollContainer } = getScrollData();
+    const { scrollTop, containerHeight } = getScrollData();
     const stackPositionPx = parsePercentage(stackPosition, containerHeight);
     const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
 
@@ -156,31 +155,15 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       } else if (scrollTop > pinEnd) {
         translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
       }
+      
+      const transform = `translate3d(0, ${Math.round(translateY * 100) / 100}px, 0) scale(${
+        Math.round(scale * 1000) / 1000
+      }) rotate(${Math.round(rotation * 100) / 100}deg)`;
+      const filter = blur > 0 ? `blur(${Math.round(blur * 100) / 100}px)` : '';
 
-      const newTransform = {
-        translateY: Math.round(translateY * 100) / 100,
-        scale: Math.round(scale * 1000) / 1000,
-        rotation: Math.round(rotation * 100) / 100,
-        blur: Math.round(blur * 100) / 100
-      };
+      card.style.transform = transform;
+      card.style.filter = filter;
 
-      const lastTransform = lastTransformsRef.current.get(i);
-      const hasChanged =
-        !lastTransform ||
-        Math.abs(lastTransform.translateY - newTransform.translateY) > 0.1 ||
-        Math.abs(lastTransform.scale - newTransform.scale) > 0.001 ||
-        Math.abs(lastTransform.rotation - newTransform.rotation) > 0.1 ||
-        Math.abs(lastTransform.blur - newTransform.blur) > 0.1;
-
-      if (hasChanged) {
-        const transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
-        const filter = newTransform.blur > 0 ? `blur(${newTransform.blur}px)` : '';
-
-        card.style.transform = transform;
-        card.style.filter = filter;
-
-        lastTransformsRef.current.set(i, newTransform);
-      }
 
       if (i === cardsRef.current.length - 1) {
         const isInView = scrollTop >= pinStart && scrollTop <= pinEnd;
@@ -279,7 +262,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         : (scrollerRef.current?.querySelectorAll('.scroll-stack-card') ?? [])
     ) as HTMLElement[];
     cardsRef.current = cards;
-    const transformsCache = lastTransformsRef.current;
 
     cards.forEach((card, i) => {
       if (i < cards.length - 1) {
@@ -307,21 +289,11 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       }
       stackCompletedRef.current = false;
       cardsRef.current = [];
-      transformsCache.clear();
       isUpdatingRef.current = false;
     };
   }, [
     itemDistance,
-    itemScale,
-    itemStackDistance,
-    stackPosition,
-    scaleEndPosition,
-    baseScale,
-    scaleDuration,
-    rotationAmount,
-    blurAmount,
     useWindowScroll,
-    onStackComplete,
     setupLenis,
     updateCardTransforms
   ]);
