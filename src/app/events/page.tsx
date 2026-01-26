@@ -1,8 +1,8 @@
+'use client';
+
 import { NavbarKL } from '@/components/ui/navbar-kl';
 import { SiteFooter } from '@/components/site-footer';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import Image from 'next/image';
-import { StickyScrollSection } from '@/components/sections/sticky-scroll-section';
+import ScrollStack, { ScrollStackItem } from '@/components/ui/scroll-stack';
 
 const pastEvents = [
   {
@@ -64,51 +64,18 @@ const pastEvents = [
 
 
 export default function EventsPage() {
-  const eventItems = pastEvents.map(event => ({
-    title: event.title,
-    content: event.description,
-  }));
-  
-  const featuredEvents = eventItems.slice(0, 3);
-  const otherEvents = pastEvents.slice(3);
-
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       <NavbarKL />
-      <main className="flex-1">
-        <StickyScrollSection items={featuredEvents} title="Featured Events" />
-        
-        {otherEvents.length > 0 && (
-          <div className="bg-background py-20 md:py-28">
-            <div className="container mx-auto max-w-6xl px-4">
-              <div className="text-center mb-16">
-                <h2 className="font-headline text-4xl font-bold tracking-tighter md:text-5xl">
-                  More Events
-                </h2>
-              </div>
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {otherEvents.map((event) => (
-                    <Card key={event.title} className="overflow-hidden bg-card">
-                      <CardHeader className="p-0">
-                         <Image
-                            src={`https://picsum.photos/seed/${event.title.replace(/\s+/g, '-')}/600/400`}
-                            alt={event.title}
-                            width={600}
-                            height={400}
-                            className="w-full h-auto object-cover aspect-[3/2]"
-                            data-ai-hint={event.hint}
-                          />
-                      </CardHeader>
-                      <CardContent className="p-6">
-                        <CardTitle className="text-2xl mb-2">{event.title}</CardTitle>
-                        <CardDescription>{event.description}</CardDescription>
-                      </CardContent>
-                    </Card>
-                  ))}
-              </div>
-            </div>
-          </div>
-        )}
+      <main className="flex-1 bg-background">
+        <ScrollStack useWindowScroll={true} stackPosition="25%" itemDistance={20}>
+            {pastEvents.map((event, index) => (
+              <ScrollStackItem key={index} itemClassName="bg-card text-card-foreground border border-border">
+                <h2 className="text-3xl font-bold mb-4 font-headline">{event.title}</h2>
+                <p className="text-muted-foreground">{event.description}</p>
+              </ScrollStackItem>
+            ))}
+        </ScrollStack>
       </main>
       <SiteFooter />
     </div>
