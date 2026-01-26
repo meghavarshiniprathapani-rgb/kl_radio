@@ -113,7 +113,6 @@ export default function CreativePage() {
   const [newsTitle, setNewsTitle] = useState('');
   const [newsContent, setNewsContent] = useState('');
   const [newsSource, setNewsSource] = useState('');
-  const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
 
 
   // --- DATA FETCHING ---
@@ -313,18 +312,9 @@ export default function CreativePage() {
 
   // --- NEWS ITEM MANAGEMENT ---
   const openNewNewsDialog = () => {
-    setEditingNews(null);
     setNewsTitle('');
     setNewsContent('');
     setNewsSource('');
-    setIsNewsDialogOpen(true);
-  };
-
-  const openEditNewsDialog = (newsItem: NewsItem) => {
-    setEditingNews(newsItem);
-    setNewsTitle(newsItem.title);
-    setNewsContent(newsItem.content);
-    setNewsSource(newsItem.source);
     setIsNewsDialogOpen(true);
   };
 
@@ -337,15 +327,9 @@ export default function CreativePage() {
     const payload = { title: newsTitle, content: newsContent, source: newsSource };
 
     try {
-      if (editingNews) {
-        const response = await api.put(`/creative/news/${editingNews.id}`, payload);
-        setNews(prev => prev.map(n => n.id === editingNews.id ? response.data : n));
-        toast({ title: 'News Item Updated', description: `"${newsTitle}" has been updated.` });
-      } else {
-        const response = await api.post('/creative/news', payload);
-        setNews(prev => [...prev, response.data]);
-        toast({ title: 'News Item Saved', description: `"${newsTitle}" has been added.` });
-      }
+      const response = await api.post('/creative/news', payload);
+      setNews(prev => [...prev, response.data]);
+      toast({ title: 'News Item Saved', description: `"${newsTitle}" has been added.` });
       setIsNewsDialogOpen(false);
     } catch (error: any) {
       console.error("Failed to save news item", error);
@@ -506,7 +490,6 @@ export default function CreativePage() {
       <Dialog open={isNewsDialogOpen} onOpenChange={(isOpen) => {
           setIsNewsDialogOpen(isOpen);
           if (!isOpen) {
-            setEditingNews(null);
             setNewsTitle('');
             setNewsContent('');
             setNewsSource('');
@@ -514,9 +497,9 @@ export default function CreativePage() {
       }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingNews ? 'Edit News Item' : 'Create a News Item'}</DialogTitle>
+            <DialogTitle>Create a News Item</DialogTitle>
             <DialogDescription>
-              {editingNews ? 'Modify the details of this news item.' : 'Draft a new news item for RJs to announce.'}
+              Draft a new news item for RJs to announce.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -535,7 +518,7 @@ export default function CreativePage() {
           </div>
           <DialogFooter>
             <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-            <Button onClick={handleSaveNews}>{editingNews ? 'Save Changes' : 'Save News Item'}</Button>
+            <Button onClick={handleSaveNews}>Save News Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -701,7 +684,6 @@ export default function CreativePage() {
                     <TableCell className="font-medium">{item.title}</TableCell>
                     <TableCell>{item.source}</TableCell>
                     <TableCell className="text-right">
-                       <Button onClick={() => openEditNewsDialog(item)} variant="ghost" size="icon" className="h-8 w-8"><Pen className="h-4 w-4" /></Button>
                       <Button onClick={() => handleDeleteNews(item.id)} variant="ghost" size="icon" className="h-8 w-8 text-destructive/80 hover:text-destructive"><Trash className="h-4 w-4" /></Button>
                     </TableCell>
                   </TableRow>
