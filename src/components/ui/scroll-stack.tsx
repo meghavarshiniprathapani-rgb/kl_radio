@@ -229,6 +229,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     if (useWindowScroll) {
       if (providedLenis) {
         providedLenis.on('scroll', handleScroll);
+      } else {
+        window.addEventListener('scroll', handleScroll);
       }
     } else {
         const scroller = scrollerRef.current;
@@ -266,8 +268,12 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      if (useWindowScroll && providedLenis) {
-        providedLenis.off('scroll', handleScroll);
+      if (useWindowScroll) {
+        if (providedLenis) {
+          providedLenis.off('scroll', handleScroll);
+        } else {
+            window.removeEventListener('scroll', handleScroll);
+        }
       }
       if (lenisRef.current) {
         lenisRef.current.destroy();
