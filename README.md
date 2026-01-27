@@ -33,25 +33,16 @@ Clone the repository and install the project dependencies:
 npm install
 ```
 
-### 2. Backend Setup
+### 2. Environment Variables
 
-This frontend application is designed to work with a corresponding backend service. Ensure your backend server is running, typically on `localhost:5000`.
+This application connects to a backend API. To configure the API endpoint, create a file named `.env.local` in the project root and add the following line:
 
-The base URL for the API is configured in `src/lib/api.ts`. If your backend runs on a different port or URL, you must update it there:
-
-```typescript
-// src/lib/api.ts
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // <-- Update this if needed
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// ...
 ```
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
+```
+
+If your backend is running on a different URL, replace `http://localhost:5000/api` with the correct endpoint. By default, the app is configured to use a live production backend, but this file will override it for local development.
+
 
 ### 3. Running the Development Server
 
