@@ -193,6 +193,8 @@ export default function TechnicalPage() {
   }, []);
 
   const startBroadcast = useCallback(async () => {
+    if (socketRef.current) return;
+
     setStreamStatus('Connecting...');
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -274,8 +276,10 @@ export default function TechnicalPage() {
         };
 
         socketRef.current.onclose = () => {
-            toast({ variant: 'destructive', title: 'Connection Lost', description: 'Disconnected from signaling server.' });
-            stopBroadcast();
+            if (streamStatus !== 'Offline') {
+                toast({ variant: 'destructive', title: 'Connection Lost', description: 'Disconnected from signaling server.' });
+                stopBroadcast();
+            }
         };
 
     } catch (err) {
@@ -287,7 +291,7 @@ export default function TechnicalPage() {
         });
         stopBroadcast();
     }
-  }, [toast, stopBroadcast, drawVisualizer]);
+  }, [toast, stopBroadcast, drawVisualizer, streamStatus]);
 
   const toggleLive = () => {
     if (streamStatus !== 'Offline') {

@@ -41,7 +41,7 @@ export function ListenLiveSection() {
   }, []);
 
   const handleTuneIn = useCallback(() => {
-    if (streamState !== 'offline') return;
+    if (streamState !== 'offline' || socketRef.current) return;
 
     setStreamState('connecting');
     toast({ title: 'Connecting to Live Stream...', description: 'This may take a moment.' });
@@ -105,7 +105,9 @@ export function ListenLiveSection() {
     };
 
     socketRef.current.onclose = () => {
-        cleanupConnection();
+        if (streamState !== 'offline') {
+            cleanupConnection();
+        }
     };
   }, [streamState, cleanupConnection, toast]);
 
