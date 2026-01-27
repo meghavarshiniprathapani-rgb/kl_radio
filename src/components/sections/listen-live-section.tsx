@@ -17,17 +17,24 @@ export function ListenLiveSection() {
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const connectedRef = useRef(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // --- Timeout and Retry refs ---
+  const offerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const retryIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const streamStateRef = useRef(streamState);
   useEffect(() => {
     streamStateRef.current = streamState;
   }, [streamState]);
 
-  const cleanupConnection = useCallback((showErrorToast = false) => {
-    if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
+  const cleanupConnection = useCallback((showErrorToast = false, errorDetails?: {title: string, description: string}) => {
+    if (offerTimeoutRef.current) {
+        clearTimeout(offerTimeoutRef.current);
+        offerTimeoutRef.current = null;
+    }
+    if (retryIntervalRef.current) {
+        clearInterval(retryIntervalRef.current);
+        retryIntervalRef.current = null;
     }
 
     if (socketRef.current) {
@@ -36,6 +43,9 @@ export function ListenLiveSection() {
         socketRef.current = null;
     }
     if (peerConnectionRef.current) {
+        peerConnectionRef.current.onconnectionstatechange = null;
+        peerConnectionRef.current.ontrack = null;
+        peerConnectionRef.current.onicecandidate = null;
         peerConnectionRef.current.close();
         peerConnectionRef.current = null;
     }
@@ -47,14 +57,14 @@ export function ListenLiveSection() {
     if (showErrorToast) {
         toast({
           variant: "destructive",
-          title: "Stream Unavailable",
-          description: "The live stream is currently offline or could not connect.",
+          title: errorDetails?.title || "Stream Unavailable",
+          description: errorDetails?.description || "The live stream is currently offline or could not connect.",
         });
     }
   }, [toast]);
 
   const handleTuneIn = useCallback(async () => {
-    if (streamState !== 'offline') {
+    if (streamStateRef.current !== 'offline') {
       toast({ title: 'Stream disconnected.' });
       cleanupConnection();
       return;
@@ -66,30 +76,45 @@ export function ListenLiveSection() {
     setStreamState('connecting');
     toast({ title: 'Connecting to Live Stream...', description: 'This may take a moment.' });
     
-    timeoutRef.current = setTimeout(() => {
+    // STEP 1: Offer Timeout
+    offerTimeoutRef.current = setTimeout(() => {
         if (streamStateRef.current === 'connecting') {
-            cleanupConnection(true);
+            cleanupConnection(true, {
+                title: "Live stream not available",
+                description: "The broadcast is not reachable right now.",
+            });
         }
-    }, 15000);
+    }, 10000);
 
     try {
       const pc = new RTCPeerConnection(WEBRTC_CONFIG);
       peerConnectionRef.current = pc;
 
+      // STEP 5: ICE Completion Guard
+      pc.onconnectionstatechange = () => {
+        if(pc.connectionState === 'connected') {
+          if (streamStateRef.current !== 'live') {
+            setStreamState('live');
+            toast({ title: "You're listening live!", description: 'Enjoy the show.' });
+          }
+        }
+        if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected' || pc.connectionState === 'closed') {
+          cleanupConnection(streamStateRef.current === 'live');
+        }
+      };
+      
       pc.ontrack = (event) => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        if (offerTimeoutRef.current) clearTimeout(offerTimeoutRef.current);
+        if (retryIntervalRef.current) clearInterval(retryIntervalRef.current);
         if (audioRef.current) {
           audioRef.current.srcObject = event.streams[0];
           audioRef.current.play().catch(error => {
             console.error("Audio playback failed:", error);
-            toast({
-              variant: "destructive",
-              title: "Audio Playback Failed",
-              description: "Your browser may have blocked audio. Please click the button again.",
-            });
+            cleanupConnection(true, {
+                title: "Audio Playback Failed",
+                description: "Your browser may have blocked audio. Please click the button again.",
+            })
           });
-          setStreamState('live');
-          toast({ title: "You're listening live!", description: 'Enjoy the show.' });
         }
       };
       
@@ -97,7 +122,25 @@ export function ListenLiveSection() {
       socketRef.current = ws;
 
       ws.onopen = () => {
-        ws.send(JSON.stringify({ type: 'request_offer', roomId: LIVE_STREAM_ROOM_ID }));
+        let offerRetries = 0;
+        
+        const requestOffer = () => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'request_offer', roomId: LIVE_STREAM_ROOM_ID }));
+            }
+        }
+        
+        requestOffer();
+
+        // STEP 3: Retry offer request
+        retryIntervalRef.current = setInterval(() => {
+            if (streamStateRef.current === 'connecting' && offerRetries < 2) {
+                offerRetries++;
+                requestOffer();
+            } else if (retryIntervalRef.current) {
+                clearInterval(retryIntervalRef.current);
+            }
+        }, 3000);
       };
 
       ws.onmessage = async (event) => {
@@ -106,6 +149,9 @@ export function ListenLiveSection() {
         if (!currentPc) return;
 
         if (data.type === 'offer') {
+          if (offerTimeoutRef.current) clearTimeout(offerTimeoutRef.current);
+          if (retryIntervalRef.current) clearInterval(retryIntervalRef.current);
+
           await currentPc.setRemoteDescription(new RTCSessionDescription(data.offer));
           const answer = await currentPc.createAnswer();
           await currentPc.setLocalDescription(answer);
@@ -119,7 +165,11 @@ export function ListenLiveSection() {
           }
         } else if (data.type === 'candidate' && data.candidate) {
            if (currentPc.remoteDescription) {
-             await currentPc.addIceCandidate(new RTCIceCandidate(data.candidate));
+             try {
+                await currentPc.addIceCandidate(new RTCIceCandidate(data.candidate));
+             } catch(e) {
+                console.error("Error adding ICE candidate", e);
+             }
            }
         } else if (data.type === 'broadcast_end') {
            toast({ title: 'Broadcast has ended', description: 'Thanks for listening!' });
@@ -144,11 +194,9 @@ export function ListenLiveSection() {
       
       ws.onclose = () => {
         if (streamStateRef.current === 'live') {
-            toast({ title: "Stream disconnected", description: "Attempting to reconnect..." });
-            setTimeout(() => window.location.reload(), 3000);
-        } else if (streamStateRef.current === 'connecting') {
-            cleanupConnection(true);
-        } else if (connectedRef.current) {
+            toast({ title: "Stream disconnected", description: "The connection was lost." });
+        }
+        if (connectedRef.current) {
             cleanupConnection();
         }
       };
@@ -157,11 +205,10 @@ export function ListenLiveSection() {
         console.error('Failed to start listening', err);
         cleanupConnection(true);
     }
-  }, [cleanupConnection, toast, streamState]);
+  }, [cleanupConnection, toast]);
 
   useEffect(() => {
     return () => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
         cleanupConnection();
     };
   }, [cleanupConnection]);
