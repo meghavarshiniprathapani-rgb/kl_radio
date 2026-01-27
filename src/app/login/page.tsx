@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { CreepyButton } from '@/components/ui/creepy-button';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -117,9 +117,9 @@ function LoginComponent() {
                 </Select>
             </div>
             
-            <CreepyButton type="submit" className="w-full mt-2" disabled={isLoading}>
+            <Button type="submit" className="w-full mt-2" disabled={isLoading}>
               {isLoading ? 'Logging in...' : 'Login'}
-            </CreepyButton>
+            </Button>
           </form>
         </CardContent>
       </Card>

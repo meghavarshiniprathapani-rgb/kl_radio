@@ -4,12 +4,14 @@ import { useState } from "react"
 import Image from "next/image"
 import { Menu, X } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { CreepyButton } from "./creepy-button"
 
 const NavbarKL = () => {
   const [open, setOpen] = useState(false)
   const toggle = () => setOpen(!open)
   const pathname = usePathname();
+  const router = useRouter();
 
   // Hide on login page
   if (pathname === '/login') {
@@ -49,12 +51,9 @@ const NavbarKL = () => {
             </nav>
 
             <div className="hidden md:block">
-              <Link
-                href="/login"
-                className="px-4 py-2 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary/90 transition"
-              >
+              <CreepyButton onClick={() => router.push('/login')}>
                 Member Login
-              </Link>
+              </CreepyButton>
             </div>
 
             <button
