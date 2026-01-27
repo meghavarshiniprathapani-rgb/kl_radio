@@ -192,7 +192,7 @@ export function StickyScrollSection({ items, title = "Announcements" }: { items?
   
   if (displayItems.length < 3) {
     return (
-      <div className="bg-[#0f0f0f] text-white text-center py-20">
+      <div className="bg-black text-white text-center py-20">
         Loading...
       </div>
     );
@@ -202,7 +202,7 @@ export function StickyScrollSection({ items, title = "Announcements" }: { items?
     <div ref={component}>
       <style>{`
         .sticky-scroll-section-container {
-          --bg: #0f0f0f;
+          --bg: #000000;
           --fg: #fff;
           --card-1: #b2b2b2;
           --card-2: #ce2017;
@@ -395,7 +395,7 @@ export function StickyScrollSection({ items, title = "Announcements" }: { items?
           }
         }
       `}</style>
-      <div className="sticky-scroll-section-container font-serif bg-[#0f0f0f]">
+      <div className="sticky-scroll-section-container font-serif bg-black">
         <section className="sticky" id="sticky">
           <div className="sticky-header">
             <h1>{title}</h1>
