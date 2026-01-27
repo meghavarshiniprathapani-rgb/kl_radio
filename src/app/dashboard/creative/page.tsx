@@ -65,6 +65,7 @@ type PodcastScript = {
   content: string;
   assignedTo?: string;
   lastEdited: string;
+  isLive?: boolean;
 };
 
 type NewsItem = {
@@ -339,6 +340,17 @@ export default function CreativePage() {
       console.error("Failed to delete podcast script", error);
       setPodcastScripts(originalPodcasts);
       toast({ variant: 'destructive', title: 'Delete Failed', description: error.response?.data?.message || 'Could not delete the script.' });
+    }
+  };
+
+  const handleSetLivePodcast = async (podcastId: string) => {
+    try {
+      await api.patch(`/creative/podcasts/${podcastId}/live`);
+      setPodcastScripts(prev => prev.map(p => ({ ...p, isLive: p.id === podcastId })));
+      toast({ title: 'Live Podcast Set', description: 'The podcast script has been marked as live for RJs.' });
+    } catch (error: any) {
+      console.error("Failed to set live podcast", error);
+      toast({ variant: 'destructive', title: 'Failed', description: error.response?.data?.message || 'Could not set the live podcast script.' });
     }
   };
 
@@ -663,6 +675,7 @@ export default function CreativePage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Live</TableHead>
                   <TableHead>Title</TableHead>
                   <TableHead>Assigned To</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -670,7 +683,12 @@ export default function CreativePage() {
               </TableHeader>
               <TableBody>
                 {podcastScripts.length > 0 ? podcastScripts.map((podcast) => (
-                  <TableRow key={podcast.id}>
+                  <TableRow key={podcast.id} className={podcast.isLive ? 'bg-primary/10' : ''}>
+                    <TableCell>
+                      <Button onClick={() => handleSetLivePodcast(podcast.id)} variant="ghost" size="icon" className="h-8 w-8" disabled={podcast.isLive}>
+                        <Star className={`h-4 w-4 ${podcast.isLive ? 'text-primary fill-primary' : 'text-muted-foreground'}`} />
+                      </Button>
+                    </TableCell>
                     <TableCell className="font-medium">{podcast.title}</TableCell>
                     <TableCell>{rjs.find(r => r.id === podcast.assignedTo)?.name || 'Unassigned'}</TableCell>
                     <TableCell className="text-right">
@@ -679,7 +697,7 @@ export default function CreativePage() {
                     </TableCell>
                   </TableRow>
                 )) : (
-                  <TableRow><TableCell colSpan={3} className="h-24 text-center">No podcast scripts created yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={4} className="h-24 text-center">No podcast scripts created yet.</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>

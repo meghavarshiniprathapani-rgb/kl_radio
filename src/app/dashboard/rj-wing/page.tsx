@@ -7,12 +7,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Mic, Newspaper, Podcast, Megaphone } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/context/auth-context';
 import api from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,12 +24,12 @@ type Script = {
   content: string;
 };
 
-type Podcast = {
+type LivePodcast = {
   id: string;
   title: string;
   topic: string;
+  content: string;
   status: string;
-  completed: boolean;
 };
 
 type Announcement = {
@@ -54,7 +53,7 @@ export default function RJWingPage() {
   const [liveScript, setLiveScript] = useState<Script | null>(null);
   const [assignedNews, setAssignedNews] = useState<NewsItem[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [podcasts, setPodcasts] = useState<Podcast[]>([]);
+  const [livePodcast, setLivePodcast] = useState<LivePodcast | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,20 +88,11 @@ export default function RJWingPage() {
       }
 
       try {
-        const podcastsRes = await api.get('/rj/podcasts');
-        setPodcasts(
-          podcastsRes.data.map((p: any) => ({
-            ...p,
-            completed: p.status === 'completed',
-          }))
-        );
+        const podcastRes = await api.get('/rj/podcast');
+        setLivePodcast(podcastRes.data);
       } catch (error) {
-        console.error('Failed to fetch podcasts', error);
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Could not fetch assigned podcasts.',
-        });
+        console.error('Failed to fetch live podcast', error);
+        setLivePodcast(null);
       }
 
       setIsLoading(false);
@@ -110,30 +100,23 @@ export default function RJWingPage() {
     fetchData();
   }, [toast]);
 
-  const handlePodcastCompletionChange = async (podcastId: string) => {
-    const originalPodcasts = [...podcasts];
-    const podcast = podcasts.find(p => p.id === podcastId);
-    if (!podcast) return;
-
-    const updatedPodcasts = podcasts.map(p =>
-      p.id === podcastId ? { ...p, completed: !p.completed, status: !p.completed ? 'completed' : 'pending' } : p
-    );
-    setPodcasts(updatedPodcasts);
+  const handleMarkPodcastComplete = async () => {
+    if (!livePodcast) return;
 
     try {
-      await api.patch(`/rj/podcasts/${podcastId}/complete`);
-      toast({
-        title: 'Podcast Status Updated',
-        description: `"${podcast.title}" marked as complete.`,
-      });
+        await api.patch(`/rj/podcast/${livePodcast.id}/complete`);
+        toast({
+            title: 'Podcast Complete',
+            description: `"${livePodcast.title}" has been marked as complete.`,
+        });
+        setLivePodcast(null);
     } catch (error) {
-      console.error('Failed to update podcast status', error);
-      toast({
-        variant: 'destructive',
-        title: 'Update Failed',
-        description: 'Could not update podcast status. Please try again.',
-      });
-      setPodcasts(originalPodcasts); // Revert on error
+        console.error('Failed to update podcast status', error);
+        toast({
+            variant: 'destructive',
+            title: 'Update Failed',
+            description: 'Could not update podcast status. Please try again.',
+        });
     }
   };
 
@@ -239,38 +222,38 @@ export default function RJWingPage() {
           <div className="flex items-center gap-3">
             <Podcast className="h-6 w-6" />
             <div>
-              <CardTitle>Assigned Podcasts</CardTitle>
-              <CardDescription>Podcast episodes assigned to you for recording.</CardDescription>
+              <CardTitle>Live Podcast Episode</CardTitle>
+              <CardDescription>The podcast script ready for you to record.</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          {isLoading ? <div className="space-y-4"><Skeleton className="h-20 w-full" /><Skeleton className="h-20 w-full" /></div> : podcasts.length > 0 ? (
+          {isLoading ? (
             <div className="space-y-4">
-              {podcasts.map((podcast) => (
-                <div key={podcast.id} className="p-4 border rounded-lg flex justify-between items-center">
-                  <div>
-                    <h3 className="font-semibold">{podcast.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Topic: {podcast.topic}</p>
-                    <p className="text-sm font-medium text-primary mt-2">{podcast.status}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`completed-${podcast.id}`}
-                      checked={podcast.completed}
-                      onCheckedChange={() => handlePodcastCompletionChange(podcast.id)}
-                    />
-                    <Label htmlFor={`completed-${podcast.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                      Mark as Complete
-                    </Label>
-                  </div>
-                </div>
-              ))}
+              <Skeleton className="h-6 w-1/2" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+          ) : livePodcast ? (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-lg">{livePodcast.title}</h3>
+                <p className="text-sm text-muted-foreground">Topic: {livePodcast.topic}</p>
+              </div>
+              <ScrollArea className="h-60">
+                <p className="text-sm whitespace-pre-wrap pr-4">{livePodcast.content}</p>
+              </ScrollArea>
             </div>
           ) : (
-            <p className="text-sm text-center text-muted-foreground py-10">No podcasts assigned to you at the moment.</p>
+            <p className="text-sm text-center text-muted-foreground py-10">No live podcast assigned to you at the moment.</p>
           )}
         </CardContent>
+        {livePodcast && !isLoading && (
+          <CardFooter>
+              <Button onClick={handleMarkPodcastComplete} className="w-full">
+                  Mark as Complete
+              </Button>
+          </CardFooter>
+        )}
       </Card>
     </div>
   );
