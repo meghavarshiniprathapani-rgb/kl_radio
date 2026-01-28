@@ -11,10 +11,30 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Mic, Newspaper, Podcast, Megaphone } from 'lucide-react';
+import { Mic, Newspaper, Podcast, Megaphone, Star } from 'lucide-react';
 import api from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 
 type Script = {
@@ -24,12 +44,13 @@ type Script = {
   content: string;
 };
 
-type LivePodcast = {
+type PodcastScript = {
   id: string;
   title: string;
   topic: string;
   content: string;
-  status: string;
+  status: 'pending' | 'completed';
+  isLive: boolean;
 };
 
 type Announcement = {
@@ -53,7 +74,10 @@ export default function RJWingPage() {
   const [liveScript, setLiveScript] = useState<Script | null>(null);
   const [assignedNews, setAssignedNews] = useState<NewsItem[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [livePodcast, setLivePodcast] = useState<LivePodcast | null>(null);
+  const [podcasts, setPodcasts] = useState<PodcastScript[]>([]);
+  const [editingPodcast, setEditingPodcast] = useState<PodcastScript | null>(null);
+  const [isPodcastDialogOpen, setIsPodcastDialogOpen] = useState(false);
+  const [podcastContent, setPodcastContent] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +86,7 @@ export default function RJWingPage() {
       const scriptPromise = api.get('/rj/live-script');
       const newsPromise = api.get('/rj/news');
       const announcementsPromise = api.get('/public/announcements');
-      const podcastPromise = api.get('/rj/podcast');
+      const podcastPromise = api.get('/rj/podcasts');
 
       const [
         scriptResult,
@@ -100,10 +124,10 @@ export default function RJWingPage() {
       }
 
       if (podcastResult.status === 'fulfilled') {
-        setLivePodcast(podcastResult.value.data);
+        setPodcasts(podcastResult.value.data);
       } else {
-        console.error('Failed to fetch live podcast', podcastResult.reason);
-        setLivePodcast(null);
+        console.error('Failed to fetch podcasts', podcastResult.reason);
+        setPodcasts([]);
       }
 
       setIsLoading(false);
@@ -111,22 +135,38 @@ export default function RJWingPage() {
     fetchData();
   }, [toast]);
 
-  const handleMarkPodcastComplete = async () => {
-    if (!livePodcast) return;
+  const openEditPodcastDialog = (podcast: PodcastScript) => {
+    setEditingPodcast(podcast);
+    setPodcastContent(podcast.content);
+    setIsPodcastDialogOpen(true);
+  };
+
+  const handleSaveAndCompletePodcast = async () => {
+    if (!editingPodcast || !podcastContent) return;
 
     try {
-        await api.patch(`/rj/podcast/${livePodcast.id}/complete`);
+        const payload = {
+            content: podcastContent,
+            status: 'completed'
+        };
+        const response = await api.put(`/rj/podcasts/${editingPodcast.id}`, payload);
+        
         toast({
-            title: 'Podcast Complete',
-            description: `"${livePodcast.title}" has been marked as complete.`,
+            title: 'Podcast Completed',
+            description: `"${editingPodcast.title}" has been updated and marked as complete.`,
         });
-        setLivePodcast(null);
+
+        setPodcasts(prev => prev.map(p => 
+            p.id === editingPodcast.id ? response.data : p
+        ));
+        
+        setIsPodcastDialogOpen(false);
     } catch (error) {
         console.error('Failed to update podcast status', error);
         toast({
             variant: 'destructive',
             title: 'Update Failed',
-            description: 'Could not update podcast status. Please try again.',
+            description: 'Could not update podcast. Please try again.',
         });
     }
   };
@@ -142,6 +182,33 @@ export default function RJWingPage() {
           Everything you need for your upcoming show is right here.
         </p>
       </div>
+
+       <Dialog open={isPodcastDialogOpen} onOpenChange={setIsPodcastDialogOpen}>
+        <DialogContent className="sm:max-w-[625px]">
+            <DialogHeader>
+                <DialogTitle>Edit Podcast: {editingPodcast?.title}</DialogTitle>
+                <DialogDescription>
+                    Finalize the script content below. Once you're done, mark it as complete.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+                <Label htmlFor="podcast-content" className="sr-only">Script Content</Label>
+                <Textarea 
+                    id="podcast-content" 
+                    value={podcastContent} 
+                    onChange={(e) => setPodcastContent(e.target.value)}
+                    rows={15} 
+                    placeholder="Enter your final script..."
+                />
+            </div>
+            <DialogFooter>
+                <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                <Button onClick={handleSaveAndCompletePodcast} disabled={editingPodcast?.status === 'completed'}>
+                    {editingPodcast?.status === 'completed' ? 'Completed' : 'Save & Mark Complete'}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
@@ -230,41 +297,58 @@ export default function RJWingPage() {
       
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <Podcast className="h-6 w-6" />
-            <div>
-              <CardTitle>Live Podcast Episode</CardTitle>
-              <CardDescription>The podcast script ready for you to record.</CardDescription>
+            <div className="flex items-center gap-3">
+                <Podcast className="h-6 w-6" />
+                <div>
+                    <CardTitle>Your Podcast Assignments</CardTitle>
+                    <CardDescription>Scripts assigned to you for recording.</CardDescription>
+                </div>
             </div>
-          </div>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              <Skeleton className="h-6 w-1/2" />
-              <Skeleton className="h-24 w-full" />
-            </div>
-          ) : livePodcast ? (
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-semibold text-lg">{livePodcast.title}</h3>
-                <p className="text-sm text-muted-foreground">Topic: {livePodcast.topic}</p>
-              </div>
-              <ScrollArea className="h-60">
-                <p className="text-sm whitespace-pre-wrap pr-4">{livePodcast.content}</p>
-              </ScrollArea>
-            </div>
-          ) : (
-            <p className="text-sm text-center text-muted-foreground py-10">No live podcast assigned to you at the moment.</p>
-          )}
+            {isLoading ? (
+                <div className="space-y-2">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            ) : podcasts.length > 0 ? (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Live</TableHead>
+                            <TableHead>Title</TableHead>
+                            <TableHead>Topic</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {podcasts.map((podcast) => (
+                            <TableRow key={podcast.id} className={podcast.isLive ? 'bg-primary/10' : ''}>
+                                <TableCell>
+                                    {podcast.isLive && <Star className="h-4 w-4 text-primary fill-primary" />}
+                                </TableCell>
+                                <TableCell className="font-medium">{podcast.title}</TableCell>
+                                <TableCell>{podcast.topic}</TableCell>
+                                <TableCell>
+                                    <Badge variant={podcast.status === 'completed' ? 'secondary' : 'default'}>
+                                        {podcast.status}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <Button onClick={() => openEditPodcastDialog(podcast)} variant="outline" size="sm">
+                                        Edit Script
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            ) : (
+                <p className="text-sm text-center text-muted-foreground py-10">No podcasts assigned to you at the moment.</p>
+            )}
         </CardContent>
-        {livePodcast && !isLoading && (
-          <CardFooter>
-              <Button onClick={handleMarkPodcastComplete} className="w-full">
-                  Mark as Complete
-              </Button>
-          </CardFooter>
-        )}
       </Card>
     </div>
   );

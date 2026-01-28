@@ -9,7 +9,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Pen, Trash, Save, Megaphone, Podcast, Newspaper } from 'lucide-react';
+import { PlusCircle, Pen, Trash, Save, Megaphone, Podcast, Newspaper, Star } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -40,8 +40,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import api from '@/lib/api';
-import { Star } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 
 type Script = {
   id: string;
@@ -66,6 +66,7 @@ type PodcastScript = {
   assignedTo?: string;
   lastEdited: string;
   isLive?: boolean;
+  status: 'pending' | 'completed';
 };
 
 type NewsItem = {
@@ -678,6 +679,7 @@ export default function CreativePage() {
                   <TableHead>Live</TableHead>
                   <TableHead>Title</TableHead>
                   <TableHead>Assigned To</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -691,13 +693,18 @@ export default function CreativePage() {
                     </TableCell>
                     <TableCell className="font-medium">{podcast.title}</TableCell>
                     <TableCell>{rjs.find(r => r.id === podcast.assignedTo)?.name || 'Unassigned'}</TableCell>
+                    <TableCell>
+                      <Badge variant={podcast.status === 'completed' ? 'secondary' : 'default'}>
+                        {podcast.status}
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button onClick={() => openEditPodcastDialog(podcast)} variant="ghost" size="icon" className="h-8 w-8"><Pen className="h-4 w-4" /></Button>
                       <Button onClick={() => handleDeletePodcast(podcast.id)} variant="ghost" size="icon" className="h-8 w-8 text-destructive/80 hover:text-destructive"><Trash className="h-4 w-4" /></Button>
                     </TableCell>
                   </TableRow>
                 )) : (
-                  <TableRow><TableCell colSpan={4} className="h-24 text-center">No podcast scripts created yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="h-24 text-center">No podcast scripts created yet.</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
