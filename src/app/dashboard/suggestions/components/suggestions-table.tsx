@@ -52,7 +52,7 @@ export function SuggestionsTable({ suggestions, setSuggestions }: SuggestionsTab
     setSuggestions(suggestions.filter(s => s.id !== id));
 
     try {
-      await api.delete(`/technical/song-suggestions/${id}`);
+      await api.delete(`/api/technical/song-suggestions/${id}`);
       toast({
         title: 'Suggestion Deleted',
         description: 'The song suggestion has been removed.',

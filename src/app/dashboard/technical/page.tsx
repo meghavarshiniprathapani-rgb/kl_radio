@@ -76,7 +76,7 @@ export default function TechnicalPage() {
   const fetchSuggestions = useCallback(async () => {
     setIsFetching(true);
     try {
-      const suggestionsRes = await api.get('/technical/song-suggestions');
+      const suggestionsRes = await api.get('/api/technical/song-suggestions');
       setSongSuggestions(suggestionsRes.data);
       setSelectedSuggestions([]);
     } catch (error) {
@@ -96,8 +96,8 @@ export default function TechnicalPage() {
       setIsInitialLoading(true);
       try {
         const [scriptRes, suggestionsRes] = await Promise.all([
-          api.get('/technical/live-script'),
-          api.get('/technical/song-suggestions')
+          api.get('/api/technical/live-script'),
+          api.get('/api/technical/song-suggestions')
         ]);
         setLiveScript(scriptRes.data);
         setSongSuggestions(suggestionsRes.data);
@@ -354,14 +354,14 @@ export default function TechnicalPage() {
     const originalSuggestions = [...songSuggestions];
 
     try {
-      await api.delete('/technical/song-suggestions', { data: { ids: selectedSuggestions } });
+      await api.delete('/api/technical/song-suggestions', { data: { ids: selectedSuggestions } });
       toast({
         title: 'Suggestions Deleted',
         description: `${selectedSuggestions.length} song(s) have been removed.`,
       });
       setSelectedSuggestions([]);
       
-      const suggestionsRes = await api.get('/technical/song-suggestions');
+      const suggestionsRes = await api.get('/api/technical/song-suggestions');
       setSongSuggestions(suggestionsRes.data);
 
     } catch (error) {
