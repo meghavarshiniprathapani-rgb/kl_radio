@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
-import { NavbarKL } from '@/components/ui/navbar-kl';
 import {
   Select,
   SelectContent,
@@ -58,17 +57,15 @@ export default function LoginPage() {
         title: 'Login Failed',
         description: result.error,
       });
+      setFormLoading(false);
     }
-    // On success, the context handles redirection.
-
-    setFormLoading(false);
+    // On success, the context handles redirection, and this component unmounts.
+    // No need to setFormLoading(false) on success to avoid React warnings.
   };
 
   const isLoading = formLoading || authLoading;
 
   return (
-    <>
-    <NavbarKL />
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="mb-8 flex items-center space-x-4 text-primary">
         <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={160} height={160} className="h-40 w-40 rounded-full" />
@@ -132,6 +129,5 @@ export default function LoginPage() {
         .
       </p>
     </div>
-    </>
   );
 }
