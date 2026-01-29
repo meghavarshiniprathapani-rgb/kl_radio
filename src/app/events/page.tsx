@@ -68,15 +68,7 @@ const pastEvents = [
 export default function EventsPage() {
   return (
     <div className="relative flex min-h-screen flex-col text-foreground overflow-hidden">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed top-0 left-0 w-full h-full object-cover -z-20"
-      >
-        <source src="https://ik.imagekit.io/bhanuteja110/Radio/Untitled%20video%20-%20Made%20with%20Clipchamp%20(2).mp4" type="video/mp4" />
-      </video>
+      
       <NavbarKL />
       <main className="flex-1">
         <div className="container mx-auto max-w-6xl px-4 text-center pt-32 pb-20">
