@@ -269,9 +269,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className }: Particl
     const ctx = canvas.getContext("2d")!
     const particles = particlesRef.current
 
-    // Background with motion blur
-    ctx.fillStyle = "rgba(0, 0, 0, 0.1)"
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    // Clear the canvas for a transparent background
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     // Update and draw particles
     for (let i = particles.length - 1; i >= 0; i--) {
