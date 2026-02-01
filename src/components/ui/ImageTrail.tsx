@@ -1216,4 +1216,3 @@ export default function ImageTrail({ items = [], variant = 1 }: ImageTrailProps)
     </div>
   );
 }
-```

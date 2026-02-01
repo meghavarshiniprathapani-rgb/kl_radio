@@ -125,6 +125,24 @@
       "imageUrl": "https://images.unsplash.com/photo-1759922378146-8e143fb47cd4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzdHVkZW50JTIwZXZlbnR8ZW58MHx8fHwxNzY5NjI0MjY3fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "student event",
       "description": "SIL event"
+    },
+    {
+      "id": "event-vasantham",
+      "imageUrl": "https://images.unsplash.com/photo-1621832985143-e8b8b093e3b7?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "saree fashion",
+      "description": "Vasantham event"
+    },
+    {
+      "id": "event-udbav",
+      "imageUrl": "https://images.unsplash.com/photo-1543349689-9b4d4263e86e?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "talent show",
+      "description": "Udbav event"
+    },
+    {
+      "id": "event-carnival",
+      "imageUrl": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop",
+      "imageHint": "music festival",
+      "description": "Carnival event"
     }
   ]
 }
