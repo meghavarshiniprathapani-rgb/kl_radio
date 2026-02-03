@@ -267,17 +267,21 @@ export default function LoginPage() {
   }, [isTyping]);
 
   useEffect(() => {
-    let peekInterval: NodeJS.Timeout;
+    let peekInterval: NodeJS.Timeout | undefined;
     if (password.length > 0 && showPassword) {
       const schedulePeek = () => {
-        return setTimeout(() => {
+        peekInterval = setTimeout(() => {
           setIsPurplePeeking(true);
-          setTimeout(() => setIsPurplePeeking(false), 800);
-          peekInterval = schedulePeek();
+          setTimeout(() => {
+            setIsPurplePeeking(false);
+            peekInterval = schedulePeek();
+          }, 800);
         }, Math.random() * 3000 + 2000);
       };
-      peekInterval = schedulePeek();
-      return () => clearTimeout(peekInterval);
+      schedulePeek();
+      return () => {
+        if (peekInterval) clearTimeout(peekInterval)
+      };
     } else {
       setIsPurplePeeking(false);
     }
@@ -477,13 +481,12 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="relative z-20 flex items-center justify-center gap-8 text-sm text-primary-foreground/60">
+        <div className="relative z-20 flex items-center justify-center text-sm text-primary-foreground/60">
            <p className="text-center text-sm text-muted-foreground/80">
             KL Radio &copy; {new Date().getFullYear()}
           </p>
         </div>
 
-        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
         <div className="absolute top-1/4 right-1/4 size-64 bg-primary-foreground/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 size-96 bg-primary-foreground/5 rounded-full blur-3xl" />
       </div>
