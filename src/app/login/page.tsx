@@ -310,7 +310,7 @@ export default function LoginPage() {
 
   return (
      <div className="min-h-screen grid lg:grid-cols-2">
-      <div className="relative hidden lg:flex flex-col justify-between bg-background text-primary-foreground p-12">
+      <div className="relative hidden lg:flex flex-col justify-between bg-gradient-to-br from-primary/90 via-primary to-primary/80 p-12 text-primary-foreground">
         <div className="relative z-20 flex items-center gap-3 text-lg font-semibold">
            <Image src="https://ik.imagekit.io/bhanuteja110/image.png" alt="KL Radio Logo" width={40} height={40} className="h-10 w-10 rounded-full" />
             <span>KL Radio</span>
@@ -484,6 +484,8 @@ export default function LoginPage() {
         </div>
 
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
+        <div className="absolute top-1/4 right-1/4 size-64 bg-primary-foreground/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 size-96 bg-primary-foreground/5 rounded-full blur-3xl" />
       </div>
 
       <div className="flex items-center justify-center p-8 bg-background">
