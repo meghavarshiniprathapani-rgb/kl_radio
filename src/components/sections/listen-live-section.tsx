@@ -17,6 +17,7 @@ export function ListenLiveSection() {
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const iceCandidateQueue = useRef<RTCIceCandidateInit[]>([]);
+  const debugIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const cleanupConnection = useCallback((showToast = false) => {
     if (socketRef.current) {
@@ -35,6 +36,10 @@ export function ListenLiveSection() {
     }
     if (audioRef.current) {
         audioRef.current.srcObject = null;
+    }
+    if (debugIntervalRef.current) {
+      clearInterval(debugIntervalRef.current);
+      debugIntervalRef.current = null;
     }
     iceCandidateQueue.current = [];
     setStreamState('offline');
@@ -91,13 +96,22 @@ export function ListenLiveSection() {
                   console.error("Failed to play audio on user interaction:", playError);
                 });
               }
-              document.removeEventListener('click', unlockAudio);
-              document.removeEventListener('touchstart', unlockAudio);
             };
-
-            document.addEventListener('click', unlockAudio);
-            document.addEventListener('touchstart', unlockAudio);
+            
+            document.body.addEventListener('click', unlockAudio, { once: true });
+            document.body.addEventListener('touchstart', unlockAudio, { once: true });
           });
+          
+          if (debugIntervalRef.current) clearInterval(debugIntervalRef.current);
+          debugIntervalRef.current = setInterval(async () => {
+            if (!peerConnectionRef.current) return;
+            const stats = await peerConnectionRef.current.getStats();
+            stats.forEach(r => {
+              if (r.type === "inbound-rtp" && r.kind === "audio") {
+                console.log("Audio bytes received:", r.bytesReceived);
+              }
+            });
+          }, 2000);
         }
         
         const receiver = pc.getReceivers().find(r => r.track.kind === "audio");

@@ -11,5 +11,6 @@ export const WEBRTC_CONFIG: RTCConfiguration = {
       username: "openrelayproject",
       credential: "openrelayproject"
     }
-  ]
+  ],
+  iceTransportPolicy: "all"
 }
