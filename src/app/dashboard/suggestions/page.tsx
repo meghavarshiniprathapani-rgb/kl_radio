@@ -34,7 +34,7 @@ export default function SuggestionsPage() {
       };
       fetchSuggestions();
     }
-  }, [user, toast]);
+  }, [user]);
 
   const handleSetSuggestions = async (newSuggestions: SongSuggestion[]) => {
     // This function can be used to update state, and potentially sync with backend
@@ -93,3 +93,5 @@ export default function SuggestionsPage() {
     </div>
   )
 }
+
+    

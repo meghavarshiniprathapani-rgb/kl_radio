@@ -17,23 +17,14 @@ const roleRedirects: { [key in UserRole]?: string } = {
   'broadcasting': '/dashboard/broadcasting',
 };
 
-type AssignedNewsItem = {
-    id: string;
-    title: string;
-    summary: string;
-    source: string;
-}
-
 type AuthContextType = {
   user: User | null;
-  users: User[];
   loading: boolean;
   login: (role: string, username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   songSuggestions: SongSuggestion[];
   addSongSuggestion: (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) => Promise<{ success: boolean }>;
   setSongSuggestions: (suggestions: SongSuggestion[]) => void;
-  assignedNews: AssignedNewsItem[];
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -147,15 +138,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ 
-        user, 
-        users: [], 
+        user,
         loading,
         login, 
         logout, 
         songSuggestions,
         addSongSuggestion,
         setSongSuggestions,
-        assignedNews: []
     }}>
       {children}
     </AuthContext.Provider>
@@ -169,3 +158,5 @@ export function useAuth() {
   }
   return context;
 }
+
+    

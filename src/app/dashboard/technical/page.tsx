@@ -91,7 +91,7 @@ export default function TechnicalPage() {
     } finally {
         setIsFetching(false);
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -115,7 +115,7 @@ export default function TechnicalPage() {
       }
     };
     fetchInitialData();
-  }, [toast]);
+  }, []);
 
   const stopBroadcast = useCallback(() => {
     setStreamStatus(currentStatus => {
@@ -644,3 +644,5 @@ export default function TechnicalPage() {
     </div>
   )
 }
+
+    

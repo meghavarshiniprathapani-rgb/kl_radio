@@ -134,7 +134,7 @@ export default function CreativePage() {
       setIsLoading(false);
     };
     fetchData();
-  }, [toast]);
+  }, []);
 
   // --- SCRIPT MANAGEMENT ---
   const openNewScriptDialog = () => {
@@ -728,3 +728,5 @@ export default function CreativePage() {
     </div>
   );
 }
+
+    
