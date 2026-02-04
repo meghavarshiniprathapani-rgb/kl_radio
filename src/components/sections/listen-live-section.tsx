@@ -68,22 +68,43 @@ export function ListenLiveSection() {
       };
       
       pc.ontrack = (event) => {
+        console.log("TRACK RECEIVED", event.streams[0]);
         if (audioRef.current) {
-          audioRef.current.srcObject = event.streams[0];
-          audioRef.current.preload = "auto";
+          const stream = event.streams[0];
+          if (!stream) return;
+
+          audioRef.current.srcObject = stream;
+          audioRef.current.autoplay = true;
+          audioRef.current.playsInline = true;
+
           audioRef.current.play().catch(error => {
-            console.error("Audio playback failed:", error);
+            console.error("Audio playback failed due to autoplay restrictions:", error);
             toast({
                 variant: 'destructive',
-                title: "Audio Playback Failed",
-                description: "Your browser may have blocked audio. Please click again to play.",
-            })
+                title: "Audio Locked",
+                description: "Your browser has blocked audio. Click anywhere to unmute.",
+            });
+            
+            const unlockAudio = () => {
+              if (audioRef.current) {
+                audioRef.current.play().catch(playError => {
+                  console.error("Failed to play audio on user interaction:", playError);
+                });
+              }
+              document.removeEventListener('click', unlockAudio);
+              document.removeEventListener('touchstart', unlockAudio);
+            };
+
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
           });
         }
+        
         const receiver = pc.getReceivers().find(r => r.track.kind === "audio");
         if (receiver?.jitterBufferTarget !== undefined) {
           receiver.jitterBufferTarget = 200; // 200ms for music
         }
+        
         setStreamState('live');
         toast({ title: "You're listening live!", description: 'Enjoy the show.' });
       };
@@ -213,7 +234,7 @@ export function ListenLiveSection() {
             >
               {getButtonText()}
             </Button>
-             <audio ref={audioRef} autoPlay hidden />
+             <audio ref={audioRef} playsInline hidden />
           </CardContent>
         </Card>
       </div>
