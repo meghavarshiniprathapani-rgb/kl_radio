@@ -24,6 +24,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import api from '@/lib/api';
+import { useCallback } from 'react';
 
 interface SuggestionsTableProps {
   suggestions: SongSuggestion[];
@@ -33,7 +34,7 @@ interface SuggestionsTableProps {
 export function SuggestionsTable({ suggestions, setSuggestions }: SuggestionsTableProps) {
   const { toast } = useToast();
 
-  const handleStatusChange = (id: string, newStatus: SongSuggestion['status']) => {
+  const handleStatusChange = useCallback((id: string, newStatus: SongSuggestion['status']) => {
     // This is a local update for immediate UI feedback.
     // The backend doesn't support status updates, only deletion.
     setSuggestions(
@@ -45,9 +46,9 @@ export function SuggestionsTable({ suggestions, setSuggestions }: SuggestionsTab
       title: 'Status Updated (Local)',
       description: `Song suggestion status changed to ${newStatus}. This is a local-only change.`,
     });
-  };
+  }, [suggestions, setSuggestions, toast]);
 
-  const handleDeleteSuggestion = async (id: string) => {
+  const handleDeleteSuggestion = useCallback(async (id: string) => {
     const originalSuggestions = [...suggestions];
     setSuggestions(suggestions.filter(s => s.id !== id));
 
@@ -66,13 +67,13 @@ export function SuggestionsTable({ suggestions, setSuggestions }: SuggestionsTab
         description: 'Could not delete the suggestion.',
       });
     }
-  };
+  }, [suggestions, setSuggestions, toast]);
 
-  const togglePlayedStatus = (id: string, currentStatus: SongSuggestion['status']) => {
+  const togglePlayedStatus = useCallback((id: string, currentStatus: SongSuggestion['status']) => {
     if (currentStatus === 'Rejected') return;
     const newStatus = currentStatus === 'Played' ? 'Pending' : 'Played';
     handleStatusChange(id, newStatus);
-  };
+  }, [handleStatusChange]);
   
   return (
     <Table>

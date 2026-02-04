@@ -14,12 +14,12 @@ import { LogOut, PanelLeft, Menu, X } from 'lucide-react';
 import { UserNav } from './user-nav';
 import { MainNav } from './main-nav';
 import { useAuth } from '@/context/auth-context';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 export function DashboardHeader() {
   const { logout } = useAuth();
   const [open, setOpen] = useState(false);
-  const toggle = () => setOpen(!open);
+  const toggle = useCallback(() => setOpen(!open), [open]);
 
   return (
     <>

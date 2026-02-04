@@ -91,7 +91,7 @@ export default function TechnicalPage() {
     } finally {
         setIsFetching(false);
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -115,7 +115,7 @@ export default function TechnicalPage() {
       }
     };
     fetchInitialData();
-  }, []);
+  }, [toast]);
 
   const stopBroadcast = useCallback(() => {
     setStreamStatus(currentStatus => {
@@ -333,13 +333,13 @@ export default function TechnicalPage() {
     }
   }, [toast, stopBroadcast, drawVisualizer, streamStatus]);
 
-  const toggleLive = () => {
+  const toggleLive = useCallback(() => {
     if (streamStatus !== 'Offline') {
         stopBroadcast();
     } else {
         startBroadcast();
     }
-  };
+  }, [streamStatus, stopBroadcast, startBroadcast]);
 
   useEffect(() => {
     return () => stopBroadcast();
@@ -353,7 +353,7 @@ export default function TechnicalPage() {
     }
   };
 
-  const handleBulkDelete = async () => {
+  const handleBulkDelete = useCallback(async () => {
     if (selectedSuggestions.length === 0) {
       await fetchSuggestions();
       toast({
@@ -388,9 +388,9 @@ export default function TechnicalPage() {
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [fetchSuggestions, selectedSuggestions, songSuggestions, toast]);
 
-  const handleGenerateSuggestions = async () => {
+  const handleGenerateSuggestions = useCallback(async () => {
     if (!aiPrompt) {
         toast({
             variant: 'destructive',
@@ -420,7 +420,7 @@ export default function TechnicalPage() {
     } finally {
         setIsGenerating(false);
     }
-  };
+  }, [aiPrompt, toast]);
 
   const isBroadcasting = streamStatus !== 'Offline';
 
@@ -644,5 +644,3 @@ export default function TechnicalPage() {
     </div>
   )
 }
-
-    

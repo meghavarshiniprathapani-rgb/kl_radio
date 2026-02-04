@@ -95,7 +95,7 @@ export default function AdminPage() {
   }, [fetchData]);
 
   // --- User Management ---
-  const handleDeleteUser = async (userId: string) => {
+  const handleDeleteUser = useCallback(async (userId: string) => {
     if (userId === adminUser?.id) {
       toast({ variant: 'destructive', title: 'Action Forbidden', description: 'You cannot delete your own account.' });
       return;
@@ -109,38 +109,52 @@ export default function AdminPage() {
       setUsers(originalUsers);
       toast({ variant: 'destructive', title: 'Delete Failed', description: error.response?.data?.message || 'Could not delete the user.' });
     }
-  };
+  }, [adminUser?.id, toast, users]);
 
   // --- Live Content Management ---
-  const createLiveHandler = <T extends { id: string; isLive: boolean }>(
-    endpoint: string,
-    stateSetter: React.Dispatch<React.SetStateAction<T[]>>,
-    toastTitle: string
-  ) => async (id: string) => {
+  const handleSetLiveScript = useCallback(async (id: string) => {
     try {
-      await api.patch(`/admin/${endpoint}/${id}/live`);
-      toast({ title: toastTitle, description: 'The content has been marked as live.' });
-      const res = await api.get(`/admin/${endpoint}`);
-      stateSetter(res.data);
+      await api.patch(`/admin/scripts/${id}/live`);
+      toast({ title: 'Live Script Set', description: 'The content has been marked as live.' });
+      const res = await api.get(`/admin/scripts`);
+      setScripts(res.data);
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Failed', description: error.response?.data?.message || 'Could not set the item as live.' });
+      toast({ variant: 'destructive', title: 'Failed', description: 'Could not set the item as live.' });
     }
-  };
+  }, [toast]);
   
-  const handleSetLiveScript = createLiveHandler('scripts', setScripts, 'Live Script Set');
-  const handleSetLiveNews = createLiveHandler('news', setNews, 'Live News Set');
-  const handleSetLivePodcast = createLiveHandler('podcasts', setPodcasts, 'Live Podcast Set');
+  const handleSetLiveNews = useCallback(async (id: string) => {
+    try {
+      await api.patch(`/admin/news/${id}/live`);
+      toast({ title: 'Live News Set', description: 'The content has been marked as live.' });
+      const res = await api.get(`/admin/news`);
+      setNews(res.data);
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Failed', description: 'Could not set the item as live.' });
+    }
+  }, [toast]);
+
+  const handleSetLivePodcast = useCallback(async (id: string) => {
+    try {
+      await api.patch(`/admin/podcasts/${id}/live`);
+      toast({ title: 'Live Podcast Set', description: 'The content has been marked as live.' });
+      const res = await api.get(`/admin/podcasts`);
+      setPodcasts(res.data);
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Failed', description: 'Could not set the item as live.' });
+    }
+  }, [toast]);
 
   // --- Song Suggestion Management ---
   const handleSuggestionSelectionChange = (id: string, checked: boolean) => {
     setSelectedSuggestions(prev => checked ? [...prev, id] : prev.filter(sId => sId !== id));
   };
   
-  const handleSelectAllSuggestions = (checked: boolean) => {
+  const handleSelectAllSuggestions = useCallback((checked: boolean) => {
     setSelectedSuggestions(checked ? songSuggestions.map(s => s.id) : []);
-  };
+  }, [songSuggestions]);
   
-  const handleBulkDeleteSuggestions = async () => {
+  const handleBulkDeleteSuggestions = useCallback(async () => {
     if (selectedSuggestions.length === 0) return;
     const originalSuggestions = [...songSuggestions];
     setSongSuggestions(prev => prev.filter(s => !selectedSuggestions.includes(s.id)));
@@ -152,7 +166,7 @@ export default function AdminPage() {
       setSongSuggestions(originalSuggestions);
       toast({ variant: 'destructive', title: 'Delete Failed', description: 'Could not delete suggestions.' });
     }
-  };
+  }, [selectedSuggestions, songSuggestions, toast]);
 
   return (
     <div className="space-y-6">

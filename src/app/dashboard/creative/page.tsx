@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -151,7 +151,7 @@ export default function CreativePage() {
     setIsScriptDialogOpen(true);
   };
 
-  const handleSaveScript = async () => {
+  const handleSaveScript = useCallback(async () => {
     if (!scriptTitle || !scriptContent) {
       toast({ variant: 'destructive', title: 'Missing Fields', description: 'Please provide a title and content for the script.' });
       return;
@@ -174,9 +174,9 @@ export default function CreativePage() {
       console.error("Failed to save script", error);
       toast({ variant: 'destructive', title: 'Save Failed', description: error.response?.data?.message || 'Could not save the script.' });
     }
-  };
+  }, [scriptTitle, scriptContent, editingScript, toast]);
 
-  const handleDeleteScript = async (scriptId: string) => {
+  const handleDeleteScript = useCallback(async (scriptId: string) => {
     const originalScripts = [...scripts];
     setScripts(prev => prev.filter(script => script.id !== scriptId));
     try {
@@ -187,9 +187,9 @@ export default function CreativePage() {
       setScripts(originalScripts);
       toast({ variant: 'destructive', title: 'Delete Failed', description: error.response?.data?.message || 'Could not delete the script.' });
     }
-  };
+  }, [scripts, toast]);
 
-  const handleSetLiveScript = async (scriptId: string) => {
+  const handleSetLiveScript = useCallback(async (scriptId: string) => {
     try {
       await api.patch(`/creative/scripts/${scriptId}/live`);
       setScripts(prev => prev.map(s => ({ ...s, isLive: s.id === scriptId })));
@@ -198,7 +198,7 @@ export default function CreativePage() {
       console.error("Failed to set live script", error);
       toast({ variant: 'destructive', title: 'Failed', description: error.response?.data?.message || 'Could not set the live script.' });
     }
-  };
+  }, [toast]);
 
 
   // --- ANNOUNCEMENT MANAGEMENT ---
@@ -216,7 +216,7 @@ export default function CreativePage() {
     setIsAnnouncementDialogOpen(true);
   };
 
-  const handleSaveAnnouncement = async () => {
+  const handleSaveAnnouncement = useCallback(async () => {
     if (!announcementTitle || !announcementContent) {
       toast({ variant: 'destructive', title: 'Missing Fields', description: 'Please provide a title and content.' });
       return;
@@ -239,9 +239,9 @@ export default function CreativePage() {
       console.error("Failed to save announcement", error);
       toast({ variant: 'destructive', title: 'Save Failed', description: error.response?.data?.message || 'Could not save the announcement.' });
     }
-  };
+  }, [announcementTitle, announcementContent, editingAnnouncement, toast]);
 
-  const handleDeleteAnnouncement = async (announcementId: string) => {
+  const handleDeleteAnnouncement = useCallback(async (announcementId: string) => {
     const originalAnnouncements = [...announcements];
     setAnnouncements(prev => prev.filter(announcement => announcement.id !== announcementId));
     try {
@@ -252,7 +252,7 @@ export default function CreativePage() {
       setAnnouncements(originalAnnouncements);
       toast({ variant: 'destructive', title: 'Delete Failed', description: error.response?.data?.message || 'Could not delete the announcement.' });
     }
-  };
+  }, [announcements, toast]);
   
   // --- PODCAST SCRIPT MANAGEMENT ---
   const openNewPodcastDialog = () => {
@@ -271,7 +271,7 @@ export default function CreativePage() {
     setIsPodcastDialogOpen(true);
   };
 
-  const handleSavePodcast = async () => {
+  const handleSavePodcast = useCallback(async () => {
     if (!podcastTitle || !podcastTopic || !podcastContent) {
       toast({ variant: 'destructive', title: 'Missing Fields', description: 'Please provide a title, topic, and content.' });
       return;
@@ -298,9 +298,9 @@ export default function CreativePage() {
       console.error("Failed to save podcast script", error);
       toast({ variant: 'destructive', title: 'Save Failed', description: error.response?.data?.message || 'Could not save the podcast script.' });
     }
-  };
+  }, [podcastTitle, podcastTopic, podcastContent, editingPodcast, toast]);
   
-  const handleDeletePodcast = async (podcastId: string) => {
+  const handleDeletePodcast = useCallback(async (podcastId: string) => {
     const originalPodcasts = [...podcastScripts];
     setPodcastScripts(prev => prev.filter(p => p.id !== podcastId));
     try {
@@ -311,9 +311,9 @@ export default function CreativePage() {
       setPodcastScripts(originalPodcasts);
       toast({ variant: 'destructive', title: 'Delete Failed', description: error.response?.data?.message || 'Could not delete the script.' });
     }
-  };
+  }, [podcastScripts, toast]);
 
-  const handleMarkForRecording = async (podcastId: string) => {
+  const handleMarkForRecording = useCallback(async (podcastId: string) => {
     try {
         await api.patch(`/creative/podcasts/${podcastId}/recording`);
         
@@ -326,7 +326,7 @@ export default function CreativePage() {
         console.error("Failed to set podcast for recording", error);
         toast({ variant: 'destructive', title: 'Failed', description: error.response?.data?.message || 'Could not mark the podcast for recording.' });
     }
-  };
+  }, [toast]);
 
 
   // --- NEWS ITEM MANAGEMENT ---
@@ -337,7 +337,7 @@ export default function CreativePage() {
     setIsNewsDialogOpen(true);
   };
 
-  const handleSaveNews = async () => {
+  const handleSaveNews = useCallback(async () => {
     if (!newsTitle || !newsContent || !newsSource) {
       toast({ variant: 'destructive', title: 'Missing Fields', description: 'Title, Content, and Source are required.' });
       return;
@@ -354,9 +354,9 @@ export default function CreativePage() {
       console.error("Failed to save news item", error);
       toast({ variant: 'destructive', title: 'Save Failed', description: error.response?.data?.message || 'Could not save the news item.' });
     }
-  };
+  }, [newsTitle, newsContent, newsSource, toast]);
 
-  const handleDeleteNews = async (newsId: string) => {
+  const handleDeleteNews = useCallback(async (newsId: string) => {
     const originalNews = [...news];
     setNews(prev => prev.filter(item => item.id !== newsId));
     try {
@@ -367,9 +367,9 @@ export default function CreativePage() {
       setNews(originalNews);
       toast({ variant: 'destructive', title: 'Delete Failed', description: error.response?.data?.message || 'Could not delete the news item.' });
     }
-  };
+  }, [news, toast]);
 
-  const handleSetLiveNews = async (newsId: string) => {
+  const handleSetLiveNews = useCallback(async (newsId: string) => {
     try {
       await api.patch(`/creative/news/${newsId}/live`);
       setNews(prev => prev.map(n => ({ ...n, isLive: n.id === newsId })));
@@ -378,7 +378,7 @@ export default function CreativePage() {
       console.error("Failed to set live news", error);
       toast({ variant: 'destructive', title: 'Failed', description: error.response?.data?.message || 'Could not set the live news item.' });
     }
-  };
+  }, [toast]);
 
   return (
     <div className="space-y-6">
@@ -728,5 +728,3 @@ export default function CreativePage() {
     </div>
   );
 }
-
-    

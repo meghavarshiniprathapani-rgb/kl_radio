@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import type { SongSuggestion, User, UserRole } from '@/lib/types';
 import api, { setAuthToken } from '@/lib/api';
@@ -132,14 +132,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [toast]);
 
+  const value = useMemo(() => ({
+    user,
+    loading,
+    login,
+    logout,
+    addSongSuggestion
+  }), [user, loading, login, logout, addSongSuggestion]);
+
   return (
-    <AuthContext.Provider value={{ 
-        user,
-        loading,
-        login, 
-        logout, 
-        addSongSuggestion,
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
@@ -152,5 +154,3 @@ export function useAuth() {
   }
   return context;
 }
-
-    
