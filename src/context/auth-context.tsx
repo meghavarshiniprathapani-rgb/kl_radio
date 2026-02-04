@@ -22,9 +22,7 @@ type AuthContextType = {
   loading: boolean;
   login: (role: string, username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  songSuggestions: SongSuggestion[];
   addSongSuggestion: (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) => Promise<{ success: boolean }>;
-  setSongSuggestions: (suggestions: SongSuggestion[]) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,7 +30,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [songSuggestions, setSongSuggestions] = useState<SongSuggestion[]>([]);
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
@@ -122,8 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const addSongSuggestion = useCallback(async (suggestion: Omit<SongSuggestion, 'id' | 'submittedAt' | 'status'>) : Promise<{ success: boolean }> => {
      try {
-      const response = await api.post('/public/song-suggestion', suggestion);
-      setSongSuggestions(prev => [response.data, ...prev]);
+      await api.post('/public/song-suggestion', suggestion);
       return { success: true };
     } catch (error: any) {
       console.error('Failed to submit song suggestion:', error);
@@ -142,9 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         login, 
         logout, 
-        songSuggestions,
         addSongSuggestion,
-        setSongSuggestions,
     }}>
       {children}
     </AuthContext.Provider>

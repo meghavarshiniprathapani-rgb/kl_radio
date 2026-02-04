@@ -39,30 +39,31 @@ const Pupil = ({
   mouseY
 }: PupilProps) => {
   const pupilRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (forceLookX !== undefined && forceLookY !== undefined) {
-      setPosition({ x: forceLookX, y: forceLookY });
-      return;
-    }
-
     if (!pupilRef.current) return;
 
-    const pupil = pupilRef.current.getBoundingClientRect();
-    const pupilCenterX = pupil.left + pupil.width / 2;
-    const pupilCenterY = pupil.top + pupil.height / 2;
+    let x = 0, y = 0;
+    if (forceLookX !== undefined && forceLookY !== undefined) {
+      x = forceLookX;
+      y = forceLookY;
+    } else {
+      const pupil = pupilRef.current.getBoundingClientRect();
+      const pupilCenterX = pupil.left + pupil.width / 2;
+      const pupilCenterY = pupil.top + pupil.height / 2;
 
-    const deltaX = mouseX - pupilCenterX;
-    const deltaY = mouseY - pupilCenterY;
-    const distance = Math.min(Math.sqrt(deltaX ** 2 + deltaY ** 2), maxDistance);
+      const deltaX = mouseX - pupilCenterX;
+      const deltaY = mouseY - pupilCenterY;
+      const distance = Math.min(Math.sqrt(deltaX ** 2 + deltaY ** 2), maxDistance);
 
-    const angle = Math.atan2(deltaY, deltaX);
-    const x = Math.cos(angle) * distance;
-    const y = Math.sin(angle) * distance;
-
-    setPosition({ x, y });
+      const angle = Math.atan2(deltaY, deltaX);
+      x = Math.cos(angle) * distance;
+      y = Math.sin(angle) * distance;
+    }
+    
+    pupilRef.current.style.transform = `translate(${x}px, ${y}px)`;
   }, [mouseX, mouseY, forceLookX, forceLookY, maxDistance]);
+
 
   return (
     <div
@@ -72,7 +73,6 @@ const Pupil = ({
         width: `${size}px`,
         height: `${size}px`,
         backgroundColor: pupilColor,
-        transform: `translate(${position.x}px, ${position.y}px)`,
         transition: 'transform 0.1s ease-out',
       }}
     />
@@ -105,29 +105,31 @@ const EyeBall = ({
   mouseY
 }: EyeBallProps) => {
   const eyeRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const pupilRef = useRef<HTMLDivElement>(null);
 
-   useEffect(() => {
+  useEffect(() => {
+    if (!pupilRef.current || !eyeRef.current) return;
+
+    let x = 0, y = 0;
+
     if (forceLookX !== undefined && forceLookY !== undefined) {
-      setPosition({ x: forceLookX, y: forceLookY });
-      return;
+        x = forceLookX;
+        y = forceLookY;
+    } else {
+        const eye = eyeRef.current.getBoundingClientRect();
+        const eyeCenterX = eye.left + eye.width / 2;
+        const eyeCenterY = eye.top + eye.height / 2;
+
+        const deltaX = mouseX - eyeCenterX;
+        const deltaY = mouseY - eyeCenterY;
+        const distance = Math.min(Math.sqrt(deltaX ** 2 + deltaY ** 2), maxDistance);
+
+        const angle = Math.atan2(deltaY, deltaX);
+        x = Math.cos(angle) * distance;
+        y = Math.sin(angle) * distance;
     }
-    
-    if (!eyeRef.current) return;
 
-    const eye = eyeRef.current.getBoundingClientRect();
-    const eyeCenterX = eye.left + eye.width / 2;
-    const eyeCenterY = eye.top + eye.height / 2;
-
-    const deltaX = mouseX - eyeCenterX;
-    const deltaY = mouseY - eyeCenterY;
-    const distance = Math.min(Math.sqrt(deltaX ** 2 + deltaY ** 2), maxDistance);
-
-    const angle = Math.atan2(deltaY, deltaX);
-    const x = Math.cos(angle) * distance;
-    const y = Math.sin(angle) * distance;
-
-    setPosition({ x, y });
+    pupilRef.current.style.transform = `translate(${x}px, ${y}px)`;
   }, [mouseX, mouseY, forceLookX, forceLookY, maxDistance]);
 
   return (
@@ -143,12 +145,12 @@ const EyeBall = ({
     >
       {!isBlinking && (
         <div
+          ref={pupilRef}
           className="rounded-full"
           style={{
             width: `${pupilSize}px`,
             height: `${pupilSize}px`,
             backgroundColor: pupilColor,
-            transform: `translate(${position.x}px, ${position.y}px)`,
             transition: 'transform 0.1s ease-out',
           }}
         />

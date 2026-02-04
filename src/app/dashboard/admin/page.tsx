@@ -69,12 +69,12 @@ export default function AdminPage() {
     setIsLoading(true);
     try {
       const [usersRes, scriptsRes, announcementsRes, newsRes, podcastsRes, suggestionsRes] = await Promise.all([
-        api.get('/users'),
-        api.get('/scripts'),
-        api.get('/announcements'),
-        api.get('/news'),
-        api.get('/podcasts'),
-        api.get('/song-suggestions'),
+        api.get('/admin/users'),
+        api.get('/admin/scripts'),
+        api.get('/admin/announcements'),
+        api.get('/admin/news'),
+        api.get('/admin/podcasts'),
+        api.get('/admin/song-suggestions'),
       ]);
       setUsers(usersRes.data);
       setScripts(scriptsRes.data);
@@ -88,7 +88,7 @@ export default function AdminPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     fetchData();
@@ -103,7 +103,7 @@ export default function AdminPage() {
     const originalUsers = [...users];
     setUsers(prev => prev.filter(user => user.id !== userId));
     try {
-      await api.delete(`/users/${userId}`);
+      await api.delete(`/admin/users/${userId}`);
       toast({ title: 'User Deleted', description: 'The user has been successfully removed.' });
     } catch (error: any) {
       setUsers(originalUsers);
@@ -118,9 +118,9 @@ export default function AdminPage() {
     toastTitle: string
   ) => async (id: string) => {
     try {
-      await api.patch(`/${endpoint}/${id}/live`);
+      await api.patch(`/admin/${endpoint}/${id}/live`);
       toast({ title: toastTitle, description: 'The content has been marked as live.' });
-      const res = await api.get(`/${endpoint}`);
+      const res = await api.get(`/admin/${endpoint}`);
       stateSetter(res.data);
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Failed', description: error.response?.data?.message || 'Could not set the item as live.' });
@@ -145,7 +145,7 @@ export default function AdminPage() {
     const originalSuggestions = [...songSuggestions];
     setSongSuggestions(prev => prev.filter(s => !selectedSuggestions.includes(s.id)));
     try {
-      await api.delete('/song-suggestions', { data: { ids: selectedSuggestions } });
+      await api.delete('/admin/song-suggestions', { data: { ids: selectedSuggestions } });
       toast({ title: 'Suggestions Deleted', description: `${selectedSuggestions.length} items removed.` });
       setSelectedSuggestions([]);
     } catch (error: any) {

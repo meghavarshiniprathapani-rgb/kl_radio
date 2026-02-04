@@ -119,7 +119,7 @@ export default function RJWingPage() {
       setIsLoading(false);
     };
     fetchData();
-  }, []);
+  }, [toast]);
   
 
   const handleMarkComplete = async () => {
