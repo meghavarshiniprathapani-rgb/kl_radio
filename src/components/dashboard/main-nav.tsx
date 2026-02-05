@@ -15,16 +15,16 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', roles: ['station_head', 'creative', 'technical', 'pr', 'rj', 'broadcasting', 'designing', 'video_editing'] },
-  { href: '/dashboard/announcements', label: 'Announcements', roles: ['station_head', 'pr', 'creative'] },
-  { href: '/dashboard/suggestions', label: 'Suggestions', roles: ['station_head', 'rj'] },
-  { href: '/dashboard/rj-wing', label: 'RJ Wing', roles: ['station_head', 'rj'] },
-  { href: '/dashboard/broadcasting', label: 'Broadcasting', roles: ['station_head', 'broadcasting'] },
-  { href: '/dashboard/creative', label: 'Creative', roles: ['station_head', 'creative'] },
-  { href: '/dashboard/designing', label: 'Designing', roles: ['station_head', 'designing'] },
-  { href: '/dashboard/pr', label: 'PR', roles: ['station_head', 'pr'] },
-  { href: '/dashboard/technical', label: 'Technical', roles: ['station_head', 'technical'] },
-  { href: '/dashboard/video-editing', label: 'Video Editing', roles: ['station_head', 'video_editing'] },
-  { href: '/dashboard/uploads', label: 'Uploads', roles: ['station_head', 'pr', 'designing', 'video_editing'] },
+  { href: '/dashboard/announcements', label: 'Announcements', roles: ['pr', 'creative'] },
+  { href: '/dashboard/suggestions', label: 'Suggestions', roles: ['rj'] },
+  { href: '/dashboard/rj-wing', label: 'RJ Wing', roles: ['rj'] },
+  { href: '/dashboard/broadcasting', label: 'Broadcasting', roles: ['broadcasting'] },
+  { href: '/dashboard/creative', label: 'Creative', roles: ['creative'] },
+  { href: '/dashboard/designing', label: 'Designing', roles: ['designing'] },
+  { href: '/dashboard/pr', label: 'PR', roles: ['pr'] },
+  { href: '/dashboard/technical', label: 'Technical', roles: ['technical'] },
+  { href: '/dashboard/video-editing', label: 'Video Editing', roles: ['video_editing'] },
+  { href: '/dashboard/uploads', label: 'Uploads', roles: ['pr', 'designing', 'video_editing'] },
   { href: '/dashboard/admin', label: 'Admin Panel', roles: ['station_head'] },
 ];
 
