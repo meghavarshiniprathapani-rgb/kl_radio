@@ -122,10 +122,10 @@ export default function EventsPage() {
             }
             .cardContainer {
               position: relative;
-              width: 300px;
-              height: 400px;
-              min-width: 300px;
-              min-height: 400px;
+              width: 320px;
+              height: 420px;
+              min-width: 320px;
+              min-height: 420px;
               margin: 4px;
               perspective: 1000px;
             }
@@ -193,7 +193,7 @@ export default function EventsPage() {
               height: 250px;
             }
             .front .info {
-                height: calc(400px - 250px);
+                height: calc(420px - 250px);
                 justify-content: center;
             }
             .back h2 {
@@ -244,7 +244,7 @@ export default function EventsPage() {
                                 <div className="side back">
                                     <div className="info">
                                         <h2>{event.title}</h2>
-                                        <ScrollArea className="h-[280px] pr-4">
+                                        <ScrollArea className="h-[320px] pr-4">
                                           <p>{event.description}</p>
                                         </ScrollArea>
                                     </div>
