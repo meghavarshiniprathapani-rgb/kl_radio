@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const verifyAuth = useCallback(async () => {
     const token = localStorage.getItem('token');
     const isAuthPage = pathname === '/login';
-    const publicPages = ['/', '/events', '/our-team'];
+    const publicPages = ['/', '/events', '/our-team', '/timeline'];
     const isPublicPage = publicPages.some(page => (page === '/' && pathname === '/') || (page !== '/' && pathname.startsWith(page)));
 
     if (!token) {
