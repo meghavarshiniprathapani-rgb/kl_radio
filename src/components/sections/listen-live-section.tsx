@@ -74,13 +74,23 @@ export function ListenLiveSection() {
         const stream = event.streams[0];
         if (!stream || !audioRef.current) return;
 
+        // Attach stream
         audioRef.current.srcObject = stream;
-        audioRef.current.playsInline = true;
 
-        // Play is allowed because handleTuneIn is a user click
-        audioRef.current.play().catch((err) => {
-          console.warn('Audio play blocked on mobile:', err);
-        });
+        // 🔴 CRITICAL MOBILE FIX
+        audioRef.current.muted = false;
+        audioRef.current.volume = 1;
+
+        // iOS Safari requirements
+        audioRef.current.playsInline = true;
+        audioRef.current.setAttribute('playsinline', 'true');
+
+        // Mobile browsers need play after microtask
+        setTimeout(() => {
+          audioRef.current
+            ?.play()
+            .catch((err) => console.warn('Audio play blocked:', err));
+        }, 0);
 
         setStreamState('live');
         toast({

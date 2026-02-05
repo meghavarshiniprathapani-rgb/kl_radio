@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ArrowLeft } from 'lucide-react';
-import Masonry from '@/components/ui/masonry';
+import ExpandableGallery from '@/components/ui/gallery-animation';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
@@ -68,35 +68,22 @@ const events = [
     }
   ];
 
-interface MasonryItem {
-  id: string;
-  img: string;
-  url: string;
-  height: number;
-}
-
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
-  const slug = params.slug;
+  const slug = params ? params.slug : null;
   const event = events.find(e => e.image === slug);
   const eventImage = PlaceHolderImages.find(p => p.id === slug);
   
-  const [masonryItems, setMasonryItems] = useState<MasonryItem[]>([]);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (slug) {
       const items = Array.from({ length: 12 }).map((_, i) => {
         const seed = `${slug}${i}`;
         const height = Math.floor(Math.random() * (900 - 400 + 1)) + 400; // Random height
-        const imgUrl = `https://picsum.photos/seed/${seed}/600/${height}`;
-        return {
-          id: seed,
-          img: imgUrl,
-          url: imgUrl,
-          height: height
-        };
+        return `https://picsum.photos/seed/${seed}/600/${height}`;
       });
-      setMasonryItems(items);
+      setGalleryImages(items);
     }
   }, [slug]);
 
@@ -134,17 +121,7 @@ export default function EventDetailPage() {
                         
                         <div className="mt-12">
                             <h2 className="font-headline text-3xl font-bold tracking-tight text-center mb-8">Event Gallery</h2>
-                            <Masonry
-                                items={masonryItems}
-                                ease="power3.out"
-                                duration={0.6}
-                                stagger={0.05}
-                                animateFrom="bottom"
-                                scaleOnHover
-                                hoverScale={1.05}
-                                blurToFocus
-                                colorShiftOnHover={false}
-                            />
+                            <ExpandableGallery images={galleryImages} className="w-full" />
                         </div>
 
                         <div className="text-center mt-12">
