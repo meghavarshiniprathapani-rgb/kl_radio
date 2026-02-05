@@ -1,5 +1,3 @@
-'use client';
-
 import { NavbarKL } from '@/components/ui/navbar-kl';
 import { SiteFooter } from '@/components/site-footer';
 import { Button } from '@/components/ui/button';
