@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
 
 const events = [
     {
@@ -66,6 +67,11 @@ const events = [
 export default function EventDetailPage({ params }: { params: { slug: string } }) {
   const event = events.find(e => e.image === params.slug);
   const eventImage = PlaceHolderImages.find(p => p.id === params.slug);
+  
+  const galleryImages = Array.from({ length: 6 }).map((_, i) => ({
+    src: `https://picsum.photos/seed/${params.slug}${i}/800/600`,
+    alt: `${event?.title} gallery image ${i + 1}`,
+  }));
 
   return (
     <div className="relative flex min-h-screen flex-col text-foreground overflow-x-hidden">
@@ -83,25 +89,39 @@ export default function EventDetailPage({ params }: { params: { slug: string } }
         <NavbarKL />
 
         <main className="flex-1 flex flex-col items-center justify-center pt-32 pb-20">
-             <div className="container mx-auto max-w-4xl px-4 text-center">
+             <div className="container mx-auto max-w-4xl px-4">
                 {event ? (
                     <div className="bg-background/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-white/10">
                         <div
                             className="w-full h-64 bg-cover bg-center rounded-lg mb-6"
                             style={{ backgroundImage: `url(${eventImage?.imageUrl || 'https://picsum.photos/seed/default/800/400'})` }}
                         ></div>
-                        <h1 className="font-headline text-5xl font-bold tracking-tighter md:text-6xl mb-4">
-                            {event.title}
-                        </h1>
-                        <p className="mt-4 max-w-2xl mx-auto text-muted-foreground md:text-lg mb-8">
-                            {event.description}
-                        </p>
-                        <Button asChild>
-                           <Link href="/events"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Events</Link>
-                        </Button>
+                        <div className="text-center">
+                            <h1 className="font-headline text-5xl font-bold tracking-tighter md:text-6xl mb-4">
+                                {event.title}
+                            </h1>
+                            <p className="mt-4 max-w-2xl mx-auto text-muted-foreground md:text-lg mb-8">
+                                {event.description}
+                            </p>
+                        </div>
+                        
+                        <div className="mt-12">
+                            <h2 className="font-headline text-3xl font-bold tracking-tight text-center mb-8">Event Gallery</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {galleryImages.map((img, index) => (
+                                    <Image key={index} src={img.src} alt={img.alt} width={800} height={600} className="w-full h-48 object-cover rounded-lg shadow-md hover:scale-105 transition-transform duration-300" />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="text-center mt-12">
+                            <Button asChild>
+                               <Link href="/events"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Events</Link>
+                            </Button>
+                        </div>
                     </div>
                 ) : (
-                    <div>
+                    <div className="text-center bg-background/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-white/10">
                         <h1 className="font-headline text-5xl font-bold tracking-tighter md:text-6xl mb-4">
                             Event Not Found
                         </h1>
