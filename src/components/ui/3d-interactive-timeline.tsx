@@ -279,25 +279,9 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({
                     )}
 
                     <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className={`text-sm font-mono text-accent tracking-wider`}>
-                          {event.date}
-                        </span>
-                        
-                        <motion.div 
-                          className={`w-3 h-3 rounded-full ${eventColor}`}
-                          animate={{ 
-                            scale: [1, 1.5, 1],
-                            opacity: [0.7, 1, 0.7] 
-                          }}
-                          transition={{ 
-                            repeat: Infinity, 
-                            duration: 2,
-                            repeatType: "reverse"
-                          }}
-                        />
-                      </div>
-
+                      <span className={`block text-sm font-mono text-accent tracking-wider mb-2`}>
+                        {event.date}
+                      </span>
                       <h3 className="text-2xl font-bold mb-2">{event.title}</h3>
                       
                       <motion.div 
