@@ -48,9 +48,9 @@ const TimelinePage: React.FC = () => {
     },
     {
       id: '5',
-      date: '2023',
-      title: 'Community Initiatives',
-      description: 'Led several successful social campaigns, including "Say No to Drugs" and mental health awareness drives, strengthening our commitment to social responsibility and student welfare.',
+      date: '2026-September',
+      title: 'Resonance and Official Media Partner for SAMYAK - 2025',
+      description: '',
       icon: <Book className="text-white" />,
       image: 'https://images.unsplash.com/photo-1533750349088-249c31122359?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
       category: 'Community',
