@@ -88,18 +88,24 @@ export default function EventsPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col text-foreground overflow-x-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="fixed top-0 left-0 w-full h-full object-cover -z-20"
+        >
+          <source src="https://ik.imagekit.io/bhanuteja110/Radio/WEBSITE_prob3.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/50 -z-10" />
+
         <style jsx global>{`
-            .events-page-body {
-                background-color: hsla(223, 13%, 87%, 1);
-                background-image: linear-gradient(140deg, hsla(0, 0%, 100%, 1), hsla(223, 13%, 87%, 1));
-                color: hsla(0, 0%, 20%, 1);
-            }
-            .events-page-body h1, .events-page-body h2, .events-page-body h4 {
+            .card h2, .card h4 {
                 font-family: var(--font-headline), sans-serif;
                 text-transform: uppercase;
                 color: hsla(0, 0%, 20%, 1);
             }
-            .events-page-body p, .events-page-body li {
+            .card p, .card li {
                 font-family: var(--font-body), sans-serif;
                 font-weight: 400;
                 color: #555;
@@ -205,52 +211,50 @@ export default function EventsPage() {
                 min-height: 24px;
             }
         `}</style>
-        <div className="events-page-body w-full">
-            <NavbarKL />
-            <main className="flex-1 flex flex-col items-center justify-start pt-32 pb-20">
-                 <div className="container mx-auto max-w-6xl px-4 text-center mb-16">
-                    <h1 className="text-5xl font-bold tracking-tighter md:text-6xl">
-                        Our Events
-                    </h1>
-                    <p className="mt-4 max-w-2xl mx-auto text-black/70 md:text-lg">
-                        Click on a card to learn more about each event.
-                    </p>
-                </div>
+        <NavbarKL />
+        <main className="flex-1 flex flex-col items-center justify-start pt-32 pb-20">
+             <div className="container mx-auto max-w-6xl px-4 text-center mb-16">
+                <h1 className="font-headline text-5xl font-bold tracking-tighter md:text-6xl">
+                    Our Events
+                </h1>
+                <p className="mt-4 max-w-2xl mx-auto text-muted-foreground md:text-lg">
+                    Click on a card to learn more about each event.
+                </p>
+            </div>
 
-                <div ref={containerRef} className="event-grid-container">
-                    {events.map((event, i) => {
-                        const eventImage = PlaceHolderImages.find((p) => p.id === event.image);
-                        return (
-                            <div
-                                key={i}
-                                className="cardContainer inactive"
-                            >
-                                <div className="card">
-                                    <div className="side front">
-                                        <div
-                                            className="img"
-                                            style={{ backgroundImage: `url(${eventImage?.imageUrl || 'https://picsum.photos/seed/default/300/250'})` }}
-                                        ></div>
-                                        <div className="info">
-                                            <h2>{event.title}</h2>
-                                        </div>
+            <div ref={containerRef} className="event-grid-container">
+                {events.map((event, i) => {
+                    const eventImage = PlaceHolderImages.find((p) => p.id === event.image);
+                    return (
+                        <div
+                            key={i}
+                            className="cardContainer inactive"
+                        >
+                            <div className="card">
+                                <div className="side front">
+                                    <div
+                                        className="img"
+                                        style={{ backgroundImage: `url(${eventImage?.imageUrl || 'https://picsum.photos/seed/default/300/250'})` }}
+                                    ></div>
+                                    <div className="info">
+                                        <h2>{event.title}</h2>
                                     </div>
-                                    <div className="side back">
-                                        <div className="info">
-                                            <h2>{event.title}</h2>
-                                            <ScrollArea className="h-[280px] pr-4">
-                                              <p>{event.description}</p>
-                                            </ScrollArea>
-                                        </div>
+                                </div>
+                                <div className="side back">
+                                    <div className="info">
+                                        <h2>{event.title}</h2>
+                                        <ScrollArea className="h-[280px] pr-4">
+                                          <p>{event.description}</p>
+                                        </ScrollArea>
                                     </div>
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
-            </main>
-            <SiteFooter />
-        </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </main>
+        <SiteFooter />
     </div>
   );
 }
