@@ -38,9 +38,9 @@ const TimelinePage: React.FC = () => {
     },
     {
       id: '4',
-      date: '2021',
-      title: 'Introduction of Podcasts',
-      description: 'Diversified our content portfolio by launching original podcasts covering a range of topics from technology to student life. This initiative provided a new platform for creative expression.',
+      date: '2025-October',
+      title: 'Media Partner for KLSAT 2',
+      description: '',
       icon: <Briefcase className="text-white" />,
       image: 'https://images.unsplash.com/photo-1581464628523-fa4f91e15dc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
       category: 'Content',
