@@ -68,6 +68,20 @@ const events = [
     }
   ];
 
+const galleryImageCounts: { [key: string]: number } = {
+  'event-calendar': 18,
+  'event-femflare': 6,
+  'event-kabbadi': 3,
+  'event-klsat2': 13,
+  'event-prachayamila': 3,
+  'event-radio-fiesta': 15,
+  'event-resonance': 24,
+  'event-samyak': 9,
+  'event-surabi': 6,
+  'event-udbav': 5,
+  'event-yuva': 23,
+};
+
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
   const slug = params ? params.slug : null;
@@ -78,27 +92,13 @@ export default function EventDetailPage() {
 
   useEffect(() => {
     if (slug) {
-      if (slug === 'event-resonance') {
-        setGalleryImages([
-          'https://ik.imagekit.io/tz33swtq7h/Resonance/DSC08982.JPG?updatedAt=1770367610318',
-          'https://ik.imagekit.io/tz33swtq7h/Resonance/_DSC4073.JPG?updatedAt=1770367609676',
-          'https://ik.imagekit.io/tz33swtq7h/Resonance/_DSC4072.JPG?updatedAt=1770367609552',
-          'https://ik.imagekit.io/tz33swtq7h/Resonance/_DSC4075.JPG?updatedAt=1770367609322',
-        ]);
-      } else if (slug === 'event-samyak') {
-        setGalleryImages([
-          'https://ik.imagekit.io/tz33swtq7h/Resonance/_J4A6004.JPG.jpeg',
-          'https://ik.imagekit.io/tz33swtq7h/Resonance/C8806T01.JPG',
-          'https://ik.imagekit.io/tz33swtq7h/Resonance/C8683T01.JPG',
-        ]);
-      } else {
-        const items = Array.from({ length: 4 }).map((_, i) => {
-          const seed = `${slug}${i}`;
-          const height = Math.floor(Math.random() * (900 - 400 + 1)) + 400; // Random height
-          return `https://picsum.photos/seed/${seed}/600/${height}`;
-        });
-        setGalleryImages(items);
-      }
+      const imageCount = galleryImageCounts[slug] || 4; // Default to 4
+      const items = Array.from({ length: imageCount }).map((_, i) => {
+        const seed = `${slug}${i}`;
+        const height = Math.floor(Math.random() * (900 - 400 + 1)) + 400; // Random height
+        return `https://picsum.photos/seed/${seed}/600/${height}`;
+      });
+      setGalleryImages(items);
     }
   }, [slug]);
 
