@@ -193,7 +193,7 @@ export default function EventDetailPage() {
                             className="w-full h-64 bg-cover rounded-lg mb-6"
                             style={{ 
                                 backgroundImage: `url(${eventImage?.imageUrl || 'https://picsum.photos/seed/default/800/400'})`,
-                                backgroundPosition: 'center 25%'
+                                backgroundPosition: 'center center'
                             }}
                         ></div>
                         <div className="text-center">
