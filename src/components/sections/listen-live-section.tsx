@@ -1,41 +1,72 @@
 'use client';
 
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SoundWave } from '../ui/sound-wave';
 import { AudioWave } from '../ui/audio-wave';
 import { SIGNALING_URL, LIVE_STREAM_ROOM_ID, WEBRTC_CONFIG } from '@/lib/webrtc';
 import { useToast } from '@/hooks/use-toast';
 import 'webrtc-adapter';
 
+type StreamState = 'offline' | 'connecting' | 'live';
+
 export function ListenLiveSection() {
   const { toast } = useToast();
 
-  const [streamState, setStreamState] = useState<
-    'offline' | 'connecting' | 'live'
-  >('offline');
+  const [streamState, setStreamState] = useState<StreamState>('offline');
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
+  const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const cleanupConnection = useCallback(
     (showToast = false) => {
+      // Stop ping
+      if (pingIntervalRef.current) {
+        clearInterval(pingIntervalRef.current);
+        pingIntervalRef.current = null;
+      }
+
+      // Close WS
       if (socketRef.current) {
-        socketRef.current.onclose = null;
-        if (socketRef.current.readyState === WebSocket.OPEN) {
-          socketRef.current.close();
+        try {
+          socketRef.current.onopen = null;
+          socketRef.current.onmessage = null;
+          socketRef.current.onerror = null;
+          socketRef.current.onclose = null;
+
+          if (socketRef.current.readyState === WebSocket.OPEN) {
+            socketRef.current.close();
+          }
+        } catch {
+          // ignore
         }
         socketRef.current = null;
       }
 
+      // Close PC
       if (peerConnectionRef.current) {
-        peerConnectionRef.current.close();
+        try {
+          peerConnectionRef.current.ontrack = null;
+          peerConnectionRef.current.onicecandidate = null;
+          peerConnectionRef.current.oniceconnectionstatechange = null;
+          peerConnectionRef.current.onconnectionstatechange = null;
+          peerConnectionRef.current.close();
+        } catch {
+          // ignore
+        }
         peerConnectionRef.current = null;
       }
 
+      // Reset audio element
       if (audioRef.current) {
+        try {
+          audioRef.current.pause();
+        } catch {
+          // ignore
+        }
         audioRef.current.srcObject = null;
       }
 
@@ -45,52 +76,90 @@ export function ListenLiveSection() {
         toast({
           variant: 'destructive',
           title: 'Stream Disconnected',
-          description: 'The live stream has ended or the connection was lost.',
+          description: 'The live stream ended or the connection was lost.',
         });
       }
     },
     [toast]
   );
 
+  const primeAudioWithGesture = async () => {
+    const el = audioRef.current;
+    if (!el) return;
+
+    // iOS/Safari friendly attributes
+    el.playsInline = true;
+    el.setAttribute('playsinline', 'true');
+    el.preload = 'auto';
+
+    // Ensure not muted
+    el.muted = false;
+    el.volume = 1;
+
+    // Prime play inside user gesture (tap)
+    try {
+      await el.play();
+      // If there's no srcObject yet, Safari may start then pause immediately — that's fine.
+      console.log('✅ audio primed via user gesture');
+    } catch (e) {
+      console.log('⚠️ audio prime play blocked (expected on some browsers):', e);
+    }
+  };
+
   const handleTuneIn = useCallback(async () => {
     // Disconnect
     if (streamState !== 'offline') {
-      cleanupConnection();
+      cleanupConnection(false);
       toast({ title: 'Stream disconnected.' });
       return;
     }
 
     setStreamState('connecting');
+
     toast({
       title: 'Connecting to Live Stream...',
       description: 'This may take a moment.',
     });
 
     try {
+      // 🔑 iOS SAFARI: prime audio with direct user gesture (this click)
+      await primeAudioWithGesture();
+
       const pc = new RTCPeerConnection(WEBRTC_CONFIG);
       peerConnectionRef.current = pc;
 
+      // ✅ iOS/mobile reliability: explicitly declare we want to receive audio
+      pc.addTransceiver('audio', { direction: 'recvonly' });
+
       pc.ontrack = (event) => {
-        const stream = event.streams[0];
-        if (!stream || !audioRef.current) return;
+        const el = audioRef.current;
+        const stream = event.streams?.[0];
+
+        console.log('ontrack:', {
+          kind: event.track.kind,
+          muted: event.track.muted,
+          readyState: event.track.readyState,
+          streams: event.streams?.length ?? 0,
+        });
+
+        if (!el || !stream) return;
 
         // Attach stream
-        audioRef.current.srcObject = stream;
+        el.srcObject = stream;
 
-        // 🔴 CRITICAL MOBILE FIX
-        audioRef.current.muted = false;
-        audioRef.current.volume = 1;
+        // Make sure Safari has the right flags
+        el.muted = false;
+        el.volume = 1;
+        el.playsInline = true;
+        el.setAttribute('playsinline', 'true');
 
-        // iOS Safari requirements
-        audioRef.current.playsInline = true;
-        audioRef.current.setAttribute('playsinline', 'true');
-
-        // Mobile browsers need play after microtask
-        setTimeout(() => {
-          audioRef.current
-            ?.play()
-            .catch((err) => console.warn('Audio play blocked:', err));
-        }, 0);
+        // Attempt to play again after attaching stream
+        // (this usually succeeds because we primed play on click)
+        queueMicrotask(() => {
+          el.play().catch((err) => {
+            console.warn('Audio play blocked:', err);
+          });
+        });
 
         setStreamState('live');
         toast({
@@ -100,12 +169,9 @@ export function ListenLiveSection() {
       };
 
       pc.onicecandidate = (event) => {
-        if (
-          event.candidate &&
-          socketRef.current &&
-          socketRef.current.readyState === WebSocket.OPEN
-        ) {
-          socketRef.current.send(
+        const ws = socketRef.current;
+        if (event.candidate && ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(
             JSON.stringify({
               type: 'candidate',
               candidate: event.candidate,
@@ -120,6 +186,7 @@ export function ListenLiveSection() {
       };
 
       pc.onconnectionstatechange = () => {
+        console.log('PC state:', pc.connectionState);
         if (
           pc.connectionState === 'failed' ||
           pc.connectionState === 'disconnected' ||
@@ -132,29 +199,22 @@ export function ListenLiveSection() {
       const ws = new WebSocket(SIGNALING_URL);
       socketRef.current = ws;
 
-     ws.onopen = () => {
-  ws.send(
-    JSON.stringify({
-      type: 'join',
-      roomId: LIVE_STREAM_ROOM_ID,
-      role: 'listener',
-    })
-  );
+      ws.onopen = () => {
+        ws.send(
+          JSON.stringify({
+            type: 'join',
+            roomId: LIVE_STREAM_ROOM_ID,
+            role: 'listener',
+          })
+        );
 
-  // ✅ MOBILE FIX: keep WebSocket alive
-  const pingInterval = setInterval(() => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'ping' }));
-    }
-  }, 15000);
-
-  // clear ping on close
-  ws.onclose = () => {
-    clearInterval(pingInterval);
-    cleanupConnection(streamState === 'live');
-  };
-};
-
+        // ✅ Keep WS alive on mobile
+        pingIntervalRef.current = setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'ping' }));
+          }
+        }, 15000);
+      };
 
       ws.onmessage = async (event) => {
         const data = JSON.parse(event.data);
@@ -180,9 +240,7 @@ export function ListenLiveSection() {
           }
         } else if (data.type === 'candidate' && data.candidate) {
           try {
-            await currentPc.addIceCandidate(
-              new RTCIceCandidate(data.candidate)
-            );
+            await currentPc.addIceCandidate(new RTCIceCandidate(data.candidate));
           } catch (e) {
             console.error('Error adding ICE candidate', e);
           }
@@ -191,7 +249,7 @@ export function ListenLiveSection() {
             title: 'Broadcast has ended',
             description: 'Thanks for listening!',
           });
-          cleanupConnection();
+          cleanupConnection(false);
         }
       };
 
@@ -210,7 +268,7 @@ export function ListenLiveSection() {
   }, [cleanupConnection, toast, streamState]);
 
   useEffect(() => {
-    return () => cleanupConnection();
+    return () => cleanupConnection(false);
   }, [cleanupConnection]);
 
   const getButtonText = () => {
@@ -263,18 +321,21 @@ export function ListenLiveSection() {
               {getButtonText()}
             </Button>
 
-           <audio
-  ref={audioRef}
-  playsInline
-  style={{
-    position: 'absolute',
-    width: 0,
-    height: 0,
-    opacity: 0,
-    pointerEvents: 'none',
-  }}
-/>
-/>
+            {/* ✅ MUST exist in DOM (not hidden). Also avoid 0x0 sizing on iOS. */}
+            <audio
+              ref={audioRef}
+              playsInline
+              preload="auto"
+              style={{
+                position: 'fixed',
+                left: '-9999px',
+                top: '0px',
+                width: '1px',
+                height: '1px',
+                opacity: 0.01,
+                pointerEvents: 'none',
+              }}
+            />
           </CardContent>
         </Card>
       </div>
