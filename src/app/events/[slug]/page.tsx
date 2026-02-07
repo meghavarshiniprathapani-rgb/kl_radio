@@ -160,6 +160,12 @@ const klsat2Images = [
     'https://ik.imagekit.io/tz33swtq7h/Klsat/KLSAT/WhatsApp%20Image%202026-02-06%20at%2012.18.36%20PM.jpeg?updatedAt=1770460596267'
 ];
 
+const parichayamilaImages = [
+    'https://ik.imagekit.io/tz33swtq7h/Praichayamilla/Parichayamila/DSC08252.JPG?updatedAt=1770460688405',
+    'https://ik.imagekit.io/tz33swtq7h/Praichayamilla/Parichayamila/DSC08236.JPG?updatedAt=1770460687572',
+    'https://ik.imagekit.io/tz33swtq7h/Praichayamilla/Parichayamila/DSC08238.JPG?updatedAt=1770460688250'
+];
+
 
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -181,6 +187,8 @@ export default function EventDetailPage() {
         setGalleryImages(kabaddiImages);
       } else if (slug === 'event-klsat2') {
         setGalleryImages(klsat2Images);
+      } else if (slug === 'event-prachayamila') {
+        setGalleryImages(parichayamilaImages);
       } else {
         const imageCount = galleryImageCounts[slug] || 4; // Default to 4
         const items = Array.from({ length: imageCount }).map((_, i) => {
