@@ -13,10 +13,10 @@ const founder = {
 };
 
 const ceo = {
-    name: 'Koneru Satyanarayana',
+    name: 'Chanti Joseph',
     role: 'CEO',
     avatarId: 'ceo',
-    imageUrl: 'https://ik.imagekit.io/bhanuteja110/Radio/1684912959823.jpeg'
+    imageUrl: 'https://ik.imagekit.io/tz33swtq7h/WhatsApp%20Image%202026-02-07%20at%203.55.13%20PM.jpeg'
 };
 
 const exHeads = [
