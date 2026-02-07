@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode, useCallback, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import type { SongSuggestion, User, UserRole } from '@/lib/types';
 import api, { setAuthToken } from '@/lib/api';
@@ -33,8 +33,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
+  const justLoggedInRef = useRef(false);
   
   const verifyAuth = useCallback(async () => {
+    if (justLoggedInRef.current) {
+      justLoggedInRef.current = false;
+      setLoading(false);
+      return;
+    }
+
     const token = localStorage.getItem('token');
     const isAuthPage = pathname === '/login';
     const publicPages = ['/', '/events', '/our-team', '/timeline'];
@@ -64,13 +71,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
             throw new Error('Invalid session');
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Session verification failed', error);
-        localStorage.removeItem('token');
-        setAuthToken(null);
-        setUser(null);
-        if (!isPublicPage && !isAuthPage) {
-            router.replace('/login');
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            setAuthToken(null);
+            setUser(null);
+            if (!isPublicPage && !isAuthPage) {
+                router.replace('/login');
+            }
         }
     } finally {
         setLoading(false);
@@ -104,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: userData.role,
         avatarId: userData.avatarId || '1',
       };
+      justLoggedInRef.current = true;
       setUser(apiUser);
       setLoading(false);
       
