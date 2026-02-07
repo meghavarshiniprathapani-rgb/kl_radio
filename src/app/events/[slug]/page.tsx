@@ -139,6 +139,12 @@ const femflareImages = [
     'https://ik.imagekit.io/tz33swtq7h/Femflare/femflare/DSC07834_edited.jpg?updatedAt=1770460424558'
 ];
 
+const kabaddiImages = [
+    'https://ik.imagekit.io/tz33swtq7h/Kabaddi/KABADDI/WhatsApp%20Image%202026-02-05%20at%2010.57.32%20PM.jpeg?updatedAt=1770460516709',
+    'https://ik.imagekit.io/tz33swtq7h/Kabaddi/KABADDI/WhatsApp%20Image%202026-02-05%20at%2010.58.28%20PM.jpeg?updatedAt=1770460516891',
+    'https://ik.imagekit.io/tz33swtq7h/Kabaddi/KABADDI/WhatsApp%20Image%202026-02-05%20at%2010.58.27%20PM.jpeg?updatedAt=1770460516509'
+];
+
 
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -156,6 +162,8 @@ export default function EventDetailPage() {
         setGalleryImages(calendarImages);
       } else if (slug === 'event-femflare') {
         setGalleryImages(femflareImages);
+      } else if (slug === 'event-kabbadi') {
+        setGalleryImages(kabaddiImages);
       } else {
         const imageCount = galleryImageCounts[slug] || 4; // Default to 4
         const items = Array.from({ length: imageCount }).map((_, i) => {
@@ -190,10 +198,9 @@ export default function EventDetailPage() {
                 {event ? (
                     <div className="bg-background/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-white/10">
                         <div
-                            className="w-full h-64 bg-cover rounded-lg mb-6"
+                            className="w-full h-64 bg-cover rounded-lg mb-6 bg-center"
                             style={{ 
                                 backgroundImage: `url(${eventImage?.imageUrl || 'https://picsum.photos/seed/default/800/400'})`,
-                                backgroundPosition: 'center center'
                             }}
                         ></div>
                         <div className="text-center">
