@@ -263,7 +263,18 @@ export function ListenLiveSection() {
               {getButtonText()}
             </Button>
 
-            <audio ref={audioRef} playsInline hidden />
+           <audio
+  ref={audioRef}
+  playsInline
+  style={{
+    position: 'absolute',
+    width: 0,
+    height: 0,
+    opacity: 0,
+    pointerEvents: 'none',
+  }}
+/>
+/>
           </CardContent>
         </Card>
       </div>
