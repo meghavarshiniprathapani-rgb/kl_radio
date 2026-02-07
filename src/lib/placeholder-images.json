@@ -61,6 +61,18 @@
       "imageHint": "woman smiling"
     },
     {
+      "id": "founder",
+      "description": "Founder of KL Radio, K. L. Havish",
+      "imageUrl": "https://ik.imagekit.io/bhanuteja110/Radio/1519888823792.jpeg",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "ceo",
+      "description": "CEO of KL Radio, Koneru Satyanarayana",
+      "imageUrl": "https://ik.imagekit.io/bhanuteja110/Radio/1684912959823.jpeg",
+      "imageHint": "man portrait"
+    },
+    {
       "id": "event-1",
       "description": "A placeholder image for a radio event",
       "imageUrl": "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjb25jZXJ0JTIwY3Jvd2R8ZW58MHx8fHwxNzY5MzgwNDMzfDA&ixlib=rb-4.1.0&q=80&w=1080",

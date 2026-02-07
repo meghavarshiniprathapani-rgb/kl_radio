@@ -33,6 +33,12 @@ const nextConfig: NextConfig = {
         hostname: 'ik.imagekit.io',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'p7.hiclipart.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
