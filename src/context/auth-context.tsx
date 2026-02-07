@@ -95,16 +95,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('token', token);
       setAuthToken(token);
       
-      const apiUser: User = {
-          id: userData.id,
-          name: userData.name,
-          username: userData.username,
-          role: userData.role,
-          avatarId: userData.avatarId || '1',
-      };
-      setUser(apiUser);
-      setLoading(false);
-
       const redirectPath = roleRedirects[userData.role as UserRole] || '/dashboard';
       router.replace(redirectPath);
       
