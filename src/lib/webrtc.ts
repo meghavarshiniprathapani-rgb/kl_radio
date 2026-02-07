@@ -1,4 +1,4 @@
-export const SIGNALING_URL = "wss://webrtc-signaling-backend.onrender.com/ws";
+export const SIGNALING_URL = "wss://webrtc-signaling-eupy.onrender.com/ws";
 export const LIVE_STREAM_ROOM_ID = "radio-live-room";
 
 export const WEBRTC_CONFIG: RTCConfiguration = {
