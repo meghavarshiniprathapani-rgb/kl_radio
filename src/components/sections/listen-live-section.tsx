@@ -13,61 +13,64 @@ type StreamState = 'offline' | 'connecting' | 'live';
 
 export function ListenLiveSection() {
   const { toast } = useToast();
-
   const [streamState, setStreamState] = useState<StreamState>('offline');
+
+  const streamStateRef = useRef<StreamState>('offline');
+  useEffect(() => {
+    streamStateRef.current = streamState;
+  }, [streamState]);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const connectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearTimers = () => {
+    if (pingIntervalRef.current) {
+      clearInterval(pingIntervalRef.current);
+      pingIntervalRef.current = null;
+    }
+    if (connectTimeoutRef.current) {
+      clearTimeout(connectTimeoutRef.current);
+      connectTimeoutRef.current = null;
+    }
+  };
 
   const cleanupConnection = useCallback(
     (showToast = false) => {
-      // Stop ping
-      if (pingIntervalRef.current) {
-        clearInterval(pingIntervalRef.current);
-        pingIntervalRef.current = null;
-      }
+      clearTimers();
 
-      // Close WS
-      if (socketRef.current) {
+      const ws = socketRef.current;
+      if (ws) {
         try {
-          socketRef.current.onopen = null;
-          socketRef.current.onmessage = null;
-          socketRef.current.onerror = null;
-          socketRef.current.onclose = null;
-
-          if (socketRef.current.readyState === WebSocket.OPEN) {
-            socketRef.current.close();
+          ws.onopen = null;
+          ws.onmessage = null;
+          ws.onerror = null;
+          ws.onclose = null;
+          if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+            ws.close();
           }
-        } catch {
-          // ignore
-        }
+        } catch {}
         socketRef.current = null;
       }
 
-      // Close PC
-      if (peerConnectionRef.current) {
+      const pc = peerConnectionRef.current;
+      if (pc) {
         try {
-          peerConnectionRef.current.ontrack = null;
-          peerConnectionRef.current.onicecandidate = null;
-          peerConnectionRef.current.oniceconnectionstatechange = null;
-          peerConnectionRef.current.onconnectionstatechange = null;
-          peerConnectionRef.current.close();
-        } catch {
-          // ignore
-        }
+          pc.ontrack = null;
+          pc.onicecandidate = null;
+          pc.oniceconnectionstatechange = null;
+          pc.onconnectionstatechange = null;
+          pc.close();
+        } catch {}
         peerConnectionRef.current = null;
       }
 
-      // Reset audio element
-      if (audioRef.current) {
-        try {
-          audioRef.current.pause();
-        } catch {
-          // ignore
-        }
-        audioRef.current.srcObject = null;
+      const el = audioRef.current;
+      if (el) {
+        try { el.pause(); } catch {}
+        el.srcObject = null;
       }
 
       setStreamState('offline');
@@ -75,8 +78,8 @@ export function ListenLiveSection() {
       if (showToast) {
         toast({
           variant: 'destructive',
-          title: 'Stream Disconnected',
-          description: 'The live stream ended or the connection was lost.',
+          title: 'Could not connect',
+          description: 'Stream is offline or connection failed.',
         });
       }
     },
@@ -87,206 +90,160 @@ export function ListenLiveSection() {
     const el = audioRef.current;
     if (!el) return;
 
-    // iOS/Safari friendly attributes
     el.playsInline = true;
     el.setAttribute('playsinline', 'true');
     el.preload = 'auto';
-
-    // Ensure not muted
     el.muted = false;
     el.volume = 1;
 
-    // Prime play inside user gesture (tap)
     try {
       await el.play();
-      // If there's no srcObject yet, Safari may start then pause immediately — that's fine.
-      console.log('✅ audio primed via user gesture');
+      console.log('✅ audio primed via tap');
     } catch (e) {
-      console.log('⚠️ audio prime play blocked (expected on some browsers):', e);
+      console.log('⚠️ prime play blocked:', e);
     }
   };
 
   const handleTuneIn = useCallback(async () => {
     // Disconnect
-    if (streamState !== 'offline') {
+    if (streamStateRef.current !== 'offline') {
       cleanupConnection(false);
       toast({ title: 'Stream disconnected.' });
       return;
     }
 
     setStreamState('connecting');
+    toast({ title: 'Connecting...', description: 'Trying to tune in.' });
 
-    toast({
-      title: 'Connecting to Live Stream...',
-      description: 'This may take a moment.',
-    });
+    // Hard timeout so you never “spin forever”
+    connectTimeoutRef.current = setTimeout(() => {
+      console.warn('⏱️ connect timeout (no offer/ontrack)');
+      cleanupConnection(true);
+    }, 15000);
 
     try {
-      // 🔑 iOS SAFARI: prime audio with direct user gesture (this click)
+      // iOS: must be inside tap
       await primeAudioWithGesture();
 
       const pc = new RTCPeerConnection(WEBRTC_CONFIG);
       peerConnectionRef.current = pc;
 
-      // ✅ iOS/mobile reliability: explicitly declare we want to receive audio
+      // iOS/mobile: explicitly receive audio
       pc.addTransceiver('audio', { direction: 'recvonly' });
 
       pc.ontrack = (event) => {
-        const el = audioRef.current;
-        const stream = event.streams?.[0];
-
-        console.log('ontrack:', {
+        console.log('🎧 ontrack fired:', {
           kind: event.track.kind,
           muted: event.track.muted,
           readyState: event.track.readyState,
           streams: event.streams?.length ?? 0,
         });
 
-        if (!el || !stream) return;
+        const stream = event.streams?.[0];
+        const el = audioRef.current;
+        if (!stream || !el) return;
 
-        // Attach stream
         el.srcObject = stream;
-
-        // Make sure Safari has the right flags
         el.muted = false;
         el.volume = 1;
         el.playsInline = true;
         el.setAttribute('playsinline', 'true');
 
-        // Attempt to play again after attaching stream
-        // (this usually succeeds because we primed play on click)
         queueMicrotask(() => {
-          el.play().catch((err) => {
-            console.warn('Audio play blocked:', err);
-          });
+          el.play().catch((err) => console.warn('play blocked:', err));
         });
 
+        clearTimers(); // connected successfully
         setStreamState('live');
-        toast({
-          title: "You're listening live!",
-          description: 'Enjoy the show.',
-        });
+        toast({ title: "You're live!", description: 'Enjoy.' });
       };
 
       pc.onicecandidate = (event) => {
         const ws = socketRef.current;
         if (event.candidate && ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(
-            JSON.stringify({
-              type: 'candidate',
-              candidate: event.candidate,
-              roomId: LIVE_STREAM_ROOM_ID,
-            })
-          );
+          ws.send(JSON.stringify({ type: 'candidate', candidate: event.candidate, roomId: LIVE_STREAM_ROOM_ID }));
         }
       };
 
       pc.oniceconnectionstatechange = () => {
-        console.log('ICE state:', pc.iceConnectionState);
+        console.log('ICE:', pc.iceConnectionState);
       };
 
       pc.onconnectionstatechange = () => {
-        console.log('PC state:', pc.connectionState);
-        if (
-          pc.connectionState === 'failed' ||
-          pc.connectionState === 'disconnected' ||
-          pc.connectionState === 'closed'
-        ) {
-          cleanupConnection(streamState === 'live');
+        console.log('PC:', pc.connectionState);
+        if (['failed', 'disconnected', 'closed'].includes(pc.connectionState)) {
+          cleanupConnection(streamStateRef.current === 'live');
         }
       };
 
       const ws = new WebSocket(SIGNALING_URL);
       socketRef.current = ws;
 
+      ws.onerror = (e) => console.log('❌ WS error:', e);
       ws.onopen = () => {
-        ws.send(
-          JSON.stringify({
-            type: 'join',
-            roomId: LIVE_STREAM_ROOM_ID,
-            role: 'listener',
-          })
-        );
+        console.log('✅ WS opened:', SIGNALING_URL);
 
-        // ✅ Keep WS alive on mobile
+        ws.send(JSON.stringify({ type: 'join', roomId: LIVE_STREAM_ROOM_ID, role: 'listener' }));
+
+        // keep alive
         pingIntervalRef.current = setInterval(() => {
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'ping' }));
-          }
+          if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'ping' }));
         }, 15000);
+      };
+
+      ws.onclose = (e) => {
+        console.log('WS closed:', e.code, e.reason);
+        cleanupConnection(streamStateRef.current === 'live');
       };
 
       ws.onmessage = async (event) => {
         const data = JSON.parse(event.data);
+        console.log('📩 WS msg:', data.type);
+
         const currentPc = peerConnectionRef.current;
         if (!currentPc) return;
 
         if (data.type === 'offer') {
-          await currentPc.setRemoteDescription(
-            new RTCSessionDescription(data.offer)
-          );
+          console.log('📩 got offer');
+          await currentPc.setRemoteDescription(new RTCSessionDescription(data.offer));
           const answer = await currentPc.createAnswer();
           await currentPc.setLocalDescription(answer);
 
           if (ws.readyState === WebSocket.OPEN) {
-            ws.send(
-              JSON.stringify({
-                type: 'answer',
-                answer: currentPc.localDescription,
-                roomId: LIVE_STREAM_ROOM_ID,
-                listenerId: data.listenerId,
-              })
-            );
+            ws.send(JSON.stringify({
+              type: 'answer',
+              answer: currentPc.localDescription,
+              roomId: LIVE_STREAM_ROOM_ID,
+              listenerId: data.listenerId,
+            }));
           }
         } else if (data.type === 'candidate' && data.candidate) {
-          try {
-            await currentPc.addIceCandidate(new RTCIceCandidate(data.candidate));
-          } catch (e) {
-            console.error('Error adding ICE candidate', e);
-          }
-        } else if (data.type === 'broadcast_end') {
-          toast({
-            title: 'Broadcast has ended',
-            description: 'Thanks for listening!',
+          await currentPc.addIceCandidate(new RTCIceCandidate(data.candidate)).catch((err) => {
+            console.error('ICE add error', err);
           });
+        } else if (data.type === 'broadcast_end') {
+          toast({ title: 'Broadcast ended', description: 'Thanks for listening!' });
           cleanupConnection(false);
         }
       };
-
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        cleanupConnection(true);
-      };
-
-      ws.onclose = () => {
-        cleanupConnection(streamState === 'live');
-      };
     } catch (err) {
-      console.error('Failed to start listening', err);
+      console.error('Failed to start listening:', err);
       cleanupConnection(true);
     }
-  }, [cleanupConnection, toast, streamState]);
+  }, [cleanupConnection, toast]);
 
   useEffect(() => {
     return () => cleanupConnection(false);
   }, [cleanupConnection]);
 
   const getButtonText = () => {
-    switch (streamState) {
-      case 'live':
-        return 'Disconnect';
-      case 'connecting':
-        return 'Connecting...';
-      default:
-        return 'Tune In to Live Stream';
-    }
+    if (streamState === 'live') return 'Disconnect';
+    if (streamState === 'connecting') return 'Connecting...';
+    return 'Tune In to Live Stream';
   };
 
   return (
-    <section
-      id="listen-live"
-      className="container mx-auto max-w-5xl px-4 py-20 md:py-28"
-    >
+    <section id="listen-live" className="container mx-auto max-w-5xl px-4 py-20 md:py-28">
       <div className="relative">
         <SoundWave />
         <Card className="relative overflow-hidden bg-primary text-primary-foreground shadow-2xl backdrop-blur-sm">
@@ -296,19 +253,11 @@ export function ListenLiveSection() {
             </h2>
 
             <p className="mt-2 max-w-md text-primary-foreground/80">
-              {streamState === 'live'
-                ? "You're tuned in to KL Radio."
-                : 'When we go live, you can tune in here!'}
+              {streamState === 'live' ? "You're tuned in to KL Radio." : 'When we go live, you can tune in here!'}
             </p>
 
             <div className="my-8 h-[60px] w-[240px] flex items-center justify-center">
-              {streamState === 'live' ? (
-                <AudioWave />
-              ) : (
-                <div className="text-primary-foreground/50 text-sm">
-                  Stream Offline
-                </div>
-              )}
+              {streamState === 'live' ? <AudioWave /> : <div className="text-primary-foreground/50 text-sm">Stream Offline</div>}
             </div>
 
             <Button
@@ -321,7 +270,7 @@ export function ListenLiveSection() {
               {getButtonText()}
             </Button>
 
-            {/* ✅ MUST exist in DOM (not hidden). Also avoid 0x0 sizing on iOS. */}
+            {/* Keep it rendered; avoid 0x0 on iOS */}
             <audio
               ref={audioRef}
               playsInline
