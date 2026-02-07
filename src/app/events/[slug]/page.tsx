@@ -198,10 +198,9 @@ export default function EventDetailPage() {
                 {event ? (
                     <div className="bg-background/70 backdrop-blur-lg p-8 rounded-2xl shadow-lg border border-white/10">
                         <div
-                            className="w-full h-64 bg-cover rounded-lg mb-6"
+                            className="w-full h-64 bg-contain bg-no-repeat bg-center rounded-lg mb-6"
                             style={{ 
                                 backgroundImage: `url(${eventImage?.imageUrl || 'https://picsum.photos/seed/default/800/400'})`,
-                                backgroundPosition: 'center 75%',
                             }}
                         ></div>
                         <div className="text-center">
