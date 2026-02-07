@@ -192,6 +192,15 @@ const samyakImages = [
     'https://ik.imagekit.io/tz33swtq7h/Resonance/_J4A6004.JPG.jpeg'
 ];
 
+const surabhiImages = [
+    'https://ik.imagekit.io/tz33swtq7h/Surabi-25/Surabi-25/IMG_1337.JPG?updatedAt=1770461285784',
+    'https://ik.imagekit.io/tz33swtq7h/Surabi-25/Surabi-25/IMG_1263.JPG?updatedAt=1770461285687',
+    'https://ik.imagekit.io/tz33swtq7h/Surabi-25/Surabi-25/IMG_1104.JPG?updatedAt=1770461285466',
+    'https://ik.imagekit.io/tz33swtq7h/Surabi-25/Surabi-25/DSC00932.JPG?updatedAt=1770461284575',
+    'https://ik.imagekit.io/tz33swtq7h/Surabi-25/Surabi-25/DSC00857%20(1).JPG?updatedAt=1770461284508',
+    'https://ik.imagekit.io/tz33swtq7h/Surabi-25/Surabi-25/WhatsApp%20Image%202026-02-05%20at%2010.33.34%20PM.jpeg?updatedAt=1770461285440'
+];
+
 
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -219,6 +228,8 @@ export default function EventDetailPage() {
         setGalleryImages(radioFiestaImages);
       } else if (slug === 'event-samyak') {
         setGalleryImages(samyakImages);
+      } else if (slug === 'event-surabi') {
+        setGalleryImages(surabhiImages);
       } else {
         const imageCount = galleryImageCounts[slug] || 4; // Default to 4
         const items = Array.from({ length: imageCount }).map((_, i) => {
