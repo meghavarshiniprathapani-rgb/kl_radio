@@ -310,7 +310,6 @@ export default function TechnicalPage() {
         };
 
         ws.onerror = (error) => {
-            console.error("WebSocket Error:", error);
             toast({ variant: 'destructive', title: 'Broadcast Error', description: 'Could not connect to the signaling server.' });
             stopBroadcast();
         };
