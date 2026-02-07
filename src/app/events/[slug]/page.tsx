@@ -73,9 +73,9 @@ const galleryImageCounts: { [key: string]: number } = {
   'event-calendar': 18,
   'event-femflare': 6,
   'event-kabbadi': 3,
-  'event-klsat2': 13,
+  'event-klsat2': 12,
   'event-prachayamila': 3,
-  'event-radio-fiesta': 15,
+  'event-radio-fiesta': 11,
   'event-resonance': 23,
   'event-samyak': 9,
   'event-surabi': 6,
@@ -166,6 +166,20 @@ const parichayamilaImages = [
     'https://ik.imagekit.io/tz33swtq7h/Praichayamilla/Parichayamila/DSC08238.JPG?updatedAt=1770460688250'
 ];
 
+const radioFiestaImages = [
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02427.JPG?updatedAt=1770460789231',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02436.JPG?updatedAt=1770460789227',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02468.JPG?updatedAt=1770460788873',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02417.JPG?updatedAt=1770460788638',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02392.JPG?updatedAt=1770460784062',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02406.JPG?updatedAt=1770460782470',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02366.JPG?updatedAt=1770460781319',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02142.JPG?updatedAt=1770460784688',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02431.JPG?updatedAt=1770460786614',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/DSC02482.JPG?updatedAt=1770460787641',
+    'https://ik.imagekit.io/tz33swtq7h/Radio%20Fiesta/Radio%20Fiesta/WhatsApp%20Image%202026-02-05%20at%2010.32.06%20PM.jpeg?updatedAt=1770460772934'
+];
+
 
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -189,6 +203,8 @@ export default function EventDetailPage() {
         setGalleryImages(klsat2Images);
       } else if (slug === 'event-prachayamila') {
         setGalleryImages(parichayamilaImages);
+      } else if (slug === 'event-radio-fiesta') {
+        setGalleryImages(radioFiestaImages);
       } else {
         const imageCount = galleryImageCounts[slug] || 4; // Default to 4
         const items = Array.from({ length: imageCount }).map((_, i) => {
@@ -226,7 +242,7 @@ export default function EventDetailPage() {
                             className="w-full h-[32rem] bg-contain bg-no-repeat bg-center rounded-lg mb-6"
                             style={{ 
                                 backgroundImage: `url(${eventImage?.imageUrl || 'https://picsum.photos/seed/default/800/400'})`,
-                                backgroundPosition: 'center center',
+                                backgroundPosition: 'center',
                             }}
                         ></div>
                         <div className="text-center">

@@ -23,8 +23,12 @@ export function ListenLiveSection() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
+
   const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const connectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ✅ CRITICAL: we must remember the listenerId assigned by server (sent inside offer msg)
+  const listenerIdRef = useRef<string | null>(null);
 
   const clearTimers = () => {
     if (pingIntervalRef.current) {
@@ -40,6 +44,7 @@ export function ListenLiveSection() {
   const cleanupConnection = useCallback(
     (showToast = false) => {
       clearTimers();
+      listenerIdRef.current = null;
 
       const ws = socketRef.current;
       if (ws) {
@@ -115,11 +120,11 @@ export function ListenLiveSection() {
     setStreamState('connecting');
     toast({ title: 'Connecting...', description: 'Trying to tune in.' });
 
-    // Hard timeout so you never “spin forever”
+    // timeout so it won’t spin forever
     connectTimeoutRef.current = setTimeout(() => {
       console.warn('⏱️ connect timeout (no offer/ontrack)');
       cleanupConnection(true);
-    }, 15000);
+    }, 20000);
 
     try {
       // iOS: must be inside tap
@@ -128,7 +133,7 @@ export function ListenLiveSection() {
       const pc = new RTCPeerConnection(WEBRTC_CONFIG);
       peerConnectionRef.current = pc;
 
-      // iOS/mobile: explicitly receive audio
+      // Receive audio explicitly
       pc.addTransceiver('audio', { direction: 'recvonly' });
 
       pc.ontrack = (event) => {
@@ -153,16 +158,26 @@ export function ListenLiveSection() {
           el.play().catch((err) => console.warn('play blocked:', err));
         });
 
-        clearTimers(); // connected successfully
+        clearTimers();
         setStreamState('live');
         toast({ title: "You're live!", description: 'Enjoy.' });
       };
 
+      // ✅ FIX: include listenerId in ICE candidate messages so broadcaster can map to correct PC
       pc.onicecandidate = (event) => {
         const ws = socketRef.current;
-        if (event.candidate && ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'candidate', candidate: event.candidate, roomId: LIVE_STREAM_ROOM_ID }));
-        }
+        const listenerId = listenerIdRef.current;
+
+        if (!event.candidate || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+        ws.send(
+          JSON.stringify({
+            type: 'candidate',
+            candidate: event.candidate,
+            roomId: LIVE_STREAM_ROOM_ID,
+            listenerId, // ✅ CRITICAL
+          })
+        );
       };
 
       pc.oniceconnectionstatechange = () => {
@@ -180,6 +195,7 @@ export function ListenLiveSection() {
       socketRef.current = ws;
 
       ws.onerror = (e) => console.log('❌ WS error:', e);
+
       ws.onopen = () => {
         console.log('✅ WS opened:', SIGNALING_URL);
 
@@ -205,17 +221,23 @@ export function ListenLiveSection() {
 
         if (data.type === 'offer') {
           console.log('📩 got offer');
+
+          // ✅ store listenerId so we can attach it to ICE candidates
+          if (data.listenerId) listenerIdRef.current = data.listenerId;
+
           await currentPc.setRemoteDescription(new RTCSessionDescription(data.offer));
           const answer = await currentPc.createAnswer();
           await currentPc.setLocalDescription(answer);
 
           if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
-              type: 'answer',
-              answer: currentPc.localDescription,
-              roomId: LIVE_STREAM_ROOM_ID,
-              listenerId: data.listenerId,
-            }));
+            ws.send(
+              JSON.stringify({
+                type: 'answer',
+                answer: currentPc.localDescription,
+                roomId: LIVE_STREAM_ROOM_ID,
+                listenerId: data.listenerId, // keep as-is
+              })
+            );
           }
         } else if (data.type === 'candidate' && data.candidate) {
           await currentPc.addIceCandidate(new RTCIceCandidate(data.candidate)).catch((err) => {
@@ -270,7 +292,6 @@ export function ListenLiveSection() {
               {getButtonText()}
             </Button>
 
-            {/* Keep it rendered; avoid 0x0 on iOS */}
             <audio
               ref={audioRef}
               playsInline
