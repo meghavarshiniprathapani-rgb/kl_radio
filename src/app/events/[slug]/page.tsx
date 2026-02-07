@@ -83,6 +83,27 @@ const galleryImageCounts: { [key: string]: number } = {
   'event-yuva': 23,
 };
 
+const calendarImages = [
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00841.JPG?updatedAt=1770460287648',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01003.JPG?updatedAt=1770460287409',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00840.JPG?updatedAt=1770460287156',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01004.JPG?updatedAt=1770460287117',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01066.JPG?updatedAt=1770460286858',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01006.JPG?updatedAt=1770460286978',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00837.JPG?updatedAt=1770460286650',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00991.JPG?updatedAt=1770460286407',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00836.JPG?updatedAt=1770460286448',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00983.JPG?updatedAt=1770460285793',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01069.JPG?updatedAt=1770460285751',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00994.JPG?updatedAt=1770460285792',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01071.JPG?updatedAt=1770460285465',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00986.JPG?updatedAt=1770460284447',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00989.JPG?updatedAt=1770460284378',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00996.JPG?updatedAt=1770460284093',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC00984.JPG?updatedAt=1770460283278',
+    'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01072.JPG?updatedAt=1770460283228'
+];
+
 const resonanceImages = [
     'https://ik.imagekit.io/tz33swtq7h/Resonance/Resonance/DSC07351.JPG?updatedAt=1770460872039',
     'https://ik.imagekit.io/tz33swtq7h/Resonance/Resonance/DSC08868.JPG?updatedAt=1770460872109',
@@ -121,6 +142,8 @@ export default function EventDetailPage() {
     if (slug) {
       if (slug === 'event-resonance') {
         setGalleryImages(resonanceImages);
+      } else if (slug === 'event-calendar') {
+        setGalleryImages(calendarImages);
       } else {
         const imageCount = galleryImageCounts[slug] || 4; // Default to 4
         const items = Array.from({ length: imageCount }).map((_, i) => {
