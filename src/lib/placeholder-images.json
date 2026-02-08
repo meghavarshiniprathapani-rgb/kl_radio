@@ -112,10 +112,10 @@
       "id": "event-klsat2",
       "imageUrl": "https://ik.imagekit.io/tz33swtq7h/Klsat/KLSAT/DSC9800.JPG?updatedAt=1770460599413",
       "imageHint": "technology fair",
-      "description": "KLSAT2 event"
+      "description": "KLSAT-2 event"
     },
     {
-      "id": "event-prachayamila",
+      "id": "event-parichayamila",
       "imageUrl": "https://ik.imagekit.io/tz33swtq7h/Praichayamilla/Parichayamila/DSC08238.JPG?updatedAt=1770460688250",
       "imageHint": "students meeting",
       "description": "Parichayamila event"
@@ -139,20 +139,20 @@
       "description": "Resonance event"
     },
     {
-      "id": "event-surabi",
+      "id": "event-surabhi",
       "imageUrl": "https://ik.imagekit.io/tz33swtq7h/Surabi-25/Surabi-25/IMG_1104.JPG?updatedAt=1770461285466",
       "imageHint": "cultural performance",
       "description": "Surabhi event"
     },
     {
-      "id": "event-udbav",
+      "id": "event-udbhav",
       "imageUrl": "https://ik.imagekit.io/tz33swtq7h/Udbhav/Udbhav/DSC02004.jpg?updatedAt=1770461341432",
       "imageHint": "talent show",
       "description": "Udbav event"
     },
     {
       "id": "event-yuva",
-      "imageUrl": "https://images.unsplash.com/photo-1763639700554-05bbc741768b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx5b3V0aCUyMGV2ZW50fGVufDB8fHx8MTc2OTY2NDQ0MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_0962.JPG?updatedAt=1770461400623",
       "imageHint": "youth event",
       "description": "Yuva event"
     }

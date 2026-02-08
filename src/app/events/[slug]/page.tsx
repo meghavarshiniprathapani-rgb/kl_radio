@@ -28,14 +28,14 @@ const events = [
       image: 'event-kabbadi'
     },
     {
-      title: 'KLSAT2',
+      title: 'KLSAT-2',
       description: 'KLSAT-2 represents a remarkable achievement in innovation and technological advancement at KL University. The successful development and launch of three satellites in the presence of distinguished authorities stands as a testament to academic excellence and vision. KL Radio proudly served as the media partner for this historic event, contributing to the dissemination of inspiration and highlighting how small dreams can transform into extraordinary realities.',
       image: 'event-klsat2'
     },
     {
       title: 'Parichayamila',
       description: 'KL Radio continuously supports and encourages the creative talents hidden within university students. *Parichayamila* is a cover song collaboratively produced by students, capturing emotions of love, elegance, and artistic expression. The grand launch of this cover song highlighted teamwork, musical passion, and the dedication of young artists, serving as a proud moment for KL Radio and its creative community.',
-      image: 'event-prachayamila'
+      image: 'event-parichayamila'
     },
     {
       title: 'Radio Fiesta',
@@ -55,7 +55,7 @@ const events = [
     {
       title: 'Surabhi',
       description: 'Surabhi is a grand cultural extravaganza that brings together a vibrant blend of music, dance, and artistic performances. The event provides a stage for students to showcase their diverse talents and creative expressions, reflecting cultural richness and artistic excellence. Surabhi celebrates unity in diversity by encouraging participation, creativity, and appreciation for the arts, creating an atmosphere filled with color, rhythm, and inspiration.',
-      image: 'event-surabi'
+      image: 'event-surabhi'
     },
     {
       title: 'Udbhav',
@@ -74,11 +74,11 @@ const galleryImageCounts: { [key: string]: number } = {
   'event-femflare': 6,
   'event-kabbadi': 3,
   'event-klsat2': 12,
-  'event-prachayamila': 3,
+  'event-parichayamila': 3,
   'event-radio-fiesta': 11,
   'event-resonance': 23,
   'event-samyak': 9,
-  'event-surabi': 6,
+  'event-surabhi': 6,
   'event-udbav': 5,
   'event-yuva': 23,
 };
@@ -229,13 +229,13 @@ export default function EventDetailPage() {
         setGalleryImages(kabaddiImages);
       } else if (slug === 'event-klsat2') {
         setGalleryImages(klsat2Images);
-      } else if (slug === 'event-prachayamila') {
+      } else if (slug === 'event-parichayamila') {
         setGalleryImages(parichayamilaImages);
       } else if (slug === 'event-radio-fiesta') {
         setGalleryImages(radioFiestaImages);
       } else if (slug === 'event-samyak') {
         setGalleryImages(samyakImages);
-      } else if (slug === 'event-surabi') {
+      } else if (slug === 'event-surabhi') {
         setGalleryImages(surabhiImages);
       } else if (slug === 'event-udbav') {
         setGalleryImages(udbavImages);

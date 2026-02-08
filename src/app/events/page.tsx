@@ -24,14 +24,14 @@ const events = [
     image: 'event-kabbadi'
   },
   {
-    title: 'KLSAT2',
+    title: 'KLSAT-2',
     description: 'KLSAT-2 represents a remarkable achievement in innovation and technological advancement at KL University. The successful development and launch of three satellites in the presence of distinguished authorities stands as a testament to academic excellence and vision. KL Radio proudly served as the media partner for this historic event, contributing to the dissemination of inspiration and highlighting how small dreams can transform into extraordinary realities.',
     image: 'event-klsat2'
   },
   {
     title: 'Parichayamila',
     description: 'KL Radio continuously supports and encourages the creative talents hidden within university students. *Parichayamila* is a cover song collaboratively produced by students, capturing emotions of love, elegance, and artistic expression. The grand launch of this cover song highlighted teamwork, musical passion, and the dedication of young artists, serving as a proud moment for KL Radio and its creative community.',
-    image: 'event-prachayamila'
+    image: 'event-parichayamila'
   },
   {
     title: 'Radio Fiesta',
@@ -51,7 +51,7 @@ const events = [
   {
     title: 'Surabhi',
     description: 'Surabhi is a grand cultural extravaganza that brings together a vibrant blend of music, dance, and artistic performances. The event provides a stage for students to showcase their diverse talents and creative expressions, reflecting cultural richness and artistic excellence. Surabhi celebrates unity in diversity by encouraging participation, creativity, and appreciation for the arts, creating an atmosphere filled with color, rhythm, and inspiration.',
-    image: 'event-surabi'
+    image: 'event-surabhi'
   },
   {
     title: 'Udbhav',
