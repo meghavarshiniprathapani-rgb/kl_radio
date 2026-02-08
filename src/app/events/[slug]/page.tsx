@@ -201,6 +201,13 @@ const surabhiImages = [
     'https://ik.imagekit.io/tz33swtq7h/Surabi-25/Surabi-25/DSC00857%20(1).JPG?updatedAt=1770461284508'
 ];
 
+const udbavImages = [
+    'https://ik.imagekit.io/tz33swtq7h/Udbhav/Udbhav/DSC01971.jpg?updatedAt=1770461341775',
+    'https://ik.imagekit.io/tz33swtq7h/Udbhav/Udbhav/DSC01980.jpg?updatedAt=1770461341761',
+    'https://ik.imagekit.io/tz33swtq7h/Udbhav/Udbhav/DSC02215.jpg?updatedAt=1770461341688',
+    'https://ik.imagekit.io/tz33swtq7h/Udbhav/Udbhav/DSC01889.jpg?updatedAt=1770461341604',
+    'https://ik.imagekit.io/tz33swtq7h/Udbhav/Udbhav/DSC02004.jpg?updatedAt=1770461341432',
+];
 
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
@@ -230,6 +237,8 @@ export default function EventDetailPage() {
         setGalleryImages(samyakImages);
       } else if (slug === 'event-surabi') {
         setGalleryImages(surabhiImages);
+      } else if (slug === 'event-udbav') {
+        setGalleryImages(udbavImages);
       } else {
         const imageCount = galleryImageCounts[slug] || 4; // Default to 4
         const items = Array.from({ length: imageCount }).map((_, i) => {
