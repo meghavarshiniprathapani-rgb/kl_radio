@@ -4,6 +4,7 @@ import { NavbarKL } from '@/components/ui/navbar-kl';
 import { SiteFooter } from '@/components/site-footer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import CircularGallery from '@/components/ui/circular-gallery';
+import ScrollStack, { ScrollStackItem } from '@/components/ui/ScrollStack';
 
 const teamMembers = [
   {
@@ -96,6 +97,33 @@ export default function OurTeamPage() {
             />
           </div>
         </div>
+
+        <div className="mt-32 text-center">
+            <h2 className="font-headline text-4xl font-bold tracking-tighter md:text-5xl">The Pillars of Our Station</h2>
+            <p className="mt-4 max-w-2xl mx-auto text-muted-foreground md:text-lg mb-16">
+                Our strength lies in our specialized wings, each a powerhouse of talent and dedication, working in harmony to create the KL Radio experience.
+            </p>
+        </div>
+
+        <ScrollStack 
+            useWindowScroll={true} 
+            rotationAmount={-1} 
+            blurAmount={2}
+        >
+            <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
+                <h2 className="text-3xl font-bold font-headline">Creative & Content Wing</h2>
+                <p className="mt-4 text-lg text-muted-foreground">The heart of our programming. From drafting compelling show scripts and engaging announcements to producing our thought-provoking podcasts, this wing is where ideas take flight.</p>
+            </ScrollStackItem>
+            <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
+                <h2 className="text-3xl font-bold font-headline">On-Air & Broadcasting</h2>
+                <p className="mt-4 text-lg text-muted-foreground">The voices and technicians who bring KL Radio to life. Our RJs connect with the audience, while the broadcasting team ensures a seamless, high-quality stream reaches your ears.</p>
+            </ScrollStackItem>
+            <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
+                <h2 className="text-3xl font-bold font-headline">Technical, Design & Production</h2>
+                <p className="mt-4 text-lg text-muted-foreground">The wizards behind the curtain. This team manages the live broadcast infrastructure, handles all video editing and design needs, and ensures a polished final product for every platform.</p>
+            </ScrollStackItem>
+        </ScrollStack>
+
       </main>
       <SiteFooter />
     </div>
