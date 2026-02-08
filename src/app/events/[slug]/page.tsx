@@ -209,6 +209,32 @@ const udbavImages = [
     'https://ik.imagekit.io/tz33swtq7h/Udbhav/Udbhav/DSC02004.jpg?updatedAt=1770461341432',
 ];
 
+const yuvaImages = [
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03266.JPG?updatedAt=1770461401052',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03460.JPG?updatedAt=1770461401006',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03289.JPG?updatedAt=1770461400970',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC07556.JPG?updatedAt=1770461400892',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03273.JPG?updatedAt=1770461400892',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03475.JPG?updatedAt=1770461400799',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_0892.JPG?updatedAt=1770461400776',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03468.JPG?updatedAt=1770461400667',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_0363.JPG?updatedAt=1770461400654',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_1039.JPG?updatedAt=1770461400587',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03418.JPG?updatedAt=1770461400638',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_0962.JPG?updatedAt=1770461400623',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_0484.JPG?updatedAt=1770461400572',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_0967.JPG?updatedAt=1770461400413',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_0349.JPG?updatedAt=1770461400231',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_0985.JPG?updatedAt=1770461399502',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/RAV_1007.JPG?updatedAt=1770461398812',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC02973.JPG?updatedAt=1770461397554',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03294.JPG?updatedAt=1770461397461',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/DSC03008.JPG?updatedAt=1770461396907',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/WhatsApp%20Image%202026-02-06%20at%2012.33.09%20PM.jpeg?updatedAt=1770461396896',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/C8924T01.JPG?updatedAt=1770461393825',
+    'https://ik.imagekit.io/tz33swtq7h/Yuva/yuva/C8923T01.JPG?updatedAt=1770461393752'
+];
+
 export default function EventDetailPage() {
   const params = useParams<{ slug: string }>();
   const slug = params ? params.slug : null;
@@ -239,6 +265,8 @@ export default function EventDetailPage() {
         setGalleryImages(surabhiImages);
       } else if (slug === 'event-udbav') {
         setGalleryImages(udbavImages);
+      } else if (slug === 'event-yuva') {
+        setGalleryImages(yuvaImages);
       } else {
         const imageCount = galleryImageCounts[slug] || 4; // Default to 4
         const items = Array.from({ length: imageCount }).map((_, i) => {
