@@ -143,8 +143,15 @@ function OurTeamPageContent() {
                 <p className="mt-4 text-lg text-muted-foreground">Ensuring a seamless, high-quality stream reaches your ears. The broadcasting team manages the on-air schedule, controls live transmissions, and guarantees a professional audio experience.</p>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
-                <h2 className="text-3xl font-bold font-headline">Video Editing Wing</h2>
-                <p className="mt-4 text-lg text-muted-foreground">Bringing our visual stories to life. This talented team produces and edits all video content, from event highlights to promotional material, for our website and social media platforms.</p>
+                 <div className="flex h-full items-center gap-8">
+                    <div className="relative w-1/2 h-full overflow-hidden rounded-2xl">
+                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_2185.jpg?updatedAt=1770654371827" alt="Video Editing Wing" fill className="object-cover" />
+                    </div>
+                    <div className="w-1/2">
+                        <h2 className="text-3xl font-bold font-headline">Video Editing Wing</h2>
+                        <p className="mt-4 text-lg text-muted-foreground">Bringing our visual stories to life. This talented team produces and edits all video content, from event highlights to promotional material, for our website and social media platforms.</p>
+                    </div>
+                </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
                 <h2 className="text-3xl font-bold font-headline">PR & Marketing Wing</h2>
