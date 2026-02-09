@@ -5,6 +5,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import CircularGallery from '@/components/ui/circular-gallery';
 import ScrollStack, { ScrollStackItem } from '@/components/ui/ScrollStack';
+import { LenisProvider } from '@/components/lenis-provider';
 
 const teamMembers = [
   {
@@ -54,8 +55,8 @@ const teamMembers = [
   },
 ];
 
-export default function OurTeamPage() {
-  const galleryItems = teamMembers.map((member) => {
+function OurTeamPageContent() {
+    const galleryItems = teamMembers.map((member) => {
     const memberImage = PlaceHolderImages.find((p) => p.id === member.avatarId);
     return {
       image: memberImage?.imageUrl || `https://picsum.photos/seed/${member.name}/800/600?grayscale`,
@@ -144,4 +145,12 @@ export default function OurTeamPage() {
       <SiteFooter />
     </div>
   );
+}
+
+export default function OurTeamPage() {
+    return (
+        <LenisProvider>
+            <OurTeamPageContent />
+        </LenisProvider>
+    )
 }

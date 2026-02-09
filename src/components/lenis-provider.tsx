@@ -3,7 +3,7 @@
 import Lenis from '@studio-freight/lenis';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-const LenisContext = createContext<Lenis | null>(null);
+export const LenisContext = createContext<Lenis | null>(null);
 
 export const useLenis = () => {
     return useContext(LenisContext);
