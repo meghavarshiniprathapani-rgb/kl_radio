@@ -6,10 +6,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
 const founder = {
-  name: 'K. L. Havish',
+  name: 'A Koushik Reddy',
   role: 'Founder',
   avatarId: 'founder',
-  imageUrl: 'https://ik.imagekit.io/bhanuteja110/Radio/1519888823792.jpeg'
+  imageUrl: 'https://ik.imagekit.io/tz33swtq7h/WhatsApp%20Image%202026-02-09%20at%2010.21.46%20PM.jpeg'
 };
 
 const ceo = {
