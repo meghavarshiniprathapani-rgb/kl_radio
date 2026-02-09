@@ -11,7 +11,7 @@ import { LenisProvider } from '@/components/lenis-provider';
 function HomeComponent() {
   return (
     <LenisProvider>
-      <div className="relative flex min-h-screen flex-col overflow-hidden">
+      <div className="relative flex min-h-screen flex-col overflow-x-hidden">
         <video
           autoPlay
           loop
