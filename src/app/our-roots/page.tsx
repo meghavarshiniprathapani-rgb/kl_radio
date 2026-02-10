@@ -43,6 +43,10 @@ const exHeads: { name: string, role: string, imageUrl: string }[] = [{
     name: 'Reshmi Paidipati',
     role: 'Former Head',
     imageUrl: 'https://ik.imagekit.io/tz33swtq7h/image.png?updatedAt=1770746649764'
+}, {
+    name: 'P. Ronith',
+    role: 'Former Head',
+    imageUrl: 'https://ik.imagekit.io/tz33swtq7h/image.png?updatedAt=1770747725660'
 }];
 
 export default function OurRootsPage() {
