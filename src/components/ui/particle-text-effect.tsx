@@ -175,6 +175,9 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className }: Particl
   }
 
   const nextWord = (word: string, canvas: HTMLCanvasElement) => {
+    if (canvas.width <= 0 || canvas.height <= 0) {
+        return;
+    }
     // Create off-screen canvas for text rendering
     const offscreenCanvas = document.createElement("canvas")
     offscreenCanvas.width = canvas.width
