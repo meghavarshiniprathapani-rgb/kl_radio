@@ -161,10 +161,20 @@ const TimelinePage: React.FC = () => {
       icon: <Radio className="text-white" />,
       image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
     },
+    {
+      id: '17',
+      date: '2016',
+      title: 'KL Radio was Founded',
+      description: 'The beginning of a new era in campus communication and entertainment, KL Radio was established to give a voice to the students and create a vibrant community hub.',
+      icon: <Radio className="text-white" />,
+      image: 'https://images.unsplash.com/photo-1484704849700-f032a568e374?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      category: 'Foundation',
+      color: 'blue',
+    },
   ];
 
   return (
-    <div className="relative flex min-h-screen flex-col text-foreground overflow-x-hidden">
+    <div className="relative flex min-h-screen flex-col text-foreground overflow-x-hidden pt-24">
       <video
         autoPlay
         loop
@@ -177,7 +187,7 @@ const TimelinePage: React.FC = () => {
       <div className="absolute inset-0 bg-black/50 -z-10" />
 
       <NavbarKL />
-      <main className="flex-1 pt-32">
+      <main className="flex-1">
         <Timeline3D 
           events={timelineEvents}
           primaryColor="bg-primary"
