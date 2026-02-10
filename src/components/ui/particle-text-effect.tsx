@@ -187,7 +187,14 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS, className }: Particl
     offscreenCtx.font = `bold ${fontSize}px 'Lexend', sans-serif`
     offscreenCtx.textAlign = "center"
     offscreenCtx.textBaseline = "middle"
-    offscreenCtx.fillText(word, canvas.width / 2, canvas.height / 2)
+    
+    const lines = word.split('\n');
+    const lineHeight = fontSize * 1.2;
+    const startY = canvas.height / 2 - ((lines.length - 1) * lineHeight) / 2;
+
+    lines.forEach((line, index) => {
+      offscreenCtx.fillText(line, canvas.width / 2, startY + index * lineHeight);
+    });
 
     const imageData = offscreenCtx.getImageData(0, 0, canvas.width, canvas.height)
     const pixels = imageData.data
