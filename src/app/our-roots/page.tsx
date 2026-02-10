@@ -19,9 +19,7 @@ const ceo = {
     imageUrl: 'https://ik.imagekit.io/tz33swtq7h/WhatsApp%20Image%202026-02-07%20at%203.55.13%20PM.jpeg'
 };
 
-const exHeads = [
-    { name: 'Charan', role: 'Ex-Head', imageUrl: 'https://ik.imagekit.io/tz33swtq7h/image.png?updatedAt=1770741682984' },
-];
+const exHeads: { name: string, role: string, imageUrl: string }[] = [];
 
 export default function OurRootsPage() {
   return (
