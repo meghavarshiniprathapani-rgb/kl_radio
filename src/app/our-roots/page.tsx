@@ -47,6 +47,10 @@ const exHeads: { name: string, role: string, imageUrl: string }[] = [{
     name: 'P. Ronith',
     role: 'Former Head',
     imageUrl: 'https://ik.imagekit.io/tz33swtq7h/image.png?updatedAt=1770747725660'
+}, {
+    name: 'P.Ronith',
+    role: 'Former Head',
+    imageUrl: 'https://ik.imagekit.io/tz33swtq7h/WhatsApp%20Image%202026-02-10%20at%207.21.15%20PM.jpeg?updatedAt=1770747943741'
 }];
 
 export default function OurRootsPage() {
@@ -95,7 +99,7 @@ export default function OurRootsPage() {
             </h2>
             <div className="flex flex-wrap justify-center gap-8">
               {exHeads.map((member) => (
-                <div key={member.name} className="flex flex-col items-center text-center">
+                <div key={member.imageUrl} className="flex flex-col items-center text-center">
                   <Card className="w-32 h-32 rounded-full overflow-hidden shadow-md">
                     <Image src={member.imageUrl} alt={member.name} width={128} height={128} className="w-full h-full object-cover" />
                   </Card>
