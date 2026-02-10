@@ -321,7 +321,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   return (
     <Wrapper {...wrapperProps}>
-      <div className="scroll-stack-inner pt-[20vh] px-4 md:px-20 pb-[50rem] min-h-screen">
+      <div className="scroll-stack-inner pt-[20vh] px-4 md:px-20 pb-[20vh] min-h-screen">
         {children}
         <div className="scroll-stack-end w-full h-px" />
       </div>
