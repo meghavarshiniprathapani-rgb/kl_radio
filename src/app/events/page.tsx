@@ -170,8 +170,9 @@ export default function EventsPage() {
               width: 100%;
               height: 100%;
               border-radius: var(--radius);
-              background-color: hsl(var(--card));
-              border: 1px solid hsl(var(--border));
+              background-color: hsl(var(--card) / 0.7);
+              border: 1px solid hsl(var(--border) / 0.3);
+              backdrop-filter: blur(12px);
             }
             .card .front {
               z-index: 2;
