@@ -259,7 +259,7 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({
                         <motion.img
                           src={event.image}
                           alt={event.title}
-                          className={cn("w-full h-full object-cover", event.id === '1' && 'object-top', event.id === '2' && 'object-bottom')}
+                          className={cn("w-full h-full object-cover", event.id === '1' && 'object-center', event.id === '2' && 'object-bottom')}
                           initial={{ scale: 1.2 }}
                           animate={{ 
                             scale: activeEvent === event.id ? 1.05 : 1,
