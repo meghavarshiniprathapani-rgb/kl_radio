@@ -117,19 +117,21 @@ function OurTeamPageContent() {
                     <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
                         <Image src="https://ik.imagekit.io/tz33swtq7h/WhatsApp%20Image%202026-02-09%20at%2010.08.26%20PM.jpeg" alt="RJ Wing" fill className="object-cover" />
                     </div>
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full md:w-1/2 p-4 md:p-0">
                         <h2 className="text-2xl md:text-3xl font-bold font-headline">RJ Wing</h2>
                         <p className="mt-4 text-base md:text-lg text-muted-foreground">The voices of KL Radio. Our RJs are the charismatic hosts who connect with the audience, conduct engaging shows, and bring an infectious energy to the airwaves every single day.</p>
                     </div>
                 </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
-                <h2 className="text-2xl md:text-3xl font-bold font-headline">Creative Wing</h2>
-                <p className="mt-4 text-base md:text-lg text-muted-foreground">The heart of our programming. From drafting compelling show scripts and engaging announcements to producing our thought-provoking podcasts, this wing is where ideas take flight.</p>
+                 <div className="p-4 md:p-0">
+                    <h2 className="text-2xl md:text-3xl font-bold font-headline">Creative Wing</h2>
+                    <p className="mt-4 text-base md:text-lg text-muted-foreground">The heart of our programming. From drafting compelling show scripts and engaging announcements to producing our thought-provoking podcasts, this wing is where ideas take flight.</p>
+                </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
                  <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full md:w-1/2 p-4 md:p-0">
                         <h2 className="text-2xl md:text-3xl font-bold font-headline">Technical Wing</h2>
                         <p className="mt-4 text-base md:text-lg text-muted-foreground">The wizards behind the curtain. This dedicated team manages our live broadcast infrastructure, develops and maintains the station's web presence, and ensures all technology runs smoothly.</p>
                     </div>
@@ -139,27 +141,38 @@ function OurTeamPageContent() {
                 </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
-                <h2 className="text-2xl md:text-3xl font-bold font-headline">Broadcasting Wing</h2>
-                <p className="mt-4 text-base md:text-lg text-muted-foreground">Ensuring a seamless, high-quality stream reaches your ears. The broadcasting team manages the on-air schedule, controls live transmissions, and guarantees a professional audio experience.</p>
-            </ScrollStackItem>
-            <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
                  <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
                     <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
-                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_2185.jpg?updatedAt=1770654371827" alt="Video Editing Wing" fill className="object-cover" />
+                        <Image src="https://ik.imagekit.io/tz33swtq7h/WhatsApp%20Image%202026-02-10%20at%204.26.36%20PM.jpeg" alt="Broadcasting Wing" fill className="object-cover" />
                     </div>
-                    <div className="w-full md:w-1/2">
-                        <h2 className="text-2xl md:text-3xl font-bold font-headline">Video Editing Wing</h2>
-                        <p className="mt-4 text-base md:text-lg text-muted-foreground">Bringing our visual stories to life. This talented team produces and edits all video content, from event highlights to promotional material, for our website and social media platforms.</p>
+                    <div className="w-full md:w-1/2 p-4 md:p-0">
+                        <h2 className="text-2xl md:text-3xl font-bold font-headline">Broadcasting Wing</h2>
+                        <p className="mt-4 text-base md:text-lg text-muted-foreground">Ensuring a seamless, high-quality stream reaches your ears. The broadcasting team manages the on-air schedule, controls live transmissions, and guarantees a professional audio experience.</p>
                     </div>
                 </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
-                <h2 className="text-2xl md:text-3xl font-bold font-headline">PR & Marketing Wing</h2>
-                <p className="mt-4 text-base md:text-lg text-muted-foreground">The bridge to our community and beyond. They handle public relations, devise marketing strategies, manage our social media presence, and promote our events and the station's brand.</p>
+                 <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
+                    <div className="w-full md:w-1/2 p-4 md:p-0">
+                        <h2 className="text-2xl md:text-3xl font-bold font-headline">Video Editing Wing</h2>
+                        <p className="mt-4 text-base md:text-lg text-muted-foreground">Bringing our visual stories to life. This talented team produces and edits all video content, from event highlights to promotional material, for our website and social media platforms.</p>
+                    </div>
+                    <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
+                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_2185.jpg?updatedAt=1770654371827" alt="Video Editing Wing" fill className="object-cover" />
+                    </div>
+                </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
-                <h2 className="text-2xl md:text-3xl font-bold font-headline">Designing Wing</h2>
-                <p className="mt-4 text-base md:text-lg text-muted-foreground">Crafting the visual identity of KL Radio. From eye-catching event posters to stunning social media graphics and website aesthetics, our designers create the look and feel that defines us.</p>
+                <div className="p-4 md:p-0">
+                    <h2 className="text-2xl md:text-3xl font-bold font-headline">PR & Marketing Wing</h2>
+                    <p className="mt-4 text-base md:text-lg text-muted-foreground">The bridge to our community and beyond. They handle public relations, devise marketing strategies, manage our social media presence, and promote our events and the station's brand.</p>
+                </div>
+            </ScrollStackItem>
+            <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
+                <div className="p-4 md:p-0">
+                    <h2 className="text-2xl md:text-3xl font-bold font-headline">Designing Wing</h2>
+                    <p className="mt-4 text-base md:text-lg text-muted-foreground">Crafting the visual identity of KL Radio. From eye-catching event posters to stunning social media graphics and website aesthetics, our designers create the look and feel that defines us.</p>
+                </div>
             </ScrollStackItem>
         </ScrollStack>
 
