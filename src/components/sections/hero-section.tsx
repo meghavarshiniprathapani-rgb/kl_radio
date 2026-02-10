@@ -4,7 +4,7 @@ import { ParticleTextEffect } from "@/components/ui/particle-text-effect";
 
 export function HeroSection() {
   return (
-    <section className="relative w-full pt-24 md:py-32 lg:py-40">
+    <section className="relative w-full h-screen flex items-center justify-center">
       <div className="container mx-auto max-w-5xl px-4 text-center">
         <div className="h-40 md:h-48">
             <div className="block h-full w-full md:hidden">

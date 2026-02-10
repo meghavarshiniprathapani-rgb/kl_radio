@@ -23,7 +23,7 @@ function HomeComponent() {
         </video>
         <div className="absolute inset-0 bg-black/50 -z-10" />
         <NavbarKL />
-        <main className="flex-1 pt-24">
+        <main className="flex-1">
           <HeroSection />
           <StickyScrollSection />
           <ListenLiveSection />
