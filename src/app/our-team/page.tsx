@@ -111,6 +111,7 @@ function OurTeamPageContent() {
             useWindowScroll={true} 
             rotationAmount={-1} 
             blurAmount={2}
+            className="pb-0"
         >
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
                  <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
@@ -123,42 +124,47 @@ function OurTeamPageContent() {
                     </div>
                 </div>
             </ScrollStackItem>
-            <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
-                 <div className="p-4 md:p-0">
-                    <h2 className="text-2xl md:text-3xl font-bold font-headline">Creative Wing</h2>
-                    <p className="mt-4 text-base md:text-lg text-muted-foreground">The heart of our programming. From drafting compelling show scripts and engaging announcements to producing our thought-provoking podcasts, this wing is where ideas take flight.</p>
+             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
+                 <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
+                    <div className="w-full md:w-1/2 p-4 md:p-0">
+                        <h2 className="text-2xl md:text-3xl font-bold font-headline">Creative Wing</h2>
+                        <p className="mt-4 text-base md:text-lg text-muted-foreground">The heart of our programming. From drafting compelling show scripts and engaging announcements to producing our thought-provoking podcasts, this wing is where ideas take flight.</p>
+                    </div>
+                    <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
+                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_2721.JPG.jpeg" alt="Creative Wing" fill className="object-cover" />
+                    </div>
                 </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
                  <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
+                     <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
+                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_0259.jpg?updatedAt=1770654468779" alt="Technical Wing" fill className="object-cover" />
+                    </div>
                     <div className="w-full md:w-1/2 p-4 md:p-0">
                         <h2 className="text-2xl md:text-3xl font-bold font-headline">Technical Wing</h2>
                         <p className="mt-4 text-base md:text-lg text-muted-foreground">The wizards behind the curtain. This dedicated team manages our live broadcast infrastructure, develops and maintains the station's web presence, and ensures all technology runs smoothly.</p>
                     </div>
-                    <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
-                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_0259.jpg?updatedAt=1770654468779" alt="Technical Wing" fill className="object-cover" />
-                    </div>
                 </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
                  <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
-                    <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
-                        <Image src="https://ik.imagekit.io/tz33swtq7h/WhatsApp%20Image%202026-02-10%20at%204.26.36%20PM.jpeg" alt="Broadcasting Wing" fill className="object-cover" />
-                    </div>
                     <div className="w-full md:w-1/2 p-4 md:p-0">
                         <h2 className="text-2xl md:text-3xl font-bold font-headline">Broadcasting Wing</h2>
                         <p className="mt-4 text-base md:text-lg text-muted-foreground">Ensuring a seamless, high-quality stream reaches your ears. The broadcasting team manages the on-air schedule, controls live transmissions, and guarantees a professional audio experience.</p>
                     </div>
+                    <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
+                        <Image src="https://ik.imagekit.io/tz33swtq7h/WhatsApp%20Image%202026-02-10%20at%204.26.36%20PM.jpeg" alt="Broadcasting Wing" fill className="object-cover" />
+                    </div>
                 </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
                  <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
+                    <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
+                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_2185.jpg?updatedAt=1770654371827" alt="Video Editing Wing" fill className="object-cover" />
+                    </div>
                     <div className="w-full md:w-1/2 p-4 md:p-0">
                         <h2 className="text-2xl md:text-3xl font-bold font-headline">Video Editing Wing</h2>
                         <p className="mt-4 text-base md:text-lg text-muted-foreground">Bringing our visual stories to life. This talented team produces and edits all video content, from event highlights to promotional material, for our website and social media platforms.</p>
-                    </div>
-                    <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
-                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_2185.jpg?updatedAt=1770654371827" alt="Video Editing Wing" fill className="object-cover" />
                     </div>
                 </div>
             </ScrollStackItem>
