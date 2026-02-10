@@ -90,7 +90,7 @@ export const Timeline3D: React.FC<Timeline3DProps> = ({
 
   return (
     <div
-      className={`w-full ${backgroundColor} py-16 px-4 sm:px-6 lg:px-8 overflow-hidden ${textColor} ${className}`}
+      className={`w-full ${backgroundColor} px-4 sm:px-6 lg:px-8 overflow-hidden ${textColor} ${className}`}
       ref={containerRef}
     >
       <div className="max-w-7xl mx-auto relative">

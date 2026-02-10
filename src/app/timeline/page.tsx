@@ -177,7 +177,7 @@ const TimelinePage: React.FC = () => {
       <div className="absolute inset-0 bg-black/50 -z-10" />
 
       <NavbarKL />
-      <main className="flex-1">
+      <main className="flex-1 pt-32">
         <Timeline3D 
           events={timelineEvents}
           primaryColor="bg-primary"
