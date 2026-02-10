@@ -175,9 +175,14 @@ function OurTeamPageContent() {
                 </div>
             </ScrollStackItem>
             <ScrollStackItem itemClassName="bg-card/70 backdrop-blur-lg border border-white/10 text-card-foreground">
-                <div className="p-4 md:p-0">
-                    <h2 className="text-2xl md:text-3xl font-bold font-headline">Designing Wing</h2>
-                    <p className="mt-4 text-base md:text-lg text-muted-foreground">Crafting the visual identity of KL Radio. From eye-catching event posters to stunning social media graphics and website aesthetics, our designers create the look and feel that defines us.</p>
+                <div className="flex flex-col md:flex-row h-full items-center gap-4 md:gap-8">
+                    <div className="w-full md:w-1/2 p-4 md:p-0">
+                        <h2 className="text-2xl md:text-3xl font-bold font-headline">Designing Wing</h2>
+                        <p className="mt-4 text-base md:text-lg text-muted-foreground">Crafting the visual identity of KL Radio. From eye-catching event posters to stunning social media graphics and website aesthetics, our designers create the look and feel that defines us.</p>
+                    </div>
+                    <div className="relative w-full md:w-1/2 h-48 md:h-full overflow-hidden rounded-2xl">
+                        <Image src="https://ik.imagekit.io/tz33swtq7h/IMG_0398.jpg" alt="Designing Wing" fill className="object-cover" />
+                    </div>
                 </div>
             </ScrollStackItem>
         </ScrollStack>
