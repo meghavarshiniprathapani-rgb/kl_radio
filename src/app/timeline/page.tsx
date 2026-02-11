@@ -12,10 +12,20 @@ const TimelinePage: React.FC = () => {
     {
       id: '1',
       date: '2026–January',
-      title: 'Calendar Distribution and Collaboration with NTR district Police department',
+      title: 'Calendar Distribution',
       description: 'The KL Radio Calendar was introduced as a thoughtful initiative to document and celebrate important events, festivals, and significant days throughout the year. Designed exclusively for KL Radio, the calendar reflects the organization’s journey, values, and milestones, serving as both a functional guide and a symbol of unity and identity.',
       icon: <Radio className="text-white" />,
       image: 'https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01069.JPG?updatedAt=1770460285751',
+    },
+    {
+      id: '18',
+      date: '2026–January',
+      title: 'Collaboration with NTR district Police department',
+      description: 'KL Radio proudly collaborated with the NTR district Police department, extending our reach and community engagement. This partnership highlights our commitment to social responsibility and working with local authorities to create a positive impact.',
+      icon: <Briefcase className="text-white" />,
+      image: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      category: 'Collaboration',
+      color: 'sky',
     },
     {
       id: '2',
