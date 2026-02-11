@@ -1,4 +1,3 @@
-import data from './placeholder-images.json';
 
 export type ImagePlaceholder = {
   id: string;
@@ -11,7 +10,7 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
     {
       "id": "1",
       "description": "User avatar for Station Head",
-      "imageUrl": "https://p7.hiclipart.com/preview/782/114/405/5bbc3519d674c.jpg",
+      "imageUrl": "https://ik.imagekit.io/tz33swtq7h/logo.jpg",
       "imageHint": "person face"
     },
     {
@@ -100,7 +99,7 @@ export const PlaceHolderImages: ImagePlaceholder[] = [
     },
     {
       "id": "event-calendar",
-      "imageUrl": "https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/DSC01069.JPG?updatedAt=1770460285751",
+      "imageUrl": "https://ik.imagekit.io/tz33swtq7h/Calender/Calendar/2026%20(3).png",
       "imageHint": "calendar schedule",
       "description": "The KL Radio Calendar was introduced as a thoughtful initiative to document and celebrate important events, festivals, and significant days throughout the year. Designed exclusively for KL Radio, the calendar reflects the organization’s journey, values, and milestones, serving as both a functional guide and a symbol of unity and identity."
     },
