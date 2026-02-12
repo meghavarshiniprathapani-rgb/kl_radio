@@ -74,7 +74,7 @@ function OurTeamPageContent() {
         playsInline
         className="fixed top-0 left-0 w-full h-full object-cover -z-20"
       >
-        <source src="https://ik.imagekit.io/bhanuteja110/Radio/Website.mp4" type="video/mp4" />
+        <source src="https://ik.imagekit.io/bhanuteja110/Radio/WEBSITE_prob3.mp4" type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-black/50 -z-10" />
       <NavbarKL />
