@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -62,7 +63,7 @@ const TimelinePage: React.FC = () => {
       title: 'Resonance and Official Media Partner for SAMYAK - 2025',
       description: 'Samyak is one of the most eagerly awaited events in the university, spanning two days that transform into a lifetime of cherished memories. Although defined as 48 hours, Samyak transcends time through its electrifying energy, nonstop DJ performances, guest appearances, reunions, meetups, and countless moments of joy. Students from across the university come together to celebrate friendship, freedom, and festivity, making Samyak a symbol of collective happiness and unforgettable campus life.',
       icon: <Book className="text-white" />,
-      image: 'https://ik.imagekit.io/tz33swtq7h/Resonance/_J4A6004.JPG.jpeg',
+      image: 'https://ik.imagekit.io/tz33swtq7h/image.png',
       category: 'Community',
       color: 'blue',
     },
