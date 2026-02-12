@@ -176,7 +176,7 @@ const TimelinePage: React.FC = () => {
       title: 'KL Radio was Founded',
       description: 'The beginning of a new era in campus communication and entertainment, KL Radio was established to give a voice to the students and create a vibrant community hub.',
       icon: <Radio className="text-white" />,
-      image: 'https://images.unsplash.com/photo-1484704849700-f032a568e374?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      image: 'https://ik.imagekit.io/tz33swtq7h/image.png',
       category: 'Foundation',
       color: 'blue',
     },
